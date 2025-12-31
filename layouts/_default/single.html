@@ -1,0 +1,71 @@
+{{ define "main" }}
+<article class="monster-detail">
+
+  <!-- 画像 -->
+  {{ with .Params.image }}
+    <div class="monster-image">
+      <img src="{{ . | relURL }}" alt="{{ $.Title }}">
+    </div>
+  {{ end }}
+
+  <!-- タイトル＋簡易情報 -->
+  <h1 class="monster-title">{{ .Title }}</h1>
+  <ul class="monster-basic">
+    <li><strong>ランク：</strong>{{ .Params.rank }}</li>
+    <li><strong>難易度：</strong>{{ .Params.difficulty }}</li>
+  </ul>
+
+  <!-- ステータス -->
+  <section class="monster-stats">
+  <h2>ステータス</h2>
+  <ul class="stats-grid">
+    <li><span>HP</span><strong>{{ .Params.hp }}</strong></li>
+    <li><span>ATK</span><strong>{{ .Params.atk }}</strong></li>
+    <li><span>INT</span><strong>{{ .Params.intelligence }}</strong></li>
+    <li><span>DEF</span><strong>{{ .Params.def }}</strong></li>
+    <li><span>M-DEF</span><strong>{{ .Params.mdef }}</strong></li>
+    <li><span>SPD</span><strong>{{ .Params.spd }}</strong></li>
+    <li><span>LUCK</span><strong>{{ .Params.luck }}</strong></li>
+    <li><span>EXP</span><strong>{{ .Params.exp }}</strong></li>
+    <li><span>GOLD</span><strong>{{ .Params.gold }}</strong></li>
+  </ul>
+</section>
+
+
+  <!-- ドロップ・出現 -->
+  <section class="monster-drops">
+    <h2>ドロップ・出現</h2>
+    <ul>
+      {{ with .Params.orb_drop }}
+      <li><strong>メインドロップ：</strong>{{ delimit . ", " }}</li>
+
+      {{ with .Params.main_drop }}
+      <li><strong>メインドロップ：</strong>{{ delimit . ", " }}</li>
+      {{ end }}
+
+      {{ with .Params.fragment_drop }}
+      <li><strong>かけらドロップ：</strong>{{ delimit . ", " }}</li>
+      {{ end }}
+
+      {{ with .Params.locations }}
+      <li><strong>出現場所：</strong>{{ delimit . ", " }}</li>
+      {{ end }}
+
+      {{end}}
+    </ul>
+  </section>
+
+  <!-- ページナビ -->
+  <nav class="monster-nav">
+    {{ if .Params.prev }}
+      <a href="/db/{{ .Params.prev }}/">&larr; 前へ</a>
+    {{ end }}
+    {{ if .Params.next }}
+      <a href="/db/{{ .Params.next }}/">次へ &rarr;</a>
+    {{ end }}
+  </nav>
+
+  <p><a href="/monster/">一覧に戻る</a></p>
+
+</article>
+{{ end }}

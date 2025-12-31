@@ -1,0 +1,20 @@
+{{ define "main" }}
+
+<h1>{{ .Title }}</h1>
+
+<div class="monster-list">
+  {{ range sort .Pages ".Params.id" "asc"}}
+  <a href="{{ .RelPermalink }}" class="monster-card">
+    {{ with .Params.image }}
+      <img src="{{ . | relURL }}" alt="{{ $.Title }}">
+    {{ end }}
+    <div class="monster-card-body">
+      <h2>{{ .Title }}</h2>
+    </div>
+
+  </a>
+  {{ end }}
+
+</div>
+
+{{ end }}

@@ -1,0 +1,12 @@
+{{ define "main" }}
+
+<h1>{{ .Title }}</h1>
+
+<div class="tool-content">
+  {{ .Content }}
+
+<input type="number" id="atk"placeholder="(ここにATK)">
+<button id="calc-btn">計算</button>
+<p id="damage-result">-</p>
+<script src="/js/damage.js"></script>
+{{end}}

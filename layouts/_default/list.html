@@ -1,0 +1,18 @@
+{{ define "main" }}
+<h1 class="page-title">{{ .Title }}</h1><!--content/_index.mdの内容が入る-->
+
+<div class="page-description"><!--content/_index.mdの内容が入る-->
+  {{ .Content }}
+</div>
+
+<ul>
+  {{range .Pages}}
+    <li>
+      <a href="{{ .RelPermalink}}">
+        {{ .Title}}
+      </a>
+    </li>
+  {{end}}
+</ul>
+
+{{end}}

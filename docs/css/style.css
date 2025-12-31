@@ -1,0 +1,259 @@
+/* 共通リンク */
+a {
+  color: #333;
+  text-decoration: none;
+}
+
+/* カーソルを合わせた時 */
+a:hover,
+a:focus {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+/* ヘッダー */
+.site-header {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.site-title {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+/* ヘッダーのサイト名専用ホバー */
+/* ヘッダー固定 */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  z-index: 1000;
+}
+
+/* ヘッダー分の余白を確保 */
+main {
+  margin-top: 56px; /* ヘッダー高さ分 */
+}
+
+/* ===== スマホ対応 ===== */
+@media screen and (max-width: 768px) {
+
+  body {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .site-header {
+    padding: 12px;
+  }
+
+  .site-title {
+    font-size: 1.1em;
+  }
+
+  main {
+    margin-top: 60px;
+    padding: 12px;
+  }
+
+  .db-stats {
+    flex-direction: column;
+  }
+
+  .db-stats div {
+    min-width: auto;
+  }
+  /* DB一覧を縦に見やすく */
+  ul {
+    padding-left: 0;
+  }
+
+  ul > li {
+    list-style: none;
+    margin-bottom: 16px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+
+  /* リンクのタップ領域を広げる */
+  a {
+    display: inline-block;
+    padding: 4px 0;
+  }
+}
+/* ===== DB一覧（カードUI） ===== */
+
+.page-title {
+  margin-bottom: 8px;
+}
+
+.page-description {
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.db-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.db-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 14px;
+  background-color: #fff;
+}
+
+.db-card-title {
+  margin: 0 0 6px 0;
+  font-size: 1.1em;
+}
+
+.db-card-title a:hover {
+  text-decoration: underline;
+}
+
+.db-card-meta {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.db-card-meta .type {
+  margin-right: 10px;
+}
+
+.db-card-stats {
+  font-size: 0.95em;
+  display: flex;
+  gap: 12px;
+}
+
+/* PCでは少し横に余裕を */
+@media screen and (min-width: 769px) {
+  .db-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+/* ===== 詳細ページ ===== */
+
+.db-detail-title {
+  margin-bottom: 12px;
+}
+
+.db-section {
+  margin-bottom: 24px;
+}
+
+.db-section h2 {
+  font-size: 1.05em;
+  border-left: 4px solid #0066cc;
+  padding-left: 8px;
+  margin-bottom: 10px;
+}
+
+.db-info-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.db-info-list li {
+  margin-bottom: 6px;
+}
+
+.db-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.db-stats div {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  min-width: 80px;
+}
+
+.db-stats span {
+  display: block;
+  font-size: 0.85em;
+  color: #666;
+}
+
+.db-stats strong {
+  font-size: 1.2em;
+}
+
+.db-tags {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.db-tags li {
+  background-color: #eef5ff;
+  color: #004a99;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85em;
+}
+
+.db-description {
+  line-height: 1.7;
+}
+
+.back-link {
+  margin-top: 30px;
+}
+/*セル同士の枠線を1本にまとめる*/
+
+/* ===== モンスター一覧 ===== */
+
+.monster-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.monster-card {
+  display: block;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+}
+
+.monster-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.monster-card-body {
+  padding: 8px;
+}
+
+.monster-card h2 {
+  font-size: 1em;
+  margin: 0 0 4px;
+}
+
+.monster-rank {
+  font-size: 0.85em;
+  color: #666;
+}
+
+/* ホバー（PC） */
+.monster-card:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
