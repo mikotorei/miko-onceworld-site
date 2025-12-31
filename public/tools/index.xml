@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ツール on OnceWorld(ワンスワ)miko</title>
+    <link>https://github.com/matsumoto0106.github.io/miko-onceworld-site.git/tools/</link>
+    <description>Recent content in ツール on OnceWorld(ワンスワ)miko</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="https://github.com/matsumoto0106.github.io/miko-onceworld-site.git/tools/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ステータス計算ツール</title>
+      <link>https://github.com/matsumoto0106.github.io/miko-onceworld-site.git/tools/status/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://github.com/matsumoto0106.github.io/miko-onceworld-site.git/tools/status/</guid>
+      <description>&lt;p&gt;ここに主人公ステータス計算ツールを実装予定です。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>与ダメ計算ツール</title>
+      <link>https://github.com/matsumoto0106.github.io/miko-onceworld-site.git/tools/atk/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://github.com/matsumoto0106.github.io/miko-onceworld-site.git/tools/atk/</guid>
+      <description>&lt;p&gt;ここに与ダメ計算ツールを実装予定です。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
