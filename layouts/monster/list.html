@@ -4,7 +4,7 @@
 
 <div class="monster-list">
   {{ range sort .Pages ".Params.id" "asc"}}
-  <a href="{{ .RelPermalink }}" class="monster-card">
+  <a href="{{ .Permalink }}" class="monster-card">
     {{ with .Params.image }}
       <img src="{{ . | relURL }}" alt="{{ $.Title }}">
     {{ end }}
