@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ツール on OnceWorld(ワンスワ)miko</title>
-    <link>http://localhost:1313/miko-onceworld-site/tools/</link>
+    <link>https://matsumoto0106.github.io/miko-onceworld-site/tools/</link>
     <description>Recent content in ツール on OnceWorld(ワンスワ)miko</description>
     <generator>Hugo</generator>
     <language>ja-jp</language>
-    <atom:link href="http://localhost:1313/miko-onceworld-site/tools/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://matsumoto0106.github.io/miko-onceworld-site/tools/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ステータス計算ツール</title>
-      <link>http://localhost:1313/miko-onceworld-site/tools/status/</link>
+      <link>https://matsumoto0106.github.io/miko-onceworld-site/tools/status/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/miko-onceworld-site/tools/status/</guid>
+      <guid>https://matsumoto0106.github.io/miko-onceworld-site/tools/status/</guid>
       <description>&lt;p&gt;ここに主人公ステータス計算ツールを実装予定です。&lt;/p&gt;</description>
     </item>
     <item>
       <title>与ダメ計算ツール</title>
-      <link>http://localhost:1313/miko-onceworld-site/tools/atk/</link>
+      <link>https://matsumoto0106.github.io/miko-onceworld-site/tools/atk/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/miko-onceworld-site/tools/atk/</guid>
+      <guid>https://matsumoto0106.github.io/miko-onceworld-site/tools/atk/</guid>
       <description>&lt;p&gt;ここに与ダメ計算ツールを実装予定です。&lt;/p&gt;</description>
     </item>
   </channel>

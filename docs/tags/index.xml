@@ -2,10 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on OnceWorld(ワンスワ)miko</title>
-    <link>http://localhost:1313/miko-onceworld-site/tags/</link>
+    <link>https://matsumoto0106.github.io/miko-onceworld-site/tags/</link>
     <description>Recent content in Tags on OnceWorld(ワンスワ)miko</description>
     <generator>Hugo</generator>
     <language>ja-jp</language>
-    <atom:link href="http://localhost:1313/miko-onceworld-site/tags/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://matsumoto0106.github.io/miko-onceworld-site/tags/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
