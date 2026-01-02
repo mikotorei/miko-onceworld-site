@@ -34,17 +34,501 @@
   モンスター選択：
 <select id="monster-select">
   <option value="">-- 選択してください --</option>
-<p>{{ range site.RegularPages }}
-{{ if in .File.Path &ldquo;monster/&rdquo; }}
-<option
-value="{{ .Params.def }}"
-data-name="{{ .Title }}"
->
-{{ .Title }}
-</option>
-{{ end }}
-{{ end }}</p>
+
+  
+    
+      <option value="100">
+        BOX
+      </option>
+    
+  
+    
+      <option value="8">
+        アヌビス
+      </option>
+    
+  
+    
+      <option value="9">
+        アリクイロード
+      </option>
+    
+  
+    
+      <option value="77">
+        イージスリエル
+      </option>
+    
+  
+    
+      <option value="22">
+        イグニシア
+      </option>
+    
+  
+    
+      <option value="55">
+        イグニス・シスター
+      </option>
+    
+  
+    
+      <option value="48">
+        ウォーデン
+      </option>
+    
+  
+    
+      <option value="11">
+        うねうね
+      </option>
+    
+  
+    
+      <option value="16">
+        エジプトアシュラ
+      </option>
+    
+  
+    
+      <option value="100">
+        エレファントパラディン
+      </option>
+    
+  
+    
+      <option value="39">
+        オルド･クラウセス
+      </option>
+    
+  
+    
+      <option value="7">
+        オルトロス
+      </option>
+    
+  
+    
+      <option value="26">
+        ガチキメラ
+      </option>
+    
+  
+    
+      <option value="29">
+        ギガントオーク
+      </option>
+    
+  
+    
+      <option value="99">
+        キメラキング
+      </option>
+    
+  
+    
+      <option value="11">
+        キメラタートル
+      </option>
+    
+  
+    
+      <option value="40">
+        クリーチャーアイ
+      </option>
+    
+  
+    
+      <option value="1">
+        クリーチャーローズ
+      </option>
+    
+  
+    
+      <option value="2">
+        グリーンスライム
+      </option>
+    
+  
+    
+      <option value="32">
+        ケルベロス
+      </option>
+    
+  
+    
+      <option value="13">
+        ゴブリンクルー
+      </option>
+    
+  
+    
+      <option value="3">
+        ゴブリンメイジ
+      </option>
+    
+  
+    
+      <option value="2">
+        ゴブリン特攻隊
+      </option>
+    
+  
+    
+      <option value="10">
+        シカファイター
+      </option>
+    
+  
+    
+      <option value="36">
+        スカルウィスプ
+      </option>
+    
+  
+    
+  
+    
+      <option value="11">
+        スノーモケラ
+      </option>
+    
+  
+    
+      <option value="5">
+        ダークメイジ
+      </option>
+    
+  
+    
+      <option value="25">
+        ダイコンに見えるダイコン
+      </option>
+    
+  
+    
+      <option value="15">
+        デーモンブレイド
+      </option>
+    
+  
+    
+      <option value="21">
+        デザートイッヌ
+      </option>
+    
+  
+    
+      <option value="26">
+        ヌー
+      </option>
+    
+  
+    
+      <option value="35">
+        ネクロプリンセス
+      </option>
+    
+  
+    
+      <option value="115">
+        バーニングロック
+      </option>
+    
+  
+    
+      <option value="17">
+        ハネスライム
+      </option>
+    
+  
+    
+      <option value="28">
+        パンダ
+      </option>
+    
+  
+    
+      <option value="16">
+        ファイヤーメイジ
+      </option>
+    
+  
+    
+      <option value="18">
+        ファントムツリー
+      </option>
+    
+  
+    
+      <option value="8">
+        ブタ天使
+      </option>
+    
+  
+    
+      <option value="29">
+        フレイムフロッグ
+      </option>
+    
+  
+    
+      <option value="48">
+        フレイムボーン
+      </option>
+    
+  
+    
+      <option value="1">
+        ペリカンEXP
+      </option>
+    
+  
+    
+      <option value="8">
+        ペンギンソルジャー
+      </option>
+    
+  
+    
+      <option value="15">
+        ペンギンロード
+      </option>
+    
+  
+    
+      <option value="50">
+        ボーンバトラー
+      </option>
+    
+  
+    
+      <option value="5">
+        ボスゴブリン
+      </option>
+    
+  
+    
+      <option value="15">
+        ホネ
+      </option>
+    
+  
+    
+      <option value="22">
+        ホムラウマ
+      </option>
+    
+  
+    
+      <option value="3">
+        マッドカエル
+      </option>
+    
+  
+    
+      <option value="29">
+        ランプの精霊
+      </option>
+    
+  
+    
+      <option value="2">
+        レッドゴブリン
+      </option>
+    
+  
+    
+      <option value="30">
+        不思議なツボ
+      </option>
+    
+  
+    
+  
+    
+      <option value="145">
+        冥王ノクタール
+      </option>
+    
+  
+    
+      <option value="19">
+        動く墓
+      </option>
+    
+  
+    
+      <option value="2">
+        原始蝶
+      </option>
+    
+  
+    
+      <option value="111">
+        古代魚　ザコーン
+      </option>
+    
+  
+    
+      <option value="31">
+        天狗
+      </option>
+    
+  
+    
+      <option value="30">
+        居住者A
+      </option>
+    
+  
+    
+      <option value="12">
+        居住者B
+      </option>
+    
+  
+    
+      <option value="89">
+        悪夢の石像
+      </option>
+    
+  
+    
+      <option value="59">
+        捧げし者
+      </option>
+    
+  
+    
+      <option value="46">
+        支配のトリ
+      </option>
+    
+  
+    
+      <option value="81">
+        時空龍クロノゼリウス
+      </option>
+    
+  
+    
+      <option value="85">
+        朽ちざる竜骸　イゾ
+      </option>
+    
+  
+    
+      <option value="17">
+        死戦士マミー
+      </option>
+    
+  
+    
+      <option value="26">
+        残燃モエコ
+      </option>
+    
+  
+    
+      <option value="25">
+        深淵灯魚
+      </option>
+    
+  
+    
+      <option value="80">
+        炎鬼
+      </option>
+    
+  
+    
+      <option value="31">
+        烈火鼠
+      </option>
+    
+  
+    
+      <option value="18">
+        焼きトリ
+      </option>
+    
+  
+    
+      <option value="15">
+        燃えてる何か
+      </option>
+    
+  
+    
+      <option value="75">
+        禁域のアヌビシュ
+      </option>
+    
+  
+    
+      <option value="101">
+        禁域のヴァルネシア
+      </option>
+    
+  
+    
+      <option value="74">
+        禁域のクマヌイ
+      </option>
+    
+  
+    
+      <option value="45">
+        禁域のラミア
+      </option>
+    
+  
+    
+      <option value="100">
+        禁域の巨木
+      </option>
+    
+  
+    
+      <option value="45">
+        紅サソリ
+      </option>
+    
+  
+    
+      <option value="74">
+        聡明神　トモダチ
+      </option>
+    
+  
+    
+      <option value="31">
+        邪黒龍
+      </option>
+    
+  
+    
+      <option value="4">
+        鉄罠花
+      </option>
+    
+  
+    
+      <option value="13">
+        雪だるまん
+      </option>
+    
+  
+    
+      <option value="88">
+        零の者
+      </option>
+    
+  
+
 </select>
+
 </label>
   <div class="atk-form">
     <label>
