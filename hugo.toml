@@ -1,7 +1,7 @@
 baseURL = "https://matsumoto0106.github.io/miko-onceworld-site/"
 publishDir = "docs"
 relativeURLs = false
-canonifyURLs = false
+canonifyURLs = true
 
 
 languageCode = "ja-jp"
