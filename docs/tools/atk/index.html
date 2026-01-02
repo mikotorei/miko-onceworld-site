@@ -884,7 +884,7 @@ document.getElementById("calc-btn").addEventListener("click", function () {
   const atk = Number(document.getElementById("atk").value);
   const def = Number(document.getElementById("def").value);
 
-  const damage = Math.max(0, Math.floor((atk - def) * (rate / 100)));
+  const damage = Math.max(0, atk - def ));
 
   document.getElementById("result").textContent = damage;
 });
