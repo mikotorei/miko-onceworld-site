@@ -8,10 +8,10 @@ description: "与ダメージを計算するツールです。"
   <h2>与ダメージ計算</h2>
   <h2>攻撃対象モンスター</h2>
 
-<label>
-  モンスター選択：
-{{< monster_select >}}
-  <label>
+<div class="form-row">
+  <label for="monster-select">モンスター選択：</label>
+  {{< monster_select >}}
+</div>
   モンスターレベル：
   <input
     type="number"
