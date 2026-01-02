@@ -907,8 +907,8 @@ function recalcMonsterDef() {
   const level = Number(document.getElementById("monster-level").value);
   if (baseDef === 0) return;
 
-  // 仮：1レベルごとに +2
-  const calculatedDef = baseDef + (level - 1) * 2;
+  // ステータス上昇の計算式
+  const calculatedDef = baseDef * ( 1 + level * 0.1) ;
   document.getElementById("def").value = calculatedDef;
 }
 
