@@ -32,24 +32,34 @@
   <div class="atk-form">
     <label>
       攻撃力（ATK）
-      <input type="number" id="atk-value" min="0" placeholder="例：120">
+      <input type="number" id="atk" value="100" min="0" placeholder="例：120">
     </label>
     <label>
       防御力（DEF）
-      <input type="number" id="def-value" min="0" placeholder="例：80">
+      <input type="number" id="def" value="30" min="0" placeholder="例：80">
     </label>
     <label>
       スキル倍率（%）
-      <input type="number" id="skill-rate" min="0" placeholder="例：150">
+      <input type="number" id="rate" value="100" min="0" placeholder="例：150">
     </label>
-    <button id="calc-damage">計算する</button>
+    <button id="calc-btn">計算する</button>
   </div>
   <div class="atk-result">
-    <p>与ダメージ：</p>
-    <p id="damage-result">---</p>
+    <p>与ダメージ：<span id="result">---</span></p>
   </div>
 </section>
 <script src="https://matsumoto0106.github.io/miko-onceworld-site/js/atk-calc.js"></script>
+<script>
+document.getElementById("calc-btn").addEventListener("click", function () {
+  const atk = Number(document.getElementById("atk").value);
+  const def = Number(document.getElementById("def").value);
+  const rate = Number(document.getElementById("rate").value);
+
+  const damage = Math.max(0, Math.floor((atk - def) * (rate / 100)));
+
+  document.getElementById("result").textContent = damage;
+});
+</script>
 
 </div>
 
