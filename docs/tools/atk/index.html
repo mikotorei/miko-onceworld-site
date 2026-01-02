@@ -558,17 +558,32 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const selectEl = document.getElementById("monster-select");
-  const defEl = document.getElementById("def");
+  const levelEl  = document.getElementById("monster-level");
+  const defEl    = document.getElementById("def");
 
-  if (!selectEl || !defEl) return;
+  if (!selectEl || !levelEl || !defEl) return;
+
+  let baseDef = 0;
+  const DEF_GROWTH_PER_LEVEL = 2; // ← ここを変えるだけで調整可能
+
+  function recalcDef() {
+    const lv = Math.max(1, Number(levelEl.value || 1));
+    if (!baseDef) return;
+
+    const calculatedDef = baseDef + (lv - 1) * DEF_GROWTH_PER_LEVEL;
+    defEl.value = calculatedDef;
+  }
 
   selectEl.addEventListener("change", () => {
     const opt = selectEl.options[selectEl.selectedIndex];
-    const def = Number(opt.dataset.def || opt.value || 0);
+    baseDef = Number(opt.dataset.def || opt.value || 0);
 
-    if (!Number.isNaN(def) && def > 0) {
-      defEl.value = def;
-    }
+    levelEl.value = 1;   // モンスター切替時はLv1に戻す（好みで変更OK）
+    recalcDef();
+  });
+
+  levelEl.addEventListener("input", () => {
+    recalcDef();
   });
 });
 </script>
