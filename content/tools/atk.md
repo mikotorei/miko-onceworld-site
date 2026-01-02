@@ -6,7 +6,26 @@ description: "与ダメージを計算するツールです。"
 
 <section class="atk-tool">
   <h2>与ダメージ計算</h2>
+  <h2>攻撃対象モンスター</h2>
 
+<label>
+  モンスター選択：
+  <select id="monster-select">
+    <option value="">-- 選択してください --</option>
+
+    {{ range site.RegularPages }}
+      {{ if eq .Section "monster" }}
+        <option
+          value="{{ .Params.def }}"
+          data-name="{{ .Title }}"
+        >
+          {{ .Title }}
+        </option>
+      {{ end }}
+    {{ end }}
+
+  </select>
+</label>
   <div class="atk-form">
     <label>
       攻撃力（ATK）
