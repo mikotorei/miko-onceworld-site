@@ -8,18 +8,18 @@
     <language>ja-jp</language>
     <atom:link href="https://matsumoto0106.github.io/miko-onceworld-site/tools/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title></title>
-      <link>https://matsumoto0106.github.io/miko-onceworld-site/tools/atk/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://matsumoto0106.github.io/miko-onceworld-site/tools/atk/</guid>
-      <description>&lt;p&gt;与ダメージを計算するツールです。&lt;/p&gt;&#xA;&lt;div id=&#34;atk-calc&#34;&gt;&lt;/div&gt;&#xA;&lt;hr&gt;&#xA;&lt;section class=&#34;atk-tool&#34;&gt;&#xA;  &lt;h2&gt;与ダメージ計算&lt;/h2&gt;&#xA;  &lt;div class=&#34;atk-form&#34;&gt;&#xA;    &lt;label&gt;&#xA;      攻撃力（ATK）&#xA;      &lt;input type=&#34;number&#34; id=&#34;atk-value&#34; min=&#34;0&#34; placeholder=&#34;例：120&#34;&gt;&#xA;    &lt;/label&gt;&#xA;&lt;pre&gt;&lt;code&gt;&amp;lt;label&amp;gt;&#xA;  防御力（DEF）&#xA;  &amp;lt;input type=&amp;quot;number&amp;quot; id=&amp;quot;def-value&amp;quot; min=&amp;quot;0&amp;quot; placeholder=&amp;quot;例：80&amp;quot;&amp;gt;&#xA;&amp;lt;/label&amp;gt;&#xA;&#xA;&amp;lt;label&amp;gt;&#xA;  スキル倍率（%）&#xA;  &amp;lt;input type=&amp;quot;number&amp;quot; id=&amp;quot;skill-rate&amp;quot; min=&amp;quot;0&amp;quot; placeholder=&amp;quot;例：150&amp;quot;&amp;gt;&#xA;&amp;lt;/label&amp;gt;&#xA;&#xA;&amp;lt;button id=&amp;quot;calc-damage&amp;quot;&amp;gt;計算する&amp;lt;/button&amp;gt;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;  &lt;/div&gt;&#xA;  &lt;div class=&#34;atk-result&#34;&gt;&#xA;    &lt;p&gt;与ダメージ：&lt;/p&gt;&#xA;    &lt;p id=&#34;damage-result&#34;&gt;---&lt;/p&gt;&#xA;  &lt;/div&gt;&#xA;&lt;/section&gt;</description>
-    </item>
-    <item>
       <title>ステータス計算ツール</title>
       <link>https://matsumoto0106.github.io/miko-onceworld-site/tools/status/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://matsumoto0106.github.io/miko-onceworld-site/tools/status/</guid>
       <description>&lt;p&gt;ここに主人公ステータス計算ツールを実装予定です。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>与ダメージ計算</title>
+      <link>https://matsumoto0106.github.io/miko-onceworld-site/tools/atk/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://matsumoto0106.github.io/miko-onceworld-site/tools/atk/</guid>
+      <description>&lt;p&gt;与ダメージを計算するツールです。&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;section class=&#34;atk-tool&#34;&gt;&#xA;  &lt;h2&gt;与ダメージ計算&lt;/h2&gt;&#xA;  &lt;div class=&#34;atk-form&#34;&gt;&#xA;    &lt;label&gt;&#xA;      攻撃力（ATK）&#xA;      &lt;input type=&#34;number&#34; id=&#34;atk-value&#34; min=&#34;0&#34; placeholder=&#34;例：120&#34;&gt;&#xA;    &lt;/label&gt;&#xA;&lt;pre&gt;&lt;code&gt;&amp;lt;label&amp;gt;&#xA;  防御力（DEF）&#xA;  &amp;lt;input type=&amp;quot;number&amp;quot; id=&amp;quot;def-value&amp;quot; min=&amp;quot;0&amp;quot; placeholder=&amp;quot;例：80&amp;quot;&amp;gt;&#xA;&amp;lt;/label&amp;gt;&#xA;&#xA;&amp;lt;label&amp;gt;&#xA;  スキル倍率（%）&#xA;  &amp;lt;input type=&amp;quot;number&amp;quot; id=&amp;quot;skill-rate&amp;quot; min=&amp;quot;0&amp;quot; placeholder=&amp;quot;例：150&amp;quot;&amp;gt;&#xA;&amp;lt;/label&amp;gt;&#xA;&#xA;&amp;lt;button id=&amp;quot;calc-damage&amp;quot;&amp;gt;計算する&amp;lt;/button&amp;gt;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;  &lt;/div&gt;&#xA;  &lt;div class=&#34;atk-result&#34;&gt;&#xA;    &lt;p&gt;与ダメージ：&lt;/p&gt;&#xA;    &lt;p id=&#34;damage-result&#34;&gt;---&lt;/p&gt;&#xA;  &lt;/div&gt;&#xA;&lt;/section&gt;&#xA;&lt;script src=&#34;https://matsumoto0106.github.io/miko-onceworld-site/js/atk-calc.js&#34;&gt;&lt;/script&gt;</description>
     </item>
   </channel>
 </rss>
