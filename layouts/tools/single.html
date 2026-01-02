@@ -3,7 +3,7 @@
 <h1>{{ .Title }}</h1>
 
 <div class="tool-container">
-  {{ .Content }}
+  {{ .Content | safeHTML }}
 </div>
 
 <script src="{{ "js/atk-calc.js" | relURL }}"></script>
