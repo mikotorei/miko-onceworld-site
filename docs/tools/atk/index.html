@@ -32,20 +32,19 @@
   <h2>攻撃対象モンスター</h2>
 <label>
   モンスター選択：
-  <select id="monster-select">
-    <option value="">-- 選択してください --</option>
-<pre><code>{{ range site.RegularPages }}
-  {{ if eq .Section &quot;monster&quot; }}
-    &lt;option
-      value=&quot;{{ .Params.def }}&quot;
-      data-name=&quot;{{ .Title }}&quot;
-    &gt;
-      {{ .Title }}
-    &lt;/option&gt;
-  {{ end }}
+<select id="monster-select">
+  <option value="">-- 選択してください --</option>
+<p>{{ range site.RegularPages }}
+{{ if in .File.Path &ldquo;monster/&rdquo; }}
+<option
+value="{{ .Params.def }}"
+data-name="{{ .Title }}"
+>
+{{ .Title }}
+</option>
 {{ end }}
-</code></pre>
-  </select>
+{{ end }}</p>
+</select>
 </label>
   <div class="atk-form">
     <label>
