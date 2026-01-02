@@ -10,22 +10,8 @@ description: "与ダメージを計算するツールです。"
 
 <label>
   モンスター選択：
-<select id="monster-select">
-  <option value="">-- 選択してください --</option>
-
-  {{ range site.RegularPages }}
-    {{ if in .File.Path "monster/" }}
-      <option
-        value="{{ .Params.def }}"
-        data-name="{{ .Title }}"
-      >
-        {{ .Title }}
-      </option>
-    {{ end }}
-  {{ end }}
-
-</select>
-
+{{< monster_select >}}
+  
 </label>
   <div class="atk-form">
     <label>
