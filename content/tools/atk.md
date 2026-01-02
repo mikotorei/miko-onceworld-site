@@ -1,14 +1,6 @@
----
-title: "与ダメージ計算"
----
-
 <p>与ダメージを計算するツールです。</p>
-
-<div id="atk-calc">
-  <!-- ここに計算UIが入ります -->
-</div>
+<div id="atk-calc"></div>
 <hr>
-
 <section class="atk-tool">
   <h2>与ダメージ計算</h2>
 
