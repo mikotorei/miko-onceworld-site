@@ -901,6 +901,28 @@ document.getElementById("calc-btn").addEventListener("click", function () {
     document.getElementById("def").value = defValue;
   }
 });
+  let baseDef = 0;
+
+function recalcMonsterDef() {
+  const level = Number(document.getElementById("monster-level").value);
+  if (baseDef === 0) return;
+
+  // 仮：1レベルごとに +2
+  const calculatedDef = baseDef + (level - 1) * 2;
+  document.getElementById("def").value = calculatedDef;
+}
+
+document.getElementById("monster-select").addEventListener("change", function () {
+  const selected = this.options[this.selectedIndex];
+  baseDef = Number(selected.dataset.def || 0);
+
+  document.getElementById("monster-level").value = 1;
+  recalcMonsterDef();
+});
+
+document.getElementById("monster-level").addEventListener("input", function () {
+  recalcMonsterDef();
+});
 </script>
 
 </div>
