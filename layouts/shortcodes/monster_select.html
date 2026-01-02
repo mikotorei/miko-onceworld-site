@@ -1,0 +1,12 @@
+<select id="monster-select">
+  <option value="">-- 選択してください --</option>
+
+  {{ range site.RegularPages }}
+    {{ if in .File.Path "monster/" }}
+      <option value="{{ .Params.def }}">
+        {{ .Title }}
+      </option>
+    {{ end }}
+  {{ end }}
+
+</select>
