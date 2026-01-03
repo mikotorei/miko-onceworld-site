@@ -54,7 +54,6 @@ title: "与ダメージ計算"
     <p>与ダメージ：<span id="result">---</span></p>
     <p id="minline">最低ライン：---</p>
 </section>
-}
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
