@@ -4,8 +4,6 @@ title: "与ダメージ計算"
 
 与ダメージを計算するツールです。
 
-<hr>
-
 <section class="atk-tool">
   <h2>与ダメージ計算</h2>
 
@@ -15,11 +13,17 @@ title: "与ダメージ計算"
       <label for="monster-select">モンスター選択：</label>
       {{< monster_select >}}
     </div>
+
   <div class="form-row">
-  <span>並び順：</span>
-  <label><input type="radio" name="monster-sort" value="id" checked> 図鑑番号</label>
-  <label><input type="radio" name="monster-sort" value="kana"> 五十音</label>
-  </div>
+      <label for="monster-level">モンスターレベル：</label>
+      <input type="number" id="monster-level" value="1" min="1">
+    </div>
+
+  <div class="form-row">
+      <span>並び順：</span>
+      <label><input type="radio" name="monster-sort" value="id" checked> 図鑑番号</label>
+      <label><input type="radio" name="monster-sort" value="kana"> 五十音</label>
+    </div>
 
   <div class="form-row">
       <span>攻撃タイプ：</span>
@@ -47,13 +51,14 @@ title: "与ダメージ計算"
       <input type="number" id="mdef" value="0" min="0">
     </div>
 
-  <button id="calc-btn">計算する</button>
+    <button id="calc-btn">計算する</button>
   </div>
 
   <div class="atk-result">
     <p>対象モンスターの体力（レベル反映）：<span id="vit-display">---</span></p>
     <p>与ダメージ：<span id="result">---</span></p>
     <p id="minline">最低ライン：---</p>
+  </div>
 </section>
 
 <script>
