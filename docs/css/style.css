@@ -3,27 +3,17 @@
 ================================================= */
 
 /* ヘッダー固定（既にあるなら上書きされる） */
+/* ===== Fix: hamburger clipped ===== */
 .site-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-
-  background: #fff;
-  border-bottom: 1px solid #ccc;
-
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  box-sizing: border-box;
+  min-height: 64px;          /* ヘッダー高さを確保 */
+  padding: 10px 12px;
 }
+
 
 /* ヘッダー分の余白 */
 main {
-  margin-top: 60px;
-  padding: 12px;
+  margin-top: 64px;
 }
 
 /* タイトル */
@@ -42,14 +32,17 @@ main {
 
 /* ハンバーガー */
 .menu-toggle {
-  font-size: 1.4rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  line-height: 1;
-  padding: 8px 10px;
-  border-radius: 10px;
+  box-sizing: border-box;
+  width: 44px;               /* タップ領域 */
+  height: 44px;
+  display: grid;
+  place-items: center;       /* 中央寄せ */
+  padding: 0;                /* 切れの原因になりやすいので0 */
+  margin: 0;
+  line-height: 1;            /* 文字の上下はみ出し防止 */
+  flex: 0 0 auto;
 }
+
 .menu-toggle:active {
   background: rgba(0,0,0,0.06);
 }
