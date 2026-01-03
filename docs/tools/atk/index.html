@@ -724,7 +724,6 @@
 </section>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const vitDisplayEl = document.getElementById("vit-display");
   const selectEl  = document.getElementById("monster-select");
   const levelEl   = document.getElementById("monster-level");
   const atkEl     = document.getElementById("atk");
@@ -734,16 +733,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultEl  = document.getElementById("result");
   const minlineEl = document.getElementById("minline");
   const calcBtn   = document.getElementById("calc-btn");
+  const vitDisplayEl = document.getElementById("vit-display"); // あるなら使う（必須にしない）
 
-  // 要素不足なら何もしない（ページが壊れないように）
-  if (!selectEl || !levelEl || !atkEl || !intEl || !defEl || !mdefEl || !resultEl || !minlineEl || !calcBtn || !vitDisplayEl) return;
-  
-  // モンスター基礎値（Lv1）
+  // ここで止まると全部動かないので、vit-display は必須にしない
+  if (!selectEl || !levelEl || !atkEl || !intEl || !defEl || !mdefEl || !resultEl || !minlineEl || !calcBtn) return;
+
   let baseDef = 0;
   let baseMdef = 0;
   let baseVit = 0;
 
-  // レベル補正：基礎×(1+(Lv-1)*0.1) を切り捨て
   function scaleByLevel(base, lv) {
     return Math.floor(base * (1 + (lv - 1) * 0.1));
   }
@@ -757,54 +755,55 @@ document.addEventListener("DOMContentLoaded", () => {
     return checked ? checked.value : "phys";
   }
 
-  // value="def|mdef" から基礎DEF/MDEFを読む
+  // value="def|mdef|vit" を読む
   function loadMonsterBases() {
-  const opt = selectEl.options[selectEl.selectedIndex];
-  const v = (opt?.value || "").trim(); // "def|mdef|vit"
+    const opt = selectEl.options[selectEl.selectedIndex];
+    const v = (opt?.value || "").trim();
 
-  if (!v || !v.includes("|")) {
-    baseDef = 0;
-    baseMdef = 0;
-    baseVit = 0;
-    return;
+    if (!v.includes("|")) {
+      baseDef = 0; baseMdef = 0; baseVit = 0;
+      return;
+    }
+
+    const [defStr, mdefStr, vitStr] = v.split("|");
+    baseDef  = Number(defStr || 0);
+    baseMdef = Number(mdefStr || 0);
+    baseVit  = Number(vitStr || 0);
   }
 
-  const parts = v.split("|");
-  baseDef = Number(parts[0] || 0);
-  baseMdef = Number(parts[1] || 0);
-  baseVit = Number(parts[2] || 0);
-}
-
   function recalcMonsterStats() {
-  const lv = getLv();
-  if (!baseDef && !baseMdef && !baseVit) return;
+    const lv = getLv();
+    if (!baseDef && !baseMdef && !baseVit) return;
 
-  const def  = scaleByLevel(baseDef, lv);
-  const mdef = scaleByLevel(baseMdef, lv);
-  const vit  = scaleByLevel(baseVit, lv);
-  const vitDisplayValue = vit * 18 + 100;
+    const def  = scaleByLevel(baseDef, lv);
+    const mdef = scaleByLevel(baseMdef, lv);
 
-  defEl.value = def;
-  mdefEl.value = mdef;
-  vitDisplayEl.textContent = vitDisplayValue;
-}
+    defEl.value  = def;
+    mdefEl.value = mdef;
 
-  // 正式ダメージ（乱数は後回し：r=1.0で表示）
+    // VIT表示がある場合だけ更新（HP換算：vit*18+100）
+    if (vitDisplayEl) {
+      const vit = scaleByLevel(baseVit, lv);
+      vitDisplayEl.textContent = vit * 18 + 100;
+    }
+  }
+
   function calcPhysicalDamage(atk, def, mdef, r = 1.0) {
     const raw = (atk * 1.75 - (def + mdef / 10)) * 4 * r;
     return Math.max(0, Math.floor(raw));
   }
+
   function calcMagicDamage(intv, def, mdef, r = 1.0) {
     const raw = (intv * 1.26 - (mdef + def / 10)) * 4 * r;
     return Math.max(0, Math.floor(raw));
   }
 
-  // 「確実に通る最低ライン」：最悪乱数 r=0.9 でも 1以上
   function minAtkLine(def, mdef) {
     const r = 0.9;
     const need = (1 / (4 * r)) + (def + mdef / 10);
     return Math.ceil(need / 1.75);
   }
+
   function minIntLine(def, mdef) {
     const r = 0.9;
     const need = (1 / (4 * r)) + (mdef + def / 10);
@@ -816,26 +815,47 @@ document.addEventListener("DOMContentLoaded", () => {
     const def  = Number(defEl.value || 0);
     const mdef = Number(mdefEl.value || 0);
 
-    if (type === "phys") {
-      minlineEl.textContent = `確実に1以上出る最低ATK：${minAtkLine(def, mdef)}`;
-    } else {
-      minlineEl.textContent = `確実に1以上出る最低INT：${minIntLine(def, mdef)}`;
-    }
+    minlineEl.textContent =
+      (type === "phys")
+        ? `確実に1以上出る最低ATK：${minAtkLine(def, mdef)}`
+        : `確実に1以上出る最低INT：${minIntLine(def, mdef)}`;
   }
 
   function onMonsterOrLevelChanged() {
     loadMonsterBases();
     recalcMonsterStats();
     updateMinLine();
-
-});
   }
 
-// イベント
-selectEl.addEventListener("change", () => {
-  levelEl.value = 1; // モンスター切替でLv1に戻す（不要なら削除OK）
-  onMonsterOrLevelChanged();
-});
+  // --- 並び替え（ここは1回だけ定義・1回だけ登録） ---
+  function sortMonsterOptions(mode) {
+    const currentValue = selectEl.value;
+
+    const placeholder = selectEl.options[0];
+    const opts = Array.from(selectEl.options).slice(1);
+
+    opts.sort((a, b) => {
+      if (mode === "id") {
+        return Number(a.dataset.id || 0) - Number(b.dataset.id || 0);
+      } else {
+        const at = (a.dataset.title || "").trim();
+        const bt = (b.dataset.title || "").trim();
+        return at.localeCompare(bt, "ja");
+      }
+    });
+
+    selectEl.innerHTML = "";
+    selectEl.appendChild(placeholder);
+    opts.forEach(o => selectEl.appendChild(o));
+
+    selectEl.value = currentValue;
+  }
+
+  // --- イベント登録（1回だけ） ---
+  selectEl.addEventListener("change", () => {
+    levelEl.value = 1;
+    onMonsterOrLevelChanged();
+  });
 
   levelEl.addEventListener("input", () => {
     recalcMonsterStats();
@@ -844,6 +864,14 @@ selectEl.addEventListener("change", () => {
 
   document.querySelectorAll('input[name="attack-type"]').forEach(radio => {
     radio.addEventListener("change", updateMinLine);
+  });
+
+  document.querySelectorAll('input[name="monster-sort"]').forEach(r => {
+    r.addEventListener("change", () => {
+      sortMonsterOptions(r.value);
+      // 並べ替え後も表示更新
+      onMonsterOrLevelChanged();
+    });
   });
 
   calcBtn.addEventListener("click", () => {
@@ -860,49 +888,10 @@ selectEl.addEventListener("change", () => {
     resultEl.textContent = dmg;
     updateMinLine();
   });
-  function sortMonsterOptions(mode) {
-  const currentValue = selectEl.value;
 
-  // 先頭の「--選択してください--」は残す
-  const placeholder = selectEl.options[0];
-  const opts = Array.from(selectEl.options).slice(1);
-
-  opts.sort((a, b) => {
-    if (mode === "id") {
-      const ai = Number(a.dataset.id || 0);
-      const bi = Number(b.dataset.id || 0);
-      return ai - bi;
-    } else {
-      // 五十音：タイトルで比較（日本語ロケール）
-      const at = (a.dataset.title || "").trim();
-      const bt = (b.dataset.title || "").trim();
-      return at.localeCompare(bt, "ja");
-    }
-  });
-
-  // 一旦中身を作り直す
-  selectEl.innerHTML = "";
-  selectEl.appendChild(placeholder);
-  opts.forEach(o => selectEl.appendChild(o));
-
-  // 選択状態を復元（同じvalueがあれば）
-  selectEl.value = currentValue;
-}
-
-// 並び順切替イベント
-document.querySelectorAll('input[name="monster-sort"]').forEach(r => {
-  r.addEventListener("change", () => {
-    sortMonsterOptions(r.value);
-
-    // 並べ替え後に選択が維持されていれば、表示も更新
-    onMonsterOrLevelChanged();
-  });
-});
-
-// 初期化
+  // 初期化（最初は図鑑番号順）
   sortMonsterOptions("id");
   onMonsterOrLevelChanged();
-  updateMinLine();
 });
 </script>
 
