@@ -1,16 +1,11 @@
-/* ===== Header Links : Mobile First ===== */
-
-/* サイトタイトル（例外） */
-.site-header .site-title a {
+/* タイトル（例外） */
+.site-title a {
   color: inherit;
-  background: none;
-  border: none;
-  padding: 0;
-  font-weight: 700;
+  text-decoration: none;
 }
 
-/* ヘッダー内リンク（タイトル以外） */
-.site-header > a {
+/* ナビリンク（色付き・押しやすい） */
+.site-nav a {
   display: block;
   padding: 14px 16px;
   border-radius: 12px;
@@ -23,20 +18,22 @@
   border: 1px solid #d6e4ff;
 }
 
-/* タップ時 */
-.site-header > a:active {
-  background: #dbeafe;
+/* スマホ：縦並び */
+.site-nav {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* PCで横並び */
+/* PC：横並び */
 @media (min-width: 769px) {
-  .site-header {
-    display: flex;
-    align-items: center;
+  .site-nav {
+    flex-direction: row;
     gap: 12px;
   }
 
-  .site-header > a {
+  .site-nav a {
     padding: 10px 14px;
   }
 }
