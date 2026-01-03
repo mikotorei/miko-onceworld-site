@@ -185,11 +185,11 @@ document.addEventListener("DOMContentLoaded", () => {
     updateMinLine();
   }
 
-  // イベント
-  selectEl.addEventListener("change", () => {
-    levelEl.value = 1; // モンスター切替でLv1に戻す（不要なら削除OK）
-    onMonsterOrLevelChanged();
-  });
+// イベント
+selectEl.addEventListener("change", () => {
+  levelEl.value = 1; // モンスター切替でLv1に戻す（不要なら削除OK）
+  onMonsterOrLevelChanged();
+});
 
   levelEl.addEventListener("input", () => {
     recalcMonsterStats();
@@ -215,8 +215,8 @@ document.addEventListener("DOMContentLoaded", () => {
     updateMinLine();
   });
 
-  // 初期化
-  onMonsterOrLevelChanged();
-  updateMinLine();
+// 初期化
+onMonsterOrLevelChanged();
+updateMinLine();
 });
 </script>
