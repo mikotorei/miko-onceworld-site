@@ -1,0 +1,14 @@
+<select id="pet-select">
+  <option value="">-- ペットを選択 --</option>
+
+  {{ $pets := where site.RegularPages "Section" "pet" }}
+  {{ range $pets }}
+    <option
+      value="{{ .Params.attack_type }}"
+      data-id="{{ .Params.id }}"
+      data-title="{{ .Title }}"
+    >
+      {{ if .Params.id }}[{{ printf "%03d" .Params.id }}] {{ end }}{{ .Title }}
+    </option>
+  {{ end }}
+</select>
