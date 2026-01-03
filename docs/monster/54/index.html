@@ -4,11 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>聡明神　トモダチ | OnceWorld(ワンスワ)miko</title>
+
   <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/style.css">
   <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/monster.css">
-
-
-  
 </head>
 <body>
 
@@ -20,18 +18,21 @@
   </h1>
 
   
-  <button class="menu-toggle" aria-label="メニュー">
+  <button class="menu-toggle" type="button" aria-label="メニューを開く" aria-expanded="false">
     ☰
   </button>
 
   
-  <nav class="site-nav">
+  <nav class="site-nav" aria-label="サイトメニュー">
     <a href="https://matsumoto0106.github.io/miko-onceworld-site/monster/">Monster</a>
     <a href="https://matsumoto0106.github.io/miko-onceworld-site/tools/">Tools</a>
   </nav>
+
+  
+  <div class="nav-overlay" aria-hidden="true"></div>
 </header>
 
-<main style="padding:10px;">
+<main>
   
 <article class="monster-detail">
   
@@ -150,19 +151,44 @@
 </article>
 
 </main>
-  
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const toggle = document.querySelector(".menu-toggle");
   const nav = document.querySelector(".site-nav");
+  const overlay = document.querySelector(".nav-overlay");
 
-  if (!toggle || !nav) return;
+  if (!toggle || !nav || !overlay) return;
+
+  function openMenu() {
+    nav.classList.add("is-open");
+    overlay.classList.add("is-open");
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.textContent = "✕";
+    document.body.classList.add("no-scroll");
+  }
+
+  function closeMenu() {
+    nav.classList.remove("is-open");
+    overlay.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.textContent = "☰";
+    document.body.classList.remove("no-scroll");
+  }
 
   toggle.addEventListener("click", () => {
-    nav.classList.toggle("is-open");
+    if (nav.classList.contains("is-open")) closeMenu();
+    else openMenu();
+  });
+
+  overlay.addEventListener("click", closeMenu);
+
+  
+  window.addEventListener("resize", () => {
+    if (window.matchMedia("(min-width: 769px)").matches) closeMenu();
   });
 });
 </script>
-  
+
 </body>
 </html>
