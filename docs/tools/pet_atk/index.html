@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ペット与ダメージ計算 | OnceWorld(ワンスワ)miko</title>
+  <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/style.css">
+  <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/monster.css">
+
+
+  
+</head>
+<body>
+
+<header class="site-header">
+  <h1 class="site-title">
+    <a href="https://matsumoto0106.github.io/miko-onceworld-site/">
+      OnceWorld(ワンスワ)miko
+    </a>
+  </h1>
+</header>
+
+<main style="padding:10px;">
+  
+
+<h1>ペット与ダメージ計算</h1>
+
+<div class="tool-container">
+  <p>ペットの与ダメージを計算するツールです（攻撃値は手入力）。</p>
+<hr>
+<section class="atk-tool">
+  <h2>ペット与ダメージ計算</h2>
+  <div class="atk-form">
+  <div class="form-row">
+      <label for="pet-select">ペット選択：</label>
+      <select id="pet-select">
+        <option value="">-- ペットを選択 --</option>
+      
+        
+        
+      </select>
+
+  </div>
+  <div class="form-row">
+      <span>並び順：</span>
+      <label><input type="radio" name="pet-sort" value="id" checked> 図鑑番号</label>
+      <label><input type="radio" name="pet-sort" value="kana"> 五十音</label>
+  </div>
+  <div class="form-row">
+      <span>攻撃タイプ：</span>
+      <strong><span id="pet-type">---</span></strong>
+  </div>
+  <div class="form-row">
+      <label for="pet-atk">ペットATK（物理用）：</label>
+      <input type="number" id="pet-atk" value="0" min="0">
+  </div>
+  <div class="form-row">
+      <label for="pet-int">ペットINT（魔法用）：</label>
+      <input type="number" id="pet-int" value="0" min="0">
+  </div>
+  <hr>
+  <div class="form-row">
+      <label for="monster-select">モンスター選択：</label>
+      <select id="monster-select">
+        <option value="">-- 選択してください --</option>
+      
+        
+        
+          <option
+            value="100|200|200"
+            data-id="203"
+            data-title="BOX"
+          >
+            [203] BOX
+          </option>
+        
+          <option
+            value="8|28|30"
+            data-id="45"
+            data-title="アヌビス"
+          >
+            [045] アヌビス
+          </option>
+        
+          <option
+            value="9|4|15"
+            data-id="23"
+            data-title="アリクイロード"
+          >
+            [023] アリクイロード
+          </option>
+        
+          <option
+            value="77|15|101"
+            data-id="164"
+            data-title="イージスリエル"
+          >
+            [164] イージスリエル
+          </option>
+        
+          <option
+            value="22|46|48"
+            data-id="241"
+            data-title="イグニシア"
+          >
+            [241] イグニシア
+          </option>
+        
+          <option
+            value="55|112|121"
+            data-id="201"
+            data-title="イグニス・シスター"
+          >
+            [201] イグニス・シスター
+          </option>
+        
+          <option
+            value="48|30|85"
+            data-id="84"
+            data-title="ウォーデン"
+          >
+            [084] ウォーデン
+          </option>
+        
+          <option
+            value="11|71|96"
+            data-id="163"
+            data-title="うねうね"
+          >
+            [163] うねうね
+          </option>
+        
+          <option
+            value="16|9|44"
+            data-id="47"
+            data-title="エジプトアシュラ"
+          >
+            [047] エジプトアシュラ
+          </option>
+        
+          <option
+            value="100|100|132"
+            data-id="91"
+            data-title="エレファントパラディン"
+          >
+            [091] エレファントパラディン
+          </option>
+        
+          <option
+            value="39|99|159"
+            data-id="202"
+            data-title="オルド･クラウセス"
+          >
+            [202] オルド･クラウセス
+          </option>
+        
+          <option
+            value="7|5|14"
+            data-id="26"
+            data-title="オルトロス"
+          >
+            [026] オルトロス
+          </option>
+        
+          <option
+            value="26|65|58"
+            data-id="87"
+            data-title="ガチキメラ"
+          >
+            [087] ガチキメラ
+          </option>
+        
+          <option
+            value="29|22|69"
+            data-id="12"
+            data-title="ギガントオーク"
+          >
+            [012] ギガントオーク
+          </option>
+        
+          <option
+            value="99|40|95"
+            data-id="70"
+            data-title="キメラキング"
+          >
+            [070] キメラキング
+          </option>
+        
+          <option
+            value="11|3|8"
+            data-id="5"
+            data-title="キメラタートル"
+          >
+            [005] キメラタートル
+          </option>
+        
+          <option
+            value="40|15|45"
+            data-id="66"
+            data-title="クリーチャーアイ"
+          >
+            [066] クリーチャーアイ
+          </option>
+        
+          <option
+            value="1|1|20"
+            data-id="4"
+            data-title="クリーチャーローズ"
+          >
+            [004] クリーチャーローズ
+          </option>
+        
+          <option
+            value="2|3|3"
+            data-id="1"
+            data-title="グリーンスライム"
+          >
+            [001] グリーンスライム
+          </option>
+        
+          <option
+            value="32|25|55"
+            data-id="86"
+            data-title="ケルベロス"
+          >
+            [086] ケルベロス
+          </option>
+        
+          <option
+            value="13|23|40"
+            data-id="42"
+            data-title="ゴブリンクルー"
+          >
+            [042] ゴブリンクルー
+          </option>
+        
+          <option
+            value="3|3|3"
+            data-id="3"
+            data-title="ゴブリンメイジ"
+          >
+            [003] ゴブリンメイジ
+          </option>
+        
+          <option
+            value="2|3|31"
+            data-id="41"
+            data-title="ゴブリン特攻隊"
+          >
+            [041] ゴブリン特攻隊
+          </option>
+        
+          <option
+            value="10|2|33"
+            data-id="28"
+            data-title="シカファイター"
+          >
+            [028] シカファイター
+          </option>
+        
+          <option
+            value="36|45|30"
+            data-id="68"
+            data-title="スカルウィスプ"
+          >
+            [068] スカルウィスプ
+          </option>
+        
+          <option
+            value="11|31|135"
+            data-id="32"
+            data-title="スノーモケラ"
+          >
+            [032] スノーモケラ
+          </option>
+        
+          <option
+            value="5|14|14"
+            data-id="22"
+            data-title="ダークメイジ"
+          >
+            [022] ダークメイジ
+          </option>
+        
+          <option
+            value="25|36|40"
+            data-id="65"
+            data-title="ダイコンに見えるダイコン"
+          >
+            [065] ダイコンに見えるダイコン
+          </option>
+        
+          <option
+            value="15|9|43"
+            data-id="165"
+            data-title="デーモンブレイド"
+          >
+            [165] デーモンブレイド
+          </option>
+        
+          <option
+            value="21|17|55"
+            data-id="48"
+            data-title="デザートイッヌ"
+          >
+            [048] デザートイッヌ
+          </option>
+        
+          <option
+            value="26|20|76"
+            data-id="242"
+            data-title="ヌー"
+          >
+            [242] ヌー
+          </option>
+        
+          <option
+            value="35|91|106"
+            data-id="71"
+            data-title="ネクロプリンセス"
+          >
+            [071] ネクロプリンセス
+          </option>
+        
+          <option
+            value="115|5|60"
+            data-id="85"
+            data-title="バーニングロック"
+          >
+            [085] バーニングロック
+          </option>
+        
+          <option
+            value="17|23|35"
+            data-id="10"
+            data-title="ハネスライム"
+          >
+            [010] ハネスライム
+          </option>
+        
+          <option
+            value="28|17|31"
+            data-id="30"
+            data-title="パンダ"
+          >
+            [030] パンダ
+          </option>
+        
+          <option
+            value="16|19|28"
+            data-id="46"
+            data-title="ファイヤーメイジ"
+          >
+            [046] ファイヤーメイジ
+          </option>
+        
+          <option
+            value="18|28|65"
+            data-id="31"
+            data-title="ファントムツリー"
+          >
+            [031] ファントムツリー
+          </option>
+        
+          <option
+            value="8|321|99"
+            data-id="90"
+            data-title="ブタ天使"
+          >
+            [090] ブタ天使
+          </option>
+        
+          <option
+            value="29|28|66"
+            data-id="69"
+            data-title="フレイムフロッグ"
+          >
+            [069] フレイムフロッグ
+          </option>
+        
+          <option
+            value="48|48|38"
+            data-id="88"
+            data-title="フレイムボーン"
+          >
+            [088] フレイムボーン
+          </option>
+        
+          <option
+            value="1|1|1"
+            data-id="251"
+            data-title="ペリカンEXP"
+          >
+            [251] ペリカンEXP
+          </option>
+        
+          <option
+            value="8|1|7"
+            data-id="7"
+            data-title="ペンギンソルジャー"
+          >
+            [007] ペンギンソルジャー
+          </option>
+        
+          <option
+            value="15|20|38"
+            data-id="29"
+            data-title="ペンギンロード"
+          >
+            [029] ペンギンロード
+          </option>
+        
+          <option
+            value="50|12|50"
+            data-id="64"
+            data-title="ボーンバトラー"
+          >
+            [064] ボーンバトラー
+          </option>
+        
+          <option
+            value="5|8|18"
+            data-id="11"
+            data-title="ボスゴブリン"
+          >
+            [011] ボスゴブリン
+          </option>
+        
+          <option
+            value="15|9|38"
+            data-id="63"
+            data-title="ホネ"
+          >
+            [063] ホネ
+          </option>
+        
+          <option
+            value="22|26|121"
+            data-id="161"
+            data-title="ホムラウマ"
+          >
+            [161] ホムラウマ
+          </option>
+        
+          <option
+            value="3|2|12"
+            data-id="21"
+            data-title="マッドカエル"
+          >
+            [021] マッドカエル
+          </option>
+        
+          <option
+            value="29|39|84"
+            data-id="51"
+            data-title="ランプの精霊"
+          >
+            [051] ランプの精霊
+          </option>
+        
+          <option
+            value="2|2|4"
+            data-id="2"
+            data-title="レッドゴブリン"
+          >
+            [002] レッドゴブリン
+          </option>
+        
+          <option
+            value="30|50|155"
+            data-id="49"
+            data-title="不思議なツボ"
+          >
+            [049] 不思議なツボ
+          </option>
+        
+          <option
+            value="145|145|170"
+            data-id="204"
+            data-title="冥王ノクタール"
+          >
+            [204] 冥王ノクタール
+          </option>
+        
+          <option
+            value="19|1|22"
+            data-id="25"
+            data-title="動く墓"
+          >
+            [025] 動く墓
+          </option>
+        
+          <option
+            value="2|9|11"
+            data-id="24"
+            data-title="原始蝶"
+          >
+            [024] 原始蝶
+          </option>
+        
+          <option
+            value="111|61|155"
+            data-id="13"
+            data-title="古代魚　ザコーン"
+          >
+            [013] 古代魚　ザコーン
+          </option>
+        
+          <option
+            value="31|36|56"
+            data-id="50"
+            data-title="天狗"
+          >
+            [050] 天狗
+          </option>
+        
+          <option
+            value="30|17|45"
+            data-id="61"
+            data-title="居住者A"
+          >
+            [061] 居住者A
+          </option>
+        
+          <option
+            value="12|37|40"
+            data-id="62"
+            data-title="居住者B"
+          >
+            [062] 居住者B
+          </option>
+        
+          <option
+            value="89|3|68"
+            data-id="67"
+            data-title="悪夢の石像"
+          >
+            [067] 悪夢の石像
+          </option>
+        
+          <option
+            value="59|69|111"
+            data-id="53"
+            data-title="捧げし者"
+          >
+            [053] 捧げし者
+          </option>
+        
+          <option
+            value="46|66|130"
+            data-id="252"
+            data-title="支配のトリ"
+          >
+            [252] 支配のトリ
+          </option>
+        
+          <option
+            value="81|81|210"
+            data-id="166"
+            data-title="時空龍クロノゼリウス"
+          >
+            [166] 時空龍クロノゼリウス
+          </option>
+        
+          <option
+            value="85|105|155"
+            data-id="72"
+            data-title="朽ちざる竜骸　イゾ"
+          >
+            [072] 朽ちざる竜骸　イゾ
+          </option>
+        
+          <option
+            value="17|17|26"
+            data-id="44"
+            data-title="死戦士マミー"
+          >
+            [044] 死戦士マミー
+          </option>
+        
+          <option
+            value="26|130|156"
+            data-id="93"
+            data-title="残燃モエコ"
+          >
+            [093] 残燃モエコ
+          </option>
+        
+          <option
+            value="25|35|173"
+            data-id="162"
+            data-title="深淵灯魚"
+          >
+            [162] 深淵灯魚
+          </option>
+        
+          <option
+            value="80|21|102"
+            data-id="89"
+            data-title="炎鬼"
+          >
+            [089] 炎鬼
+          </option>
+        
+          <option
+            value="31|41|56"
+            data-id="81"
+            data-title="烈火鼠"
+          >
+            [081] 烈火鼠
+          </option>
+        
+          <option
+            value="18|25|70"
+            data-id="83"
+            data-title="焼きトリ"
+          >
+            [083] 焼きトリ
+          </option>
+        
+          <option
+            value="15|90|44"
+            data-id="82"
+            data-title="燃えてる何か"
+          >
+            [082] 燃えてる何か
+          </option>
+        
+          <option
+            value="75|105|75"
+            data-id="56"
+            data-title="禁域のアヌビシュ"
+          >
+            [056] 禁域のアヌビシュ
+          </option>
+        
+          <option
+            value="101|100|101"
+            data-id="96"
+            data-title="禁域のヴァルネシア"
+          >
+            [096] 禁域のヴァルネシア
+          </option>
+        
+          <option
+            value="74|184|104"
+            data-id="76"
+            data-title="禁域のクマヌイ"
+          >
+            [076] 禁域のクマヌイ
+          </option>
+        
+          <option
+            value="45|165|75"
+            data-id="16"
+            data-title="禁域のラミア"
+          >
+            [016] 禁域のラミア
+          </option>
+        
+          <option
+            value="100|100|200"
+            data-id="36"
+            data-title="禁域の巨木"
+          >
+            [036] 禁域の巨木
+          </option>
+        
+          <option
+            value="45|5|3"
+            data-id="43"
+            data-title="紅サソリ"
+          >
+            [043] 紅サソリ
+          </option>
+        
+          <option
+            value="74|115|180"
+            data-id="54"
+            data-title="聡明神　トモダチ"
+          >
+            [054] 聡明神　トモダチ
+          </option>
+        
+          <option
+            value="31|81|128"
+            data-id="52"
+            data-title="邪黒龍"
+          >
+            [052] 邪黒龍
+          </option>
+        
+          <option
+            value="4|15|15"
+            data-id="6"
+            data-title="鉄罠花"
+          >
+            [006] 鉄罠花
+          </option>
+        
+          <option
+            value="13|13|27"
+            data-id="27"
+            data-title="雪だるまん"
+          >
+            [027] 雪だるまん
+          </option>
+        
+          <option
+            value="88|188|130"
+            data-id="33"
+            data-title="零の者"
+          >
+            [033] 零の者
+          </option>
+        
+      </select>
+
+  </div>
+  <div class="form-row">
+      <label for="monster-level">モンスターレベル：</label>
+      <input type="number" id="monster-level" value="1" min="1">
+  </div>
+  <div class="form-row">
+      <label for="def">DEF：</label>
+      <input type="number" id="def" value="0" min="0">
+  </div>
+  <div class="form-row">
+      <label for="mdef">MDEF：</label>
+      <input type="number" id="mdef" value="0" min="0">
+  </div>
+  <div class="form-row">
+      <label for="vit-display">対象モンスター体力（レベル反映）：</label>
+      <span id="vit-display">---</span>
+  </div>
+<p><button id="calc-btn">計算する</button></p>
+  </div>
+  <div class="atk-result">
+    <p>与ダメージ：<span id="result">---</span></p>
+  </div>
+</section>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // --- 要素取得 ---
+  const petSelectEl = document.getElementById("pet-select");
+  const petAtkEl = document.getElementById("pet-atk");
+  const petIntEl = document.getElementById("pet-int");
+  const petTypeEl = document.getElementById("pet-type");
+
+  const monsterSelectEl = document.getElementById("monster-select");
+  const levelEl = document.getElementById("monster-level");
+  const defEl = document.getElementById("def");
+  const mdefEl = document.getElementById("mdef");
+  const vitDisplayEl = document.getElementById("vit-display");
+
+  const resultEl = document.getElementById("result");
+  const calcBtn = document.getElementById("calc-btn");
+
+  if (!petSelectEl || !petAtkEl || !petIntEl || !petTypeEl ||
+      !monsterSelectEl || !levelEl || !defEl || !mdefEl || !vitDisplayEl ||
+      !resultEl || !calcBtn) return;
+
+  // --- モンスター基礎値（Lv1） ---
+  let baseDef = 0;
+  let baseMdef = 0;
+  let baseVit = 0;
+
+  function scaleByLevel(base, lv) {
+    return Math.floor(base * (1 + (lv - 1) * 0.1));
+  }
+
+  function getLv() {
+    return Math.max(1, Number(levelEl.value || 1));
+  }
+
+  // monster_select は value="def|mdef|vit" 方式の前提
+  function loadMonsterBases() {
+    const opt = monsterSelectEl.options[monsterSelectEl.selectedIndex];
+    const v = (opt?.value || "").trim();
+
+    if (!v.includes("|")) {
+      baseDef = 0; baseMdef = 0; baseVit = 0;
+      return;
+    }
+
+    const [defStr, mdefStr, vitStr] = v.split("|");
+    baseDef = Number(defStr || 0);
+    baseMdef = Number(mdefStr || 0);
+    baseVit = Number(vitStr || 0);
+  }
+
+  function recalcMonsterStats() {
+    const lv = getLv();
+    if (!baseDef && !baseMdef && !baseVit) return;
+
+    const def = scaleByLevel(baseDef, lv);
+    const mdef = scaleByLevel(baseMdef, lv);
+    const vit = scaleByLevel(baseVit, lv);
+
+    defEl.value = def;
+    mdefEl.value = mdef;
+
+    // 体力表示は “vit*18+100” 仕様
+    vitDisplayEl.textContent = vit * 18 + 100;
+  }
+
+  function onMonsterOrLevelChanged() {
+    loadMonsterBases();
+    recalcMonsterStats();
+  }
+
+  // --- ペット攻撃タイプ制御 ---
+  function setPetType(type) {
+    petTypeEl.textContent = type || "---";
+
+    if (type === "物理") {
+      petAtkEl.disabled = false;
+      petAtkEl.style.opacity = "1";
+      petIntEl.disabled = true;
+      petIntEl.value = 0;
+      petIntEl.style.opacity = "0.5";
+    } else if (type === "魔法") {
+      petIntEl.disabled = false;
+      petIntEl.style.opacity = "1";
+      petAtkEl.disabled = true;
+      petAtkEl.value = 0;
+      petAtkEl.style.opacity = "0.5";
+    } else {
+      // 未選択
+      petAtkEl.disabled = true;
+      petIntEl.disabled = true;
+      petAtkEl.style.opacity = "0.5";
+      petIntEl.style.opacity = "0.5";
+      petAtkEl.value = 0;
+      petIntEl.value = 0;
+    }
+  }
+
+  function getPetType() {
+    return (petSelectEl.value || "").trim(); // "物理" or "魔法"
+  }
+
+  // --- ペット並び替え ---
+  function sortPetOptions(mode) {
+    const currentValue = petSelectEl.value;
+
+    const placeholder = petSelectEl.options[0];
+    const opts = Array.from(petSelectEl.options).slice(1);
+
+    opts.sort((a, b) => {
+      if (mode === "id") {
+        return Number(a.dataset.id || 0) - Number(b.dataset.id || 0);
+      } else {
+        const at = (a.dataset.title || "").trim();
+        const bt = (b.dataset.title || "").trim();
+        return at.localeCompare(bt, "ja");
+      }
+    });
+
+    petSelectEl.innerHTML = "";
+    petSelectEl.appendChild(placeholder);
+    opts.forEach(o => petSelectEl.appendChild(o));
+
+    petSelectEl.value = currentValue;
+  }
+
+  document.querySelectorAll('input[name="pet-sort"]').forEach(r => {
+    r.addEventListener("change", () => {
+      sortPetOptions(r.value);
+      // 並べ替え後にタイプ表示を再反映
+      setPetType(getPetType());
+    });
+  });
+
+  // --- 仮：ペットダメージ計算（後で式差し替え） ---
+  function calcPetDamagePhysical(petAtk, def, mdef) {
+    // 仮式：とりあえず動く形（後で正式式に差し替え）
+    const raw = petAtk - (def + mdef / 10);
+    return Math.max(0, Math.floor(raw));
+  }
+
+  function calcPetDamageMagic(petInt, def, mdef) {
+    // 仮式：とりあえず動く形（後で正式式に差し替え）
+    const raw = petInt - (mdef + def / 10);
+    return Math.max(0, Math.floor(raw));
+  }
+
+  // --- イベント ---
+  petSelectEl.addEventListener("change", () => {
+    setPetType(getPetType());
+  });
+
+  monsterSelectEl.addEventListener("change", () => {
+    levelEl.value = 1;
+    onMonsterOrLevelChanged();
+  });
+
+  levelEl.addEventListener("input", () => {
+    recalcMonsterStats();
+  });
+
+  calcBtn.addEventListener("click", () => {
+    const type = getPetType();
+    const def = Number(defEl.value || 0);
+    const mdef = Number(mdefEl.value || 0);
+
+    let dmg = 0;
+    if (type === "物理") {
+      dmg = calcPetDamagePhysical(Number(petAtkEl.value || 0), def, mdef);
+    } else if (type === "魔法") {
+      dmg = calcPetDamageMagic(Number(petIntEl.value || 0), def, mdef);
+    } else {
+      dmg = 0;
+    }
+
+    resultEl.textContent = dmg;
+  });
+
+  // --- 初期化 ---
+  sortPetOptions("id");
+  setPetType(getPetType());
+  onMonsterOrLevelChanged();
+});
+</script>
+
+</div>
+
+<script src="https://matsumoto0106.github.io/miko-onceworld-site/js/atk-calc.js"></script>
+
+
+</main>
+
+</body>
+</html>
