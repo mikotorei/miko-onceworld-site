@@ -87,8 +87,17 @@ function getAttackType() {
 // select の data-* から基礎DEF/MDEFを読む
 function loadMonsterBases() {
   const opt = selectEl.options[selectEl.selectedIndex];
-  baseDef  = Number(opt?.dataset?.def  ?? opt?.value ?? 0);
-  baseMdef = Number(opt?.dataset?.mdef ?? 0);
+  const v = (opt?.value || "").trim(); // "def|mdef" のはず
+
+  if (!v || !v.includes("|")) {
+    baseDef = 0;
+    baseMdef = 0;
+    return;
+  }
+
+  const [defStr, mdefStr] = v.split("|");
+  baseDef = Number(defStr || 0);
+  baseMdef = Number(mdefStr || 0);
 }
 
 // DEF/MDEF をレベル反映して入力欄へ
