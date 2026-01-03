@@ -20,15 +20,6 @@ title: "与ダメージ計算"
   <label><input type="radio" name="monster-sort" value="id" checked> 図鑑番号</label>
   <label><input type="radio" name="monster-sort" value="kana"> 五十音</label>
   </div>
-  <div class="form-row">
-  <span>並び順：</span>
-  <label><input type="radio" name="monster-sort" value="id" checked> 図鑑番号</label>
-  <label><input type="radio" name="monster-sort" value="kana"> 五十音</label>
-  </div>
-  <div class="form-row">
-      <label for="monster-level">モンスターレベル：</label>
-      <input type="number" id="monster-level" value="1" min="1">
-    </div>
 
   <div class="form-row">
       <span>攻撃タイプ：</span>
