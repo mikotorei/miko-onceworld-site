@@ -69,7 +69,8 @@ title: "ペット与ダメージ計算"
   </div>
 
   <div class="atk-result">
-    <p>与ダメージ：<span id="result">---</span></p>
+  <p>与ダメージ：<span id="result">---</span></p>
+  <p id="minline">最低ライン：---</p>
   </div>
 </section>
 
@@ -88,12 +89,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const vitDisplayEl = document.getElementById("vit-display");
 
   const resultEl = document.getElementById("result");
+  const minlineEl = document.getElementById("minline");
   const calcBtn = document.getElementById("calc-btn");
 
   if (!petSelectEl || !monsterSelectEl || !levelEl ||
       !petTypeEl || !petAtkEl || !petIntEl ||
       !defEl || !mdefEl || !vitDisplayEl ||
-      !resultEl || !calcBtn) return;
+      !resultEl || !minlineEl || !calcBtn) return;
 
   // --- ユーティリティ ---
   function scaleByLevel(base, lv) {
@@ -174,6 +176,21 @@ document.addEventListener("DOMContentLoaded", () => {
       petAtkEl.style.opacity = "0.5";
       petIntEl.style.opacity = "0.5";
     }
+    function updateMinLine() {
+    const petData = parseMonsterOption(petSelectEl);
+    const type = petData ? petData.attackType : "";
+
+    const def = Number(defEl.value || 0);
+    const mdef = Number(mdefEl.value || 0);
+
+    if (type === "物理") {
+    minlineEl.textContent = `確実に1以上出る最低ATK：${minPetAtkLine(def, mdef)}`;
+  } else if (type === "魔法") {
+    minlineEl.textContent = `確実に1以上出る最低INT：${minPetIntLine(def, mdef)}`;
+  } else {
+    minlineEl.textContent = "最低ライン：---";
+  }
+}
   }
 
   function updatePetTypeFromSelection() {
@@ -248,20 +265,37 @@ function calcPetMagic(petInt, def, mdef) {
 
   return Math.max(0, Math.floor(raw));
 }
+  // --- 最低ライン（確実に1以上：最悪乱数0.9、属性1.0） ---
+  function minPetAtkLine(def, mdef) {
+  const r = 0.9;   // 最悪乱数
+  const a = 1.0;   // 属性補正（未実装なので等倍）
+  const need = (1 / (4 * r * a)) + (def + mdef * 0.1);
+  return Math.ceil(need / 1.75);
+}
+
+  function minPetIntLine(def, mdef) {
+  const r = 0.9;
+  const a = 1.0;
+  const need = (1 / (4 * r * a)) + (mdef + def * 0.1);
+  return Math.ceil(need / 1.75);
+}
 
   // --- イベント ---
   petSelectEl.addEventListener("change", () => {
-    updatePetTypeFromSelection();
-  });
+  updatePetTypeFromSelection();
+  updateMinLine();
+});
 
   monsterSelectEl.addEventListener("change", () => {
-    levelEl.value = 1;
-    onTargetChanged();
-  });
+  levelEl.value = 1;
+  onTargetChanged();
+  updateMinLine();
+});
 
   levelEl.addEventListener("input", () => {
-    recalcTargetStats();
-  });
+  recalcTargetStats();
+  updateMinLine();
+});
 
   calcBtn.addEventListener("click", () => {
     const petData = parseMonsterOption(petSelectEl);
@@ -290,5 +324,6 @@ function calcPetMagic(petInt, def, mdef) {
   applySortToBoth("id");
   updatePetTypeFromSelection();
   onTargetChanged();
+  updateMinLine();
 });
 </script>
