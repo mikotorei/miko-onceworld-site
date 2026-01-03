@@ -559,11 +559,13 @@
 <p><button id="calc-btn">計算する</button></p>
   </div>
   <div class="atk-result">
+    <p>対象モンスターVIT（レベル反映）：<span id="vit-display">---</span></p>
     <p>与ダメージ：<span id="result">---</span></p>
     <p id="minline">最低ライン：---</p>
 </section>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  const vitDisplayEl = document.getElementById("vit-display");
   const selectEl  = document.getElementById("monster-select");
   const levelEl   = document.getElementById("monster-level");
   const atkEl     = document.getElementById("atk");
@@ -575,11 +577,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const calcBtn   = document.getElementById("calc-btn");
 
   // 要素不足なら何もしない（ページが壊れないように）
-  if (!selectEl || !levelEl || !atkEl || !intEl || !defEl || !mdefEl || !resultEl || !minlineEl || !calcBtn) return;
-
+  if (!selectEl || !levelEl || !atkEl || !intEl || !defEl || !mdefEl || !resultEl || !minlineEl || !calcBtn || !vitDisplayEl) return;
+  
   // モンスター基礎値（Lv1）
   let baseDef = 0;
   let baseMdef = 0;
+  let baseVit = 0;
 
   // レベル補正：基礎×(1+(Lv-1)*0.1) を切り捨て
   function scaleByLevel(base, lv) {
@@ -597,30 +600,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // value="def|mdef" から基礎DEF/MDEFを読む
   function loadMonsterBases() {
-    const opt = selectEl.options[selectEl.selectedIndex];
-    const v = (opt?.value || "").trim(); // "def|mdef"
+  const opt = selectEl.options[selectEl.selectedIndex];
+  const v = (opt?.value || "").trim(); // "def|mdef|vit"
 
-    if (!v || !v.includes("|")) {
-      baseDef = 0;
-      baseMdef = 0;
-      return;
-    }
-
-    const [defStr, mdefStr] = v.split("|");
-    baseDef = Number(defStr || 0);
-    baseMdef = Number(mdefStr || 0);
+  if (!v || !v.includes("|")) {
+    baseDef = 0;
+    baseMdef = 0;
+    baseVit = 0;
+    return;
   }
+
+  const parts = v.split("|");
+  baseDef = Number(parts[0] || 0);
+  baseMdef = Number(parts[1] || 0);
+  baseVit = Number(parts[2] || 0);
+}
 
   function recalcMonsterStats() {
-    const lv = getLv();
-    if (!baseDef && !baseMdef) return;
+  const lv = getLv();
+  if (!baseDef && !baseMdef && !baseVit) return;
 
-    const def  = scaleByLevel(baseDef, lv);
-    const mdef = scaleByLevel(baseMdef, lv);
+  const def  = scaleByLevel(baseDef, lv);
+  const mdef = scaleByLevel(baseMdef, lv);
+  const vit  = scaleByLevel(baseVit, lv);
 
-    defEl.value  = def;
-    mdefEl.value = mdef;
-  }
+  defEl.value  = def;
+  mdefEl.value = mdef;
+  vitDisplayEl.textContent = vit;
+}
 
   // 正式ダメージ（乱数は後回し：r=1.0で表示）
   function calcPhysicalDamage(atk, def, mdef, r = 1.0) {
