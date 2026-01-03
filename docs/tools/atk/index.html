@@ -563,34 +563,6 @@
     <p id="minline">最低ライン：---</p>
 </section>
 }
-<p>// &mdash; イベント &mdash;
-selectEl.addEventListener(&ldquo;change&rdquo;, () =&gt; {
-levelEl.value = 1; // モンスター切替時はLv1に戻す（不要なら削除OK）
-onMonsterOrLevelChanged();
-});
-levelEl.addEventListener(&ldquo;input&rdquo;, () =&gt; {
-recalcMonsterStats();
-updateMinLine();
-});
-document.querySelectorAll(&lsquo;input[name=&ldquo;attack-type&rdquo;]&rsquo;).forEach(radio =&gt; {
-radio.addEventListener(&ldquo;change&rdquo;, updateMinLine);
-});
-calcBtn.addEventListener(&ldquo;click&rdquo;, () =&gt; {
-const type = getAttackType();
-const atk  = Number(atkEl.value || 0);
-const intv = Number(intEl.value || 0);
-const def  = Number(defEl.value || 0);
-const mdef = Number(mdefEl.value || 0);
-const dmg = (type === &ldquo;phys&rdquo;)
-? calcPhysicalDamage(atk, def, mdef, 1.0)
-: calcMagicDamage(intv, def, mdef, 1.0);
-resultEl.textContent = dmg;
-updateMinLine();
-});</p>
-<p>// 初期化
-onMonsterOrLevelChanged();
-updateMinLine();
-});</p>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const selectEl  = document.getElementById("monster-select");
