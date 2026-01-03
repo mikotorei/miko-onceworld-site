@@ -1,12 +1,7 @@
-<select id="monster-select">
-  <option value="">-- 選択してください --</option>
-
-  {{ range site.RegularPages }}
-    {{ if in .File.Path "monster/" }}
-      <option value="{{ .Params.def }}|{{ .Params.mdef }}|{{ .Params.vit }}">
-        {{ .Title }}
-      </option>
-    {{ end }}
+{{ range sort site.RegularPages ".Params.id" "asc" }}
+  {{ if in .File.Path "monster/" }}
+    <option value="{{ .Params.def }}|{{ .Params.mdef }}|{{ .Params.vit }}">
+      {{ .Title }}
+    </option>
   {{ end }}
-
-</select>
+{{ end }}
