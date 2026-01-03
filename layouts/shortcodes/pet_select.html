@@ -1,16 +1,15 @@
-{{ $id := .Get "id" | default "monster-select" }}
+<select id="pet-select">
+  <option value="">-- ペットを選択 --</option>
 
-<select id="{{ $id }}">
-  <option value="">-- 選択してください --</option>
-
-  {{ $monsters := where site.RegularPages "Section" "monster" }}
-  {{ range $monsters }}
-    <option
-      value="{{ .Params.def }}|{{ .Params.mdef }}|{{ .Params.vit }}|{{ .Params.attack_type }}"
-      data-id="{{ .Params.id }}"
-      data-title="{{ .Title }}"
-    >
-      {{ if .Params.id }}[{{ printf "%03d" .Params.id }}] {{ end }}{{ .Title }}
-    </option>
+  {{ range site.RegularPages }}
+    {{ if in .File.Path "pet/" }}
+      <option
+        value="{{ .Params.attack_type }}"
+        data-id="{{ .Params.id }}"
+        data-title="{{ .Title }}"
+      >
+        {{ if .Params.id }}[{{ printf "%03d" .Params.id }}] {{ end }}{{ .Title }}
+      </option>
+    {{ end }}
   {{ end }}
 </select>
