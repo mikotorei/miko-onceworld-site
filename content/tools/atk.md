@@ -56,35 +56,6 @@ title: "与ダメージ計算"
 </section>
 }
 
-// --- イベント ---
-selectEl.addEventListener("change", () => {
-  levelEl.value = 1; // モンスター切替時はLv1に戻す（不要なら削除OK）
-  onMonsterOrLevelChanged();
-});
-levelEl.addEventListener("input", () => {
-  recalcMonsterStats();
-  updateMinLine();
-});
-document.querySelectorAll('input[name="attack-type"]').forEach(radio => {
-  radio.addEventListener("change", updateMinLine);
-});
-calcBtn.addEventListener("click", () => {
-  const type = getAttackType();
-  const atk  = Number(atkEl.value || 0);
-  const intv = Number(intEl.value || 0);
-  const def  = Number(defEl.value || 0);
-  const mdef = Number(mdefEl.value || 0);
-  const dmg = (type === "phys")
-    ? calcPhysicalDamage(atk, def, mdef, 1.0)
-    : calcMagicDamage(intv, def, mdef, 1.0);
-  resultEl.textContent = dmg;
-  updateMinLine();
-});
-
-// 初期化
-onMonsterOrLevelChanged();
-updateMinLine();
-});
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const selectEl  = document.getElementById("monster-select");
