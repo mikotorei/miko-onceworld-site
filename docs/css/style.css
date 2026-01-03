@@ -90,3 +90,21 @@
     gap: 12px;
   }
 }
+
+/* ===== Site Title (mobile-first) ===== */
+
+.site-title {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.site-title a {
+  font-size: 1.25rem;   /* スマホで見やすい */
+  font-weight: 800;     /* タイトル感を出す */
+  letter-spacing: 0.02em;
+}
+@media (min-width: 769px) {
+  .site-title a {
+    font-size: 1.5rem;  /* PCで映える */
+  }
+}
