@@ -53,6 +53,7 @@ title: "与ダメージ計算"
   <div class="atk-result">
     <p>与ダメージ：<span id="result">---</span></p>
     <p id="minline">最低ライン：---</p>
+    <p id="debug" style="font-size:12px;opacity:0.8;">debug: ---</p>
   </div>
 </section>
 <script>
