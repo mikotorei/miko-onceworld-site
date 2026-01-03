@@ -1,10 +1,12 @@
-<select id="pet-select">
-  <option value="">-- ペットを選択 --</option>
+{{ $id := .Get "id" | default "monster-select" }}
 
-  {{ $pets := where site.RegularPages "Section" "pet" }}
-  {{ range $pets }}
+<select id="{{ $id }}">
+  <option value="">-- 選択してください --</option>
+
+  {{ $monsters := where site.RegularPages "Section" "monster" }}
+  {{ range $monsters }}
     <option
-      value="{{ .Params.attack_type }}"
+      value="{{ .Params.def }}|{{ .Params.mdef }}|{{ .Params.vit }}|{{ .Params.attack_type }}"
       data-id="{{ .Params.id }}"
       data-title="{{ .Title }}"
     >
