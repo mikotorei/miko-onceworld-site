@@ -22,6 +22,17 @@ a:focus {
   margin: 0;
 }
 
+/* ナビ内リンクだけ色を付ける */
+.site-header nav a {
+  color: #2b6cb0;           /* 好きな色に */
+  font-weight: 600;
+}
+
+/* サイトタイトルのリンクは通常色 */
+.site-title a {
+  color: inherit;
+}
+
 /* ヘッダーのサイト名専用ホバー */
 /* ヘッダー固定 */
 .site-header {
