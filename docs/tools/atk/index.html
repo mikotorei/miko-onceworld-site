@@ -27,7 +27,6 @@
 
 <div class="tool-container">
   <p>与ダメージを計算するツールです。</p>
-<hr>
 <section class="atk-tool">
   <h2>与ダメージ計算</h2>
   <div class="atk-form">
@@ -690,10 +689,14 @@
 
     </div>
   <div class="form-row">
-  <span>並び順：</span>
-  <label><input type="radio" name="monster-sort" value="id" checked> 図鑑番号</label>
-  <label><input type="radio" name="monster-sort" value="kana"> 五十音</label>
-  </div>
+      <label for="monster-level">モンスターレベル：</label>
+      <input type="number" id="monster-level" value="1" min="1">
+    </div>
+  <div class="form-row">
+      <span>並び順：</span>
+      <label><input type="radio" name="monster-sort" value="id" checked> 図鑑番号</label>
+      <label><input type="radio" name="monster-sort" value="kana"> 五十音</label>
+    </div>
   <div class="form-row">
       <span>攻撃タイプ：</span>
       <label><input type="radio" name="attack-type" value="phys" checked> 物理（ATK）</label>
@@ -715,12 +718,14 @@
       <label for="mdef">MDEF：</label>
       <input type="number" id="mdef" value="0" min="0">
     </div>
-<p><button id="calc-btn">計算する</button></p>
+<pre><code>&lt;button id=&quot;calc-btn&quot;&gt;計算する&lt;/button&gt;
+</code></pre>
   </div>
   <div class="atk-result">
     <p>対象モンスターの体力（レベル反映）：<span id="vit-display">---</span></p>
     <p>与ダメージ：<span id="result">---</span></p>
     <p id="minline">最低ライン：---</p>
+  </div>
 </section>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
