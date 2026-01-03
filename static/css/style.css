@@ -37,3 +37,56 @@
     padding: 10px 14px;
   }
 }
+
+/* ===== Hamburger Menu (simple) ===== */
+
+.menu-toggle {
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ナビはデフォルト非表示（スマホ） */
+.site-nav {
+  display: none;
+  position: absolute;
+  top: 60px;              /* ヘッダー下 */
+  right: 12px;
+
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+
+  padding: 8px;
+  min-width: 140px;
+}
+
+/* ナビ内リンク */
+.site-nav a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #2b6cb0;
+}
+
+/* 表示中 */
+.site-nav.is-open {
+  display: block;
+}
+
+/* PCでは常に表示、ボタン非表示 */
+@media (min-width: 769px) {
+  .menu-toggle {
+    display: none;
+  }
+
+  .site-nav {
+    display: flex !important;
+    position: static;
+    border: none;
+    padding: 0;
+    gap: 12px;
+  }
+}
