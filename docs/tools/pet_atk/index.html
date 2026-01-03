@@ -1537,17 +1537,36 @@ document.addEventListener("DOMContentLoaded", () => {
     r.addEventListener("change", () => applySortToBoth(r.value));
   });
 
-  // --- 仮：ダメージ式（あとで差し替え） ---
+  // --- ペット：正式ダメージ式（平均値表示） ---
+  // 乱数：0.9〜1.1 → 現在は 1.0 固定
+  // 属性補正：未実装 → 1.0 固定
+  // 最低保証：0
+
   function calcPetPhysical(petAtk, def, mdef) {
-    // TODO: 正式式に置換
-    const raw = (petAtk - (def + mdef / 10));
-    return Math.max(0, Math.floor(raw));
-  }
-  function calcPetMagic(petInt, def, mdef) {
-    // TODO: 正式式に置換
-    const raw = (petInt - (mdef + def / 10));
-    return Math.max(0, Math.floor(raw));
-  }
+  const attr = 1.0;   // 属性補正（後回し）
+  const rand = 1.0;   // 乱数（後回し）
+
+  const raw =
+    (petAtk * 1.75 - (def + mdef * 0.1)) *
+    4 *
+    attr *
+    rand;
+
+  return Math.max(0, Math.floor(raw));
+}
+
+function calcPetMagic(petInt, def, mdef) {
+  const attr = 1.0;   // 属性補正（後回し）
+  const rand = 1.0;   // 乱数（後回し）
+
+  const raw =
+    (petInt * 1.75 - (mdef + def * 0.1)) *
+    4 *
+    attr *
+    rand;
+
+  return Math.max(0, Math.floor(raw));
+}
 
   // --- イベント ---
   petSelectEl.addEventListener("change", () => {
