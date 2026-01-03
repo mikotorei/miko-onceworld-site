@@ -1,18 +1,23 @@
 {{ define "main" }}
-<h1 class="page-title">{{ .Title }}</h1><!--content/_index.mdの内容が入る-->
+<h1 class="page-title">{{ .Title }}</h1>
 
-<div class="page-description"><!--content/_index.mdの内容が入る-->
+<div class="page-description">
   {{ .Content }}
 </div>
 
-<ul>
-  {{range .Pages}}
-    <li>
-      <a href="{{ .Permalink}}">
-        {{ .Title}}
-      </a>
-    </li>
-  {{end}}
-</ul>
+<div class="db-list">
+  {{ range .Pages }}
+    <article class="db-card">
+      <h2 class="db-card-title">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </h2>
 
-{{end}}
+      {{ with .Params.type }}
+        <div class="db-card-meta">
+          <span class="type">{{ . }}</span>
+        </div>
+      {{ end }}
+    </article>
+  {{ end }}
+</div>
+{{ end }}
