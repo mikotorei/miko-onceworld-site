@@ -269,32 +269,49 @@ main {
   transform: translateY(-2px);
 }
 
-/* ===== ヘッダーナビ：タップ領域拡張 ===== */
+/* ===== Mobile First: Header Nav ===== */
 
-/* ナビ全体 */
-.site-header nav {
-  margin-top: 8px;
+/* タイトルはそのまま（色を変えない） */
+.site-header .site-title a {
+  color: inherit !important;
+  text-decoration: none;
 }
 
-/* リンクをブロック化して押しやすく */
+/* ナビ：スマホは縦並びでタップしやすく */
+.site-header nav {
+  margin-top: 10px;
+}
+
+/* ナビリンクだけ色を付ける（強めに指定して確実に勝つ） */
 .site-header nav a {
   display: block;
-  padding: 12px 16px;
+  padding: 14px 16px;
   border-radius: 12px;
+
+  color: #2b6cb0 !important;     /* ← ここが色 */
+  font-weight: 700;
   text-decoration: none;
-  color: inherit;
-  transition: background 0.15s ease;
+
+  background: rgba(43, 108, 176, 0.10);
+  border: 1px solid rgba(43, 108, 176, 0.20);
 }
 
-/* hover / tap 時の反応 */
+/* 押した時の反応 */
 .site-header nav a:hover,
 .site-header nav a:active {
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(43, 108, 176, 0.18);
 }
 
-/* スマホ向け：間隔を少し広げる */
-@media (max-width: 768px) {
+/* ===== PC later: 769px 以上で横並び ===== */
+@media (min-width: 769px) {
+  .site-header nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
   .site-header nav a {
-    padding: 14px 18px;
+    display: inline-block;
+    padding: 10px 14px;
   }
 }
