@@ -186,3 +186,11 @@ main {
     padding: 10px 14px;
   }
 }
+/* ナビリンクの状態を統一 */
+.site-nav a,
+.site-nav a:visited,
+.site-nav a:hover,
+.site-nav a:active {
+  color: #2b6cb0;
+  text-decoration: none;
+}
