@@ -223,13 +223,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function applySortToBoth(mode) {
-    sortOptions(petSelectEl, mode);
-    sortOptions(monsterSelectEl, mode);
-    // 並べ替え後に表示再反映
-    updatePetTypeFromSelection();
-    onTargetChanged();
-  }
-
+  sortOptions(petSelectEl, mode);
+  sortOptions(monsterSelectEl, mode);
+  updatePetTypeFromSelection();
+  onTargetChanged();
+  updateMinLine();
+}
+  
   document.querySelectorAll('input[name="sort-mode"]').forEach(r => {
     r.addEventListener("change", () => applySortToBoth(r.value));
   });
@@ -261,22 +261,38 @@ function calcPetMagic(petInt, def, mdef) {
     4 *
     attr *
     rand;
-
+  
   return Math.max(0, Math.floor(raw));
 }
   // --- 最低ライン（確実に1以上：最悪乱数0.9、属性1.0） ---
-  function minPetAtkLine(def, mdef) {
-  const r = 0.9;   // 最悪乱数
-  const a = 1.0;   // 属性補正（未実装なので等倍）
+function minPetAtkLine(def, mdef) {
+  const r = 0.9; // 最悪乱数
+  const a = 1.0; // 属性補正（未実装なので等倍）
   const need = (1 / (4 * r * a)) + (def + mdef * 0.1);
   return Math.ceil(need / 1.75);
 }
 
-  function minPetIntLine(def, mdef) {
+function minPetIntLine(def, mdef) {
   const r = 0.9;
   const a = 1.0;
   const need = (1 / (4 * r * a)) + (mdef + def * 0.1);
   return Math.ceil(need / 1.75);
+}
+
+function updateMinLine() {
+  const petData = parseMonsterOption(petSelectEl);
+  const type = petData ? petData.attackType : "";
+
+  const def = Number(defEl.value || 0);
+  const mdef = Number(mdefEl.value || 0);
+
+  if (type === "物理") {
+    minlineEl.textContent = `確実に1以上出る最低ATK：${minPetAtkLine(def, mdef)}`;
+  } else if (type === "魔法") {
+    minlineEl.textContent = `確実に1以上出る最低INT：${minPetIntLine(def, mdef)}`;
+  } else {
+    minlineEl.textContent = "最低ライン：---";
+  }
 }
 
   // --- イベント ---
