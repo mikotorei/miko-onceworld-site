@@ -200,3 +200,46 @@ main {
   color: #2b6cb0 !important;
   text-decoration: none;
 }
+/* =================================================
+   List page (cards) – minimal
+================================================= */
+
+.db-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.db-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fff;
+}
+
+.db-card-title {
+  margin: 0;
+  font-size: 1.05em;
+}
+
+/* 一覧リンク：visitedでも色を変えない */
+.db-card-title a,
+.db-card-title a:link,
+.db-card-title a:visited,
+.db-card-title a:hover,
+.db-card-title a:active,
+.db-card-title a:focus {
+  color: #2b6cb0;
+  text-decoration: none;
+}
+
+.db-card-title a:hover {
+  text-decoration: underline;
+}
+
+/* PCだけ少し横に広げる */
+@media (min-width: 769px) {
+  .db-list {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
