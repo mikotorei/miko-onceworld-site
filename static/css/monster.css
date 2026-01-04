@@ -80,11 +80,6 @@
 .attack-magic .monster-id {
   color: #7a3df0;
 }
-/* 詳細ページ：魔法だけ紫（物理は黒のまま） */
-.monster-detail.attack-magic .monster-title,
-.monster-detail.attack-magic .monster_name_physic {
-  color: #7a3df0;
-}
 
 /* =================================================
    Monster detail – layout
