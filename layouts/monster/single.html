@@ -1,5 +1,6 @@
 {{ define "main" }}
-<article class="monster-detail">
+<article class="monster-detail {{ if eq .Params.attack_type "魔法" }}attack-magic{{ else }}attack-physic{{ end }}">
+
   <!-- タイトル -->
   <h1 class="monster-title">{{ .Title }}</h1>
 
