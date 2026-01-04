@@ -187,3 +187,11 @@
   padding: 4px 0;
   border-bottom: 1px solid #eee;
 }
+
+/* 最後の行だけ下線を消す */
+.table_status dt:last-of-type,
+.table_status dd:last-of-type,
+.table_infomasion dt:last-of-type,
+.table_infomasion dd:last-of-type {
+  border-bottom: none;
+}
