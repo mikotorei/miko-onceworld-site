@@ -1,36 +1,31 @@
-/* スマホ用：ステータス／情報ブロック */
-.table_status,
-.table_infomasion {
+/* =================================================
+   Monster list – 2 columns
+================================================= */
+
+.monster-list {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  max-width: 280px;
-  margin: 0 auto;
-  padding: 8px 0;
-  row-gap: 12px;
+  grid-template-columns: repeat(2, 1fr); /* ← 2列 */
+  gap: 12px;
 }
 
-/* 項目（左） */
-.table_status dt,
-.table_infomasion dt {
-  font-weight: bold;
-  text-align: left;
+/* カード */
+.monster-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
 }
 
-/* 値（右） */
-.table_status dd,
-.table_infomasion dd {
-  margin: 0;
-  text-align: right;
+/* 画像 */
+.monster-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
 }
 
-/* 下線（1セットごと） */
-.table_status dt::after,
-.table_infomasion dt:after {
-  content: "";
-  display: block;
-  grid-column: 1 / -1;
-  width: 200%;
-  margin: 6px auto 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+/* PCでは自動で列を増やす */
+@media (min-width: 769px) {
+  .monster-list {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
 }
-
