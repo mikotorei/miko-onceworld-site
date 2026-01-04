@@ -183,7 +183,7 @@
 .table_status dt,
 .table_infomasion dt {
   display: block;              /* ★これが効きます */
-  width: 110%;
+  width: 108%;
   padding: 6px 0;
   border-bottom: 1px solid #ddd;
   box-sizing: border-box;
