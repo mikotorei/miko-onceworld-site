@@ -189,4 +189,20 @@
   box-sizing: border-box;
 }
 
+/* dt を左、dd を右に寄せる */
+.table_status,
+.table_infomasion {
+  display: grid;
+  grid-template-columns: 1fr auto; /* 左：可変 / 右：内容幅 */
+  align-items: center;
+}
 
+.table_status dt,
+.table_infomasion dt {
+  text-align: left;
+}
+
+.table_status dd,
+.table_infomasion dd {
+  text-align: right;
+}
