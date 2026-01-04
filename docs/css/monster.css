@@ -179,19 +179,23 @@
    Status row separators (下罫線)
 ================================================= */
 
-/* 1行（dt + dd）をまとめて区切る */
+/* 下罫線を確実に見せる（dt/dd を行として扱う） */
 .table_status dt,
 .table_status dd,
 .table_infomasion dt,
 .table_infomasion dd {
-  padding: 4px 0;
-  border-bottom: 1px solid #eee;
+  display: block;              /* ★これが効きます */
+  width: 100%;
+  padding: 6px 0;
+  border-bottom: 1px solid #ddd;
+  box-sizing: border-box;
 }
 
-/* 最後の行だけ下線を消す */
+/* 最後の行だけ線を消す（dtとddそれぞれの最後） */
 .table_status dt:last-of-type,
 .table_status dd:last-of-type,
 .table_infomasion dt:last-of-type,
 .table_infomasion dd:last-of-type {
   border-bottom: none;
 }
+
