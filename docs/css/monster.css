@@ -1,5 +1,5 @@
 /* =================================================
-   Monster list – cards（A案：正方形＋名前下）
+   Monster list – image top / name bottom
 ================================================= */
 
 .monster-list {
@@ -8,7 +8,7 @@
   gap: 12px;
 }
 
-/* カード全体 */
+/* カード */
 .monster-card {
   border: 1px solid #ddd;
   border-radius: 12px;
@@ -16,43 +16,70 @@
   background: #fff;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* ホバー（PCのみでもOK） */
-.monster-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-/* 画像：正方形に固定 */
-.monster-card img {
+/* 上部：画像枠 */
+.monster-thumb {
   width: 100%;
-  aspect-ratio: 1 / 1;   /* ★ 正方形 */
+  height: 140px;          /* ここで「上部だけ画像」にする */
+  overflow: hidden;
+}
+
+.monster-thumb img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
 }
 
-/* 名前エリア */
+/* 下部：名前（＋番号） */
 .monster-card-body {
-  padding: 10px 12px;
-  text-align: center;
+  padding: 10px 12px 12px;
 }
 
-.monster-card-body h2 {
+.monster-name {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.3;
-  font-weight: 600;
+  font-weight: 700;
+
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
-/* PCでは自動で列を増やす */
+/* 番号（名前の後ろに小さく） */
+.monster-id {
+  font-size: 0.8rem;
+  font-weight: 700;       /* 色が反映されたとき見えるように */
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+/* PC：列数を増やす */
 @media (min-width: 769px) {
   .monster-list {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .monster-thumb {
+    height: 160px;
   }
 }
 
+/* =================================================
+   Attack type color (物理/魔法)
+   - 物理は黒のまま（デフォルト）
+   - 魔法だけ紫
+================================================= */
+
+/* 物理（黒）＝何もしない */
+
+/* 魔法（紫） */
+.attack-magic .monster-name,
+.attack-magic .monster-id {
+  color: #7a3df0;
+}
 
 /* =================================================
    Monster detail – layout
@@ -107,7 +134,7 @@
   padding: 6px 8px;
 }
 
-/* 「ステータス」ひとかたまり（カード） */
+/* 「ひとかたまり」カード */
 .monster-panel {
   margin-top: 12px;
   padding: 12px;
@@ -123,25 +150,23 @@
 
 /* =================================================
    Status tables (stat-row)
-   - single.html 側で dt/dd を .stat-row で包んでいる想定
-   - status-calc.js が data-stat / data-base を読む想定
 ================================================= */
 
-/* 2ブロック（左：status / 右：info）を並べる */
+/* 左：status / 右：info を並べる */
 .table_top {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-/* dl は余白だけ整える（gridは stat-row 側でやる） */
+/* dl は余白だけ */
 .table_status,
 .table_infomasion {
   margin: 0;
   padding: 0;
 }
 
-/* 1行（dt+dd）を作る：ここに下罫線を付けるので線が途切れない */
+/* 1行（dt+dd） */
 .stat-row {
   display: grid;
   grid-template-columns: 1fr auto; /* dt:左 / dd:右 */
@@ -150,7 +175,13 @@
   border-bottom: 1px solid #ddd;
 }
 
-/* dt/dd の基本 */
+/* 最終行の下線は消す */
+.table_status .stat-row:last-child,
+.table_infomasion .stat-row:last-child {
+  border-bottom: none;
+}
+
+/* dt/dd */
 .table_status dt,
 .table_infomasion dt {
   margin: 0;
