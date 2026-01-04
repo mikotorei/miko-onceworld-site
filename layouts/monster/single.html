@@ -11,78 +11,70 @@
 
   
   <!-- ステータス -->
-  <section class="monster-stats">
-    <!-- 名前+簡易情報 -->
-  <p><section class="monster_name">名前:</section>
-    <span class="monster_name_physic">{{ .Title}}</span>
-    ({{ .Params.attack_type}}・{{ .Params.attack_range}}・{{ .Params.element}})
+<section class="monster-stats">
+
+  <!-- 名前+簡易情報 -->
+  <p>
+    <span class="monster_name">名前:</span>
+    <span class="monster_name_physic">{{ .Title }}</span>
+    ({{ .Params.attack_type }}・{{ .Params.attack_range }}・{{ .Params.element }})
   </p>
+
   <div class="level-control">
     <label for="monster-level">Lv</label>
-    <input
-      type="number"
-      id="monster-level"
-      value="1"
-      min="1"
-    >
+    <input type="number" id="monster-level" value="1" min="1">
   </div>
 
-  <h2>ステータス</h2>
- <div class="table">
-  <div class="table_top">
-    <div class="table_status" id="status-table">
-      <dt>VIT:</dt>
-      <dd data-stat="vit" data-base="{{ .Params.vit }}">
-        {{ .Params.vit }}
-      </dd>
+  <!-- ★ ここから「ステータス」ひとかたまり -->
+  <section class="monster-panel monster-panel--status">
+    <h2>ステータス</h2>
 
-      <dt>SPD:</dt>
-      <dd data-stat="spd" data-base="{{ .Params.spd}}">
-        {{ .Params.spd }}
-      </dd>
+    <div class="table">
+      <div class="table_top">
 
-      <dt>ATK:</dt>
-      <dd data-stat="atk" data-base="{{ .Params.atk}}">
-        {{ .Params.atk }}
-      </dd>
-      <dt>INT:</dt>
-      <dd data-stat="int" data-base="{{ .Params.int}}">
-        {{ .Params.int }}
-      </dd>
-      <dt>DEF:</dt>
-      <dd data-stat="def" data-base="{{ .Params.def}}">
-        {{ .Params.def }}
-      </dd>
+        <dl class="table_status" id="status-table">
+          <dt>VIT:</dt>
+          <dd data-stat="vit" data-base="{{ .Params.vit }}">{{ .Params.vit }}</dd>
 
-      <dt>M-DEF:</dt>
-      <dd data-stat="mdef" data-base="{{ .Params.mdef}}">
-        {{ .Params.mdef }}
-      </dd>
+          <dt>SPD:</dt>
+          <dd data-stat="spd" data-base="{{ .Params.spd }}">{{ .Params.spd }}</dd>
 
-      <dt>LUK:</dt>
-      <dd data-stat="luk" data-base="{{ .Params.luk}}">
-        {{ .Params.luk }}
-      </dd>
+          <dt>ATK:</dt>
+          <dd data-stat="atk" data-base="{{ .Params.atk }}">{{ .Params.atk }}</dd>
 
-      <dt>MOV:</dt>
-      <dd data-stat="mov" data-base="{{ .Params.mov}}">
-        {{ .Params.mov }}
+          <dt>INT:</dt>
+          <dd data-stat="int" data-base="{{ .Params.int }}">{{ .Params.int }}</dd>
+
+          <dt>DEF:</dt>
+          <dd data-stat="def" data-base="{{ .Params.def }}">{{ .Params.def }}</dd>
+
+          <dt>M-DEF:</dt>
+          <dd data-stat="mdef" data-base="{{ .Params.mdef }}">{{ .Params.mdef }}</dd>
+
+          <dt>LUK:</dt>
+          <dd data-stat="luk" data-base="{{ .Params.luk }}">{{ .Params.luk }}</dd>
+
+          <dt>MOV:</dt>
+          <dd data-stat="mov" data-base="{{ .Params.mov }}">{{ .Params.mov }}</dd>
+        </dl>
+
+        <dl class="table_infomasion" id="info-table">
+          <dt>EXP:</dt>
+          <dd data-stat="exp" data-base="{{ .Params.exp }}">{{ .Params.exp }}</dd>
+
+          <dt>GOLD:</dt>
+          <dd>{{ .Params.gold }}</dd>
+
+          <dt>捕獲確率:</dt>
+          <dd>{{ .Params.rate }}%</dd>
+        </dl>
+
+      </div>
     </div>
-    <div class="table_infomasion" id="info-table">
-      <dt>EXP:</dt>
-      <dd data-stat="exp" data-base="{{ .Params.exp}}">
-        {{ .Params.exp }}
-      </dd>
+  </section>
+  <!-- ★ ここまで「ステータス」ひとかたまり -->
 
-      <dt>GOLD:</dt>
-      <dd>{{ .Params.gold }}</dd>
-
-      <dt>捕獲確率:</dt>
-      <dd>{{ .Params.rate}}%</dd>
-    </div>
-  </div>
- </div>
-
+</section>
 
   <!-- ドロップ・出現 -->
 {{ with .Params.drop }}
