@@ -1,10 +1,10 @@
 /* =================================================
-   Monster list – 2 columns
+   Monster list – cards
 ================================================= */
 
 .monster-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* ← 2列 */
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
 
@@ -14,6 +14,8 @@
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
+  text-decoration: none;
+  color: inherit;
 }
 
 /* 画像 */
@@ -21,11 +23,155 @@
   width: 100%;
   height: 120px;
   object-fit: cover;
+  display: block;
+}
+
+/* カード本文 */
+.monster-card-body {
+  padding: 10px 12px;
+}
+
+.monster-card-body h2 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.3;
 }
 
 /* PCでは自動で列を増やす */
 @media (min-width: 769px) {
   .monster-list {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
+  .monster-card img {
+    height: 140px;
+  }
+}
+
+/* =================================================
+   Monster detail – layout
+================================================= */
+
+.monster-detail {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.monster-title {
+  margin: 0 0 10px;
+}
+
+.monster-image {
+  margin: 10px 0 14px;
+}
+
+.monster-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+/* 名前行 */
+.monster-stats p {
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+
+.monster_name {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.monster_name_physic {
+  font-weight: 700;
+}
+
+/* Lv操作 */
+.level-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 8px 0 14px;
+}
+
+.level-control input {
+  width: 90px;
+  padding: 6px 8px;
+}
+
+/* 「ステータス」ひとかたまり（カード） */
+.monster-panel {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.monster-panel > h2 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+
+/* =================================================
+   Status tables (dl/dt/dd)
+   - status-calc.js が data-stat / data-base を読む想定
+================================================= */
+
+/* 2ブロック（左：status / 右：info）を並べる */
+.table_top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* dl をグリッド表示 */
+.table_status,
+.table_infomasion {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 6px 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.table_status dt,
+.table_infomasion dt {
+  font-weight: 600;
+  color: #555;
+}
+
+.table_status dd,
+.table_infomasion dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* ドロップ・出現 */
+.monster-drop,
+.monster-locations {
+  margin-top: 12px;
+}
+
+.monster-drop ul,
+.monster-locations ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+/* =================================================
+   Responsive (mobile)
+================================================= */
+
+@media (max-width: 760px) {
+  .table_top {
+    grid-template-columns: 1fr;
+  }
+
+  .table_status,
+  .table_infomasion {
+    grid-template-columns: 110px 1fr;
   }
 }
