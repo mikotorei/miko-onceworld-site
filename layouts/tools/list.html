@@ -1,13 +1,21 @@
 {{ define "main" }}
 
-<h1>{{ .Title }}</h1>
+<h1 class="page-title">{{ .Title }}</h1>
 
-<ul>
+<div class="db-list">
   {{ range .Pages }}
-    <li>
-      <a href="{{ .Permalink }}">{{ .Title }}</a>
-    </li>
+    <article class="db-card">
+      <h2 class="db-card-title">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </h2>
+
+      {{ with .Params.description }}
+        <p class="db-card-description">
+          {{ . }}
+        </p>
+      {{ end }}
+    </article>
   {{ end }}
-</ul>
+</div>
 
 {{ end }}
