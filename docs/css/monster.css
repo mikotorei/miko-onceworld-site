@@ -73,7 +73,7 @@
 }
 
 /* 名前行 */
-.monster-stats p {
+.monster-basic {
   margin: 0 0 10px;
   line-height: 1.6;
 }
@@ -116,7 +116,8 @@
 }
 
 /* =================================================
-   Status tables (dl/dt/dd)
+   Status tables (stat-row)
+   - single.html 側で dt/dd を .stat-row で包んでいる想定
    - status-calc.js が data-stat / data-base を読む想定
 ================================================= */
 
@@ -127,26 +128,42 @@
   gap: 12px;
 }
 
-/* dl をグリッド表示 */
+/* dl は余白だけ整える（gridは stat-row 側でやる） */
 .table_status,
 .table_infomasion {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 6px 10px;
   margin: 0;
   padding: 0;
 }
 
+/* 1行（dt+dd）を作る：ここに下罫線を付けるので線が途切れない */
+.stat-row {
+  display: grid;
+  grid-template-columns: 1fr auto; /* dt:左 / dd:右 */
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+/* 最終行の下線は消す */
+.table_status .stat-row:last-child,
+.table_infomasion .stat-row:last-child {
+  border-bottom: none;
+}
+
+/* dt/dd の基本 */
 .table_status dt,
 .table_infomasion dt {
+  margin: 0;
   font-weight: 600;
   color: #555;
+  text-align: left;
 }
 
 .table_status dd,
 .table_infomasion dd {
   margin: 0;
   font-weight: 700;
+  text-align: right;
 }
 
 /* ドロップ・出現 */
@@ -167,42 +184,6 @@
 
 @media (max-width: 760px) {
   .table_top {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* 縦並び */
   }
-
-  .table_status,
-  .table_infomasion {
-    grid-template-columns: 110px 1fr;
-  }
-}
-/* =================================================
-   Status row separators (下罫線)
-================================================= */
-
-/* 下罫線を確実に見せる（dt/dd を行として扱う） */
-.table_status dt,
-.table_infomasion dt {
-  display: block;              /* ★これが効きます */
-  width: 108%;
-  padding: 6px 0;
-  border-bottom: 1px solid #ddd;
-  box-sizing: border-box;
-}
-
-/* dt を左、dd を右に寄せる */
-.table_status,
-.table_infomasion {
-  display: grid;
-  grid-template-columns: 1fr auto; /* 左：可変 / 右：内容幅 */
-  align-items: center;
-}
-
-.table_status dt,
-.table_infomasion dt {
-  text-align: left;
-}
-
-.table_status dd,
-.table_infomasion dd {
-  text-align: right;
 }
