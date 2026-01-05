@@ -175,12 +175,6 @@
   border-bottom: 1px solid #ddd;
 }
 
-/* 最終行の下線は消す */
-.table_status .stat-row:last-child,
-.table_infomasion .stat-row:last-child {
-  border-bottom: none;
-}
-
 /* dt/dd */
 .table_status dt,
 .table_infomasion dt {
