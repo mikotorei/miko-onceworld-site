@@ -70,4 +70,11 @@ title: "被ダメージ計算"
 <script src="/js/def-calc.js"></script>
 {{< /rawhtml >}}
 
+<hr>
+
+<p class="tool-note">
+  ※敵モンスターのレベルに応じて攻撃力は変動します。<br>
+  「必要DEF / MDEF」は、被ダメージを一桁（1〜9）に抑えるために必要な単体でのラインの目安です。<br>
+  実際には防御力=(DEF+MDEF*0.1) 魔法防御=(MDEF+DEF*0.1)の値がラインを越えていれば大丈夫です。
+</p>
 
