@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> | OnceWorld(ワンスワ)miko</title>
+
+  <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/style.css">
+  <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/monster.css">
+</head>
+<body>
+
+<header class="site-header">
+  <h1 class="site-title">
+    <a href="https://matsumoto0106.github.io/miko-onceworld-site/">
+      OnceWorld(ワンスワ)miko
+    </a>
+  </h1>
+
+  
+  <button class="menu-toggle" type="button" aria-label="メニュー" aria-expanded="false">
+    ☰
+  </button>
+
+  
+  <nav class="site-nav" aria-label="サイトメニュー">
+    <a href="https://matsumoto0106.github.io/miko-onceworld-site/">ホームへ</a>
+    <a href="https://matsumoto0106.github.io/miko-onceworld-site/monster/">モンスター一覧</a>
+    <a href="https://matsumoto0106.github.io/miko-onceworld-site/tools/">ツール</a>
+  </nav>
+
+  
+  <div class="nav-overlay" aria-hidden="true"></div>
+</header>
+
+<main>
+  
+
+<h1></h1>
+
+<div class="tool-container">
+  <h2 id="-contenttoolslukmd全文置き換え">// content/tools/luk.md（全文置き換え）</h2>
+<h2 id="title-命中回避計算ツール">title: &ldquo;命中回避計算ツール&rdquo;</h2>
+<h1>命中回避計算ツール</h1>
+<div class="tool-box">
+  <div class="tool-row">
+    <label for="enemy-select">敵モンスター選択：</label>
+    
+    <select id="enemy-select">
+      
+      
+        
+          
+          <option
+            value="/monster/1/"
+            data-id="1"
+            data-name="グリーンスライム"
+            data-luk="2"
+          >
+            グリーンスライム
+          </option>
+        
+          
+          <option
+            value="/monster/2/"
+            data-id="2"
+            data-name="レッドゴブリン"
+            data-luk="1"
+          >
+            レッドゴブリン
+          </option>
+        
+          
+          <option
+            value="/monster/3/"
+            data-id="3"
+            data-name="ゴブリンメイジ"
+            data-luk="3"
+          >
+            ゴブリンメイジ
+          </option>
+        
+          
+          <option
+            value="/monster/4/"
+            data-id="4"
+            data-name="クリーチャーローズ"
+            data-luk="3"
+          >
+            クリーチャーローズ
+          </option>
+        
+          
+          <option
+            value="/monster/5/"
+            data-id="5"
+            data-name="キメラタートル"
+            data-luk="3"
+          >
+            キメラタートル
+          </option>
+        
+          
+          <option
+            value="/monster/6/"
+            data-id="6"
+            data-name="鉄罠花"
+            data-luk="3"
+          >
+            鉄罠花
+          </option>
+        
+          
+          <option
+            value="/monster/7/"
+            data-id="7"
+            data-name="ペンギンソルジャー"
+            data-luk="7"
+          >
+            ペンギンソルジャー
+          </option>
+        
+          
+          <option
+            value="/monster/10/"
+            data-id="10"
+            data-name="ハネスライム"
+            data-luk="18"
+          >
+            ハネスライム
+          </option>
+        
+          
+          <option
+            value="/monster/11/"
+            data-id="11"
+            data-name="ボスゴブリン"
+            data-luk="6"
+          >
+            ボスゴブリン
+          </option>
+        
+          
+          <option
+            value="/monster/12/"
+            data-id="12"
+            data-name="ギガントオーク"
+            data-luk="11"
+          >
+            ギガントオーク
+          </option>
+        
+          
+          <option
+            value="/monster/13/"
+            data-id="13"
+            data-name="古代魚　ザコーン"
+            data-luk="77"
+          >
+            古代魚　ザコーン
+          </option>
+        
+          
+          <option
+            value="/monster/16/"
+            data-id="16"
+            data-name="禁域のラミア"
+            data-luk="75"
+          >
+            禁域のラミア
+          </option>
+        
+          
+          <option
+            value="/monster/21/"
+            data-id="21"
+            data-name="マッドカエル"
+            data-luk="5"
+          >
+            マッドカエル
+          </option>
+        
+          
+          <option
+            value="/monster/22/"
+            data-id="22"
+            data-name="ダークメイジ"
+            data-luk="3"
+          >
+            ダークメイジ
+          </option>
+        
+          
+          <option
+            value="/monster/23/"
+            data-id="23"
+            data-name="アリクイロード"
+            data-luk="4"
+          >
+            アリクイロード
+          </option>
+        
+          
+          <option
+            value="/monster/24/"
+            data-id="24"
+            data-name="原始蝶"
+            data-luk="3"
+          >
+            原始蝶
+          </option>
+        
+          
+          <option
+            value="/monster/25/"
+            data-id="25"
+            data-name="動く墓"
+            data-luk="0"
+          >
+            動く墓
+          </option>
+        
+          
+          <option
+            value="/monster/26/"
+            data-id="26"
+            data-name="オルトロス"
+            data-luk="6"
+          >
+            オルトロス
+          </option>
+        
+          
+          <option
+            value="/monster/27/"
+            data-id="27"
+            data-name="雪だるまん"
+            data-luk="11"
+          >
+            雪だるまん
+          </option>
+        
+          
+          <option
+            value="/monster/28/"
+            data-id="28"
+            data-name="シカファイター"
+            data-luk="10"
+          >
+            シカファイター
+          </option>
+        
+          
+          <option
+            value="/monster/29/"
+            data-id="29"
+            data-name="ペンギンロード"
+            data-luk="15"
+          >
+            ペンギンロード
+          </option>
+        
+          
+          <option
+            value="/monster/30/"
+            data-id="30"
+            data-name="パンダ"
+            data-luk="29"
+          >
+            パンダ
+          </option>
+        
+          
+          <option
+            value="/monster/31/"
+            data-id="31"
+            data-name="ファントムツリー"
+            data-luk="17"
+          >
+            ファントムツリー
+          </option>
+        
+          
+          <option
+            value="/monster/32/"
+            data-id="32"
+            data-name="スノーモケラ"
+            data-luk="9"
+          >
+            スノーモケラ
+          </option>
+        
+          
+          <option
+            value="/monster/33/"
+            data-id="33"
+            data-name="零の者"
+            data-luk="45"
+          >
+            零の者
+          </option>
+        
+          
+          <option
+            value="/monster/36/"
+            data-id="36"
+            data-name="禁域の巨木"
+            data-luk="200"
+          >
+            禁域の巨木
+          </option>
+        
+          
+          <option
+            value="/monster/41/"
+            data-id="41"
+            data-name="ゴブリン特攻隊"
+            data-luk="9"
+          >
+            ゴブリン特攻隊
+          </option>
+        
+          
+          <option
+            value="/monster/42/"
+            data-id="42"
+            data-name="ゴブリンクルー"
+            data-luk="18"
+          >
+            ゴブリンクルー
+          </option>
+        
+          
+          <option
+            value="/monster/43/"
+            data-id="43"
+            data-name="紅サソリ"
+            data-luk="20"
+          >
+            紅サソリ
+          </option>
+        
+          
+          <option
+            value="/monster/44/"
+            data-id="44"
+            data-name="死戦士マミー"
+            data-luk="14"
+          >
+            死戦士マミー
+          </option>
+        
+          
+          <option
+            value="/monster/45/"
+            data-id="45"
+            data-name="アヌビス"
+            data-luk="30"
+          >
+            アヌビス
+          </option>
+        
+          
+          <option
+            value="/monster/46/"
+            data-id="46"
+            data-name="ファイヤーメイジ"
+            data-luk="24"
+          >
+            ファイヤーメイジ
+          </option>
+        
+          
+          <option
+            value="/monster/47/"
+            data-id="47"
+            data-name="エジプトアシュラ"
+            data-luk="30"
+          >
+            エジプトアシュラ
+          </option>
+        
+          
+          <option
+            value="/monster/48/"
+            data-id="48"
+            data-name="デザートイッヌ"
+            data-luk="47"
+          >
+            デザートイッヌ
+          </option>
+        
+          
+          <option
+            value="/monster/49/"
+            data-id="49"
+            data-name="不思議なツボ"
+            data-luk="42"
+          >
+            不思議なツボ
+          </option>
+        
+          
+          <option
+            value="/monster/50/"
+            data-id="50"
+            data-name="天狗"
+            data-luk="35"
+          >
+            天狗
+          </option>
+        
+          
+          <option
+            value="/monster/51/"
+            data-id="51"
+            data-name="ランプの精霊"
+            data-luk="26"
+          >
+            ランプの精霊
+          </option>
+        
+          
+          <option
+            value="/monster/52/"
+            data-id="52"
+            data-name="邪黒龍"
+            data-luk="38"
+          >
+            邪黒龍
+          </option>
+        
+          
+          <option
+            value="/monster/53/"
+            data-id="53"
+            data-name="捧げし者"
+            data-luk="99"
+          >
+            捧げし者
+          </option>
+        
+          
+          <option
+            value="/monster/54/"
+            data-id="54"
+            data-name="聡明神　トモダチ"
+            data-luk="77"
+          >
+            聡明神　トモダチ
+          </option>
+        
+          
+          <option
+            value="/monster/56/"
+            data-id="56"
+            data-name="禁域のアヌビシュ"
+            data-luk="290"
+          >
+            禁域のアヌビシュ
+          </option>
+        
+          
+          <option
+            value="/monster/61/"
+            data-id="61"
+            data-name="居住者A"
+            data-luk="12"
+          >
+            居住者A
+          </option>
+        
+          
+          <option
+            value="/monster/62/"
+            data-id="62"
+            data-name="居住者B"
+            data-luk="22"
+          >
+            居住者B
+          </option>
+        
+          
+          <option
+            value="/monster/63/"
+            data-id="63"
+            data-name="ホネ"
+            data-luk="18"
+          >
+            ホネ
+          </option>
+        
+          
+          <option
+            value="/monster/64/"
+            data-id="64"
+            data-name="ボーンバトラー"
+            data-luk="26"
+          >
+            ボーンバトラー
+          </option>
+        
+          
+          <option
+            value="/monster/65/"
+            data-id="65"
+            data-name="ダイコンに見えるダイコン"
+            data-luk="55"
+          >
+            ダイコンに見えるダイコン
+          </option>
+        
+          
+          <option
+            value="/monster/66/"
+            data-id="66"
+            data-name="クリーチャーアイ"
+            data-luk="26"
+          >
+            クリーチャーアイ
+          </option>
+        
+          
+          <option
+            value="/monster/67/"
+            data-id="67"
+            data-name="悪夢の石像"
+            data-luk="48"
+          >
+            悪夢の石像
+          </option>
+        
+          
+          <option
+            value="/monster/68/"
+            data-id="68"
+            data-name="スカルウィスプ"
+            data-luk="31"
+          >
+            スカルウィスプ
+          </option>
+        
+          
+          <option
+            value="/monster/69/"
+            data-id="69"
+            data-name="フレイムフロッグ"
+            data-luk="66"
+          >
+            フレイムフロッグ
+          </option>
+        
+          
+          <option
+            value="/monster/70/"
+            data-id="70"
+            data-name="キメラキング"
+            data-luk="55"
+          >
+            キメラキング
+          </option>
+        
+          
+          <option
+            value="/monster/71/"
+            data-id="71"
+            data-name="ネクロプリンセス"
+            data-luk="77"
+          >
+            ネクロプリンセス
+          </option>
+        
+          
+          <option
+            value="/monster/72/"
+            data-id="72"
+            data-name="朽ちざる竜骸　イゾ"
+            data-luk="116"
+          >
+            朽ちざる竜骸　イゾ
+          </option>
+        
+          
+          <option
+            value="/monster/76/"
+            data-id="76"
+            data-name="禁域のクマヌイ"
+            data-luk="144"
+          >
+            禁域のクマヌイ
+          </option>
+        
+          
+          <option
+            value="/monster/81/"
+            data-id="81"
+            data-name="烈火鼠"
+            data-luk="25"
+          >
+            烈火鼠
+          </option>
+        
+          
+          <option
+            value="/monster/82/"
+            data-id="82"
+            data-name="燃えてる何か"
+            data-luk="55"
+          >
+            燃えてる何か
+          </option>
+        
+          
+          <option
+            value="/monster/83/"
+            data-id="83"
+            data-name="焼きトリ"
+            data-luk="140"
+          >
+            焼きトリ
+          </option>
+        
+          
+          <option
+            value="/monster/84/"
+            data-id="84"
+            data-name="ウォーデン"
+            data-luk="44"
+          >
+            ウォーデン
+          </option>
+        
+          
+          <option
+            value="/monster/85/"
+            data-id="85"
+            data-name="バーニングロック"
+            data-luk="42"
+          >
+            バーニングロック
+          </option>
+        
+          
+          <option
+            value="/monster/86/"
+            data-id="86"
+            data-name="ケルベロス"
+            data-luk="29"
+          >
+            ケルベロス
+          </option>
+        
+          
+          <option
+            value="/monster/87/"
+            data-id="87"
+            data-name="ガチキメラ"
+            data-luk="36"
+          >
+            ガチキメラ
+          </option>
+        
+          
+          <option
+            value="/monster/88/"
+            data-id="88"
+            data-name="フレイムボーン"
+            data-luk="55"
+          >
+            フレイムボーン
+          </option>
+        
+          
+          <option
+            value="/monster/89/"
+            data-id="89"
+            data-name="炎鬼"
+            data-luk="21"
+          >
+            炎鬼
+          </option>
+        
+          
+          <option
+            value="/monster/90/"
+            data-id="90"
+            data-name="ブタ天使"
+            data-luk="50"
+          >
+            ブタ天使
+          </option>
+        
+          
+          <option
+            value="/monster/91/"
+            data-id="91"
+            data-name="エレファントパラディン"
+            data-luk="70"
+          >
+            エレファントパラディン
+          </option>
+        
+          
+          <option
+            value="/monster/93/"
+            data-id="93"
+            data-name="残燃モエコ"
+            data-luk="155"
+          >
+            残燃モエコ
+          </option>
+        
+          
+          <option
+            value="/monster/96/"
+            data-id="96"
+            data-name="禁域のヴァルネシア"
+            data-luk="151"
+          >
+            禁域のヴァルネシア
+          </option>
+        
+          
+          <option
+            value="/monster/161/"
+            data-id="161"
+            data-name="ホムラウマ"
+            data-luk="33"
+          >
+            ホムラウマ
+          </option>
+        
+          
+          <option
+            value="/monster/162/"
+            data-id="162"
+            data-name="深淵灯魚"
+            data-luk="35"
+          >
+            深淵灯魚
+          </option>
+        
+          
+          <option
+            value="/monster/163/"
+            data-id="163"
+            data-name="うねうね"
+            data-luk="29"
+          >
+            うねうね
+          </option>
+        
+          
+          <option
+            value="/monster/164/"
+            data-id="164"
+            data-name="イージスリエル"
+            data-luk="61"
+          >
+            イージスリエル
+          </option>
+        
+          
+          <option
+            value="/monster/165/"
+            data-id="165"
+            data-name="デーモンブレイド"
+            data-luk="31"
+          >
+            デーモンブレイド
+          </option>
+        
+          
+          <option
+            value="/monster/166/"
+            data-id="166"
+            data-name="時空龍クロノゼリウス"
+            data-luk="88"
+          >
+            時空龍クロノゼリウス
+          </option>
+        
+          
+          <option
+            value="/monster/201/"
+            data-id="201"
+            data-name="イグニス・シスター"
+            data-luk="56"
+          >
+            イグニス・シスター
+          </option>
+        
+          
+          <option
+            value="/monster/202/"
+            data-id="202"
+            data-name="オルド･クラウセス"
+            data-luk="99"
+          >
+            オルド･クラウセス
+          </option>
+        
+          
+          <option
+            value="/monster/203/"
+            data-id="203"
+            data-name="BOX"
+            data-luk="100"
+          >
+            BOX
+          </option>
+        
+          
+          <option
+            value="/monster/204/"
+            data-id="204"
+            data-name="冥王ノクタール"
+            data-luk="89"
+          >
+            冥王ノクタール
+          </option>
+        
+          
+          <option
+            value="/monster/241/"
+            data-id="241"
+            data-name="イグニシア"
+            data-luk="55"
+          >
+            イグニシア
+          </option>
+        
+          
+          <option
+            value="/monster/242/"
+            data-id="242"
+            data-name="ヌー"
+            data-luk="33"
+          >
+            ヌー
+          </option>
+        
+          
+          <option
+            value="/monster/251/"
+            data-id="251"
+            data-name="ペリカンEXP"
+            data-luk="1"
+          >
+            ペリカンEXP
+          </option>
+        
+          
+          <option
+            value="/monster/252/"
+            data-id="252"
+            data-name="支配のトリ"
+            data-luk="35"
+          >
+            支配のトリ
+          </option>
+        
+      
+    </select>
+
+  </div>
+  <div class="tool-row">
+    <label for="enemy-level">敵レベル：</label>
+    <input type="number" id="enemy-level" value="1" min="1">
+  </div>
+  <div class="tool-row">
+    <label for="monster-order">並び順：</label>
+    <select id="monster-order">
+      <option value="id-asc" selected>図鑑番号（昇順）</option>
+      <option value="name-asc">名前（昇順）</option>
+      <option value="name-desc">名前（降順）</option>
+    </select>
+  </div>
+  <div class="tool-row">
+    <button id="calc-btn" type="button">計算する</button>
+  </div>
+  <hr>
+  <section class="tool-result">
+    <h2>計算結果</h2>
+<pre><code>&lt;p&gt;敵LUK：&lt;strong id=&quot;enemy-luk&quot;&gt;---&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;命中に必要な攻撃側LUK：&lt;strong id=&quot;need-hit&quot;&gt;---&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;回避が発生する防御側LUK：&lt;strong id=&quot;need-evade&quot;&gt;---&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;ほぼ完全回避の防御側LUK：&lt;strong id=&quot;need-perfect&quot;&gt;---&lt;/strong&gt;&lt;/p&gt;
+</code></pre>
+  </section>
+</div>
+
+<script src="https://matsumoto0106.github.io/miko-onceworld-site/js/luk-calc.js"></script>
+
+
+
+</div>
+
+<script src="https://matsumoto0106.github.io/miko-onceworld-site/js/atk-calc.js"></script>
+
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.querySelector(".menu-toggle");
+  const nav = document.querySelector(".site-nav");
+  const overlay = document.querySelector(".nav-overlay");
+
+  if (!toggle || !nav || !overlay) return;
+
+  function openMenu() {
+    nav.classList.add("is-open");
+    overlay.classList.add("is-open");
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.textContent = "✕";
+    document.body.classList.add("no-scroll");
+  }
+
+  function closeMenu() {
+    nav.classList.remove("is-open");
+    overlay.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.textContent = "☰";
+    document.body.classList.remove("no-scroll");
+  }
+
+  toggle.addEventListener("click", () => {
+    if (nav.classList.contains("is-open")) closeMenu();
+    else openMenu();
+  });
+
+  overlay.addEventListener("click", closeMenu);
+
+  
+  window.addEventListener("resize", () => {
+    if (window.matchMedia("(min-width: 769px)").matches) closeMenu();
+  });
+});
+</script>
+
+</body>
+</html>
