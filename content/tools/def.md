@@ -44,24 +44,24 @@ title: "被ダメージ計算"
   <hr>
 
   <section class="tool-result">
-    <h2>計算結果</h2>
+<h2>計算結果</h2>
 
-    <p>
-      敵の攻撃タイプ：
-      <strong id="enemy-attack-type">---</strong>
-    </p>
+<p>
+  敵の攻撃タイプ：
+    <strong id="enemy-attack-type">---</strong>
+</p>
 
-    <p>
-      最終被ダメージ：
-      <strong id="result-dmg">---</strong>
-      <span class="note">（最低保証：1）</span>
-    </p>
+<p>
+  最終被ダメージ：
+    <strong id="result-dmg">---</strong>
+    <span class="note">（最低保証：1）</span>
+  </p>
 
-    <p>
-      被ダメを一桁(1〜9)に抑えるには：
-      <strong id="need-label">必要DEF</strong>
-      <strong id="result-need">---</strong>
-    </p>
+<p>
+  被ダメを一桁(1〜9)に抑えるには：
+    <strong id="need-label">必要DEF</strong>
+    <strong id="result-need">---</strong>
+  </p>
   </section>
 
 </div>
