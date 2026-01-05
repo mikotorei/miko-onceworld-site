@@ -2,8 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://matsumoto0106.github.io/miko-onceworld-site/tools/def/</loc>
-  </url><url>
     <loc>https://matsumoto0106.github.io/miko-onceworld-site/monster/203/</loc>
   </url><url>
     <loc>https://matsumoto0106.github.io/miko-onceworld-site/categories/</loc>
@@ -173,6 +171,8 @@
     <loc>https://matsumoto0106.github.io/miko-onceworld-site/monster/43/</loc>
   </url><url>
     <loc>https://matsumoto0106.github.io/miko-onceworld-site/monster/54/</loc>
+  </url><url>
+    <loc>https://matsumoto0106.github.io/miko-onceworld-site/tools/def/</loc>
   </url><url>
     <loc>https://matsumoto0106.github.io/miko-onceworld-site/monster/52/</loc>
   </url><url>
