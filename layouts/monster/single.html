@@ -21,7 +21,26 @@
       ({{ .Params.attack_type }}・{{ .Params.attack_range }}・{{ .Params.element }})
     </p>
 
+    <!-- Lv操作（ショートカット追加：横並び） -->
     <div class="level-control">
+
+      {{ with .Params.level_shortcuts }}
+        <div class="level-shortcuts" aria-label="レベルショートカット">
+          {{/* 1以上のみ / 重複除去 / 昇順 */}}
+          {{ $seen := dict }}
+          {{ range sort . "value" "asc" }}
+            {{ $lv := int . }}
+            {{ if ge $lv 1 }}
+              {{ $key := printf "%d" $lv }}
+              {{ if not (isset $seen $key) }}
+                {{ $seen = merge $seen (dict $key true) }}
+                <button type="button" class="level-shortcut-btn" data-level="{{ $lv }}">Lv{{ $lv }}</button>
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        </div>
+      {{ end }}
+
       <label for="monster-level">Lv</label>
       <input type="number" id="monster-level" value="1" min="1">
     </div>
@@ -128,6 +147,7 @@
   {{ end }}
 
   <script src="{{ "js/status-calc.js" | relURL }}"></script>
+  <script src="{{ "js/level-shortcuts.js" | relURL }}"></script>
 
   <p><a href="{{ "/monster/" | relURL }}">一覧に戻る</a></p>
 </article>
