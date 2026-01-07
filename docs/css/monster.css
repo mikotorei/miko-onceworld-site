@@ -212,3 +212,26 @@
     grid-template-columns: 1fr; /* 縦並び */
   }
 }
+/* Lvショートカット（追加） */
+.level-shortcuts {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.level-shortcut-btn {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* 押した状態（改善④） */
+.level-shortcut-btn.active {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+
