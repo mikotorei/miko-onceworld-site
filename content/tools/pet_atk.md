@@ -343,3 +343,7 @@ function updateMinLine() {
   updateMinLine();
 });
 </script>
+
+{{< rawhtml >}}
+<script src="/js/monster-order.js"></script>
+{{< /rawhtml >}}
