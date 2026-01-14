@@ -44,8 +44,6 @@ title: "ペット与ダメージ計算"
         <option value="name-desc">名前（降順）</option>
       </select>
     </div>
-    
-    <!-- ★ よくあるLv（敵モンスター用） -->
   <div class="form-row" id="common-lv-row" style="display:none;">
       <label>よくあるLv：</label>
       <div id="common-lv-buttons"></div>
