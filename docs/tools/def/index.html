@@ -1680,6 +1680,11 @@
 <option value="name-desc">名前（降順）</option>
 </select></p>
   </div>
+  <!-- ★ よくあるLv -->
+  <div class="tool-row" id="common-lv-row" style="display:none;">
+    <label>よくあるLv：</label>
+    <div id="common-lv-buttons"></div>
+  </div>
   <div class="tool-row">
     <label for="enemy-level">敵レベル：</label>
     <input type="number" id="enemy-level" value="1" min="1">
@@ -1718,6 +1723,59 @@
 
 <script src="https://matsumoto0106.github.io/miko-onceworld-site/js/def-calc.js"></script>
 <script src="https://matsumoto0106.github.io/miko-onceworld-site/js/monster-order.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const selectEl = document.getElementById("enemy-select");
+  const levelEl  = document.getElementById("enemy-level");
+
+  const row  = document.getElementById("common-lv-row");
+  const wrap = document.getElementById("common-lv-buttons");
+
+  if (!selectEl || !levelEl || !row || !wrap) return;
+
+  function renderCommonLevels() {
+    const opt = selectEl.options[selectEl.selectedIndex];
+    const raw = opt?.dataset?.levels || "";
+
+    const levels = String(raw)
+      .split(",")
+      .map(v => Number(v.trim()))
+      .filter(v => Number.isFinite(v) && v >= 1);
+
+    if (!opt || !opt.value || levels.length === 0) {
+      wrap.innerHTML = "";
+      row.style.display = "none";
+      return;
+    }
+
+    wrap.innerHTML = "";
+    row.style.display = "";
+
+    levels.forEach(lv => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = lv;
+      b.style.marginRight = "6px";
+      b.style.padding = "4px 10px";
+      b.style.borderRadius = "999px";
+      b.style.border = "1px solid #ddd";
+      b.style.background = "#fff";
+      b.style.cursor = "pointer";
+
+      b.addEventListener("click", () => {
+        levelEl.value = lv;
+        levelEl.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+
+      wrap.appendChild(b);
+    });
+  }
+
+  selectEl.addEventListener("change", renderCommonLevels);
+  renderCommonLevels();
+});
+</script>
 
 
 <hr>
