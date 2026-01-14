@@ -10,9 +10,9 @@ title: "被ダメージ計算"
     <label for="enemy-select">敵モンスター選択：</label>
     {{< monster_select id="enemy-select" role="enemy" >}}
 
-  <label>並び順：</label>
-    <select data-monster-order="enemy">
-      <option value="id-asc">図鑑番号（昇順）</option>
+  <label for="monster-order">並び順：</label>
+    <select id="monster-order" data-monster-order="enemy">
+      <option value="id-asc" selected>図鑑番号（昇順）</option>
       <option value="name-asc">名前（昇順）</option>
       <option value="name-desc">名前（降順）</option>
     </select>
