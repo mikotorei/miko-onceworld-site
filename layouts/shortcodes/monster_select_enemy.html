@@ -11,7 +11,6 @@
         data-attack-type="{{ $p.Params.attack_type }}"
         data-atk="{{ $p.Params.atk }}"
         data-int="{{ $p.Params.int }}"
-        data-level-shortcuts='{{ with $p.Params.level_shortcuts }}{{ . | jsonify }}{{ else }}[]{{ end }}'
       >
         {{ $p.Title }}
       </option>
