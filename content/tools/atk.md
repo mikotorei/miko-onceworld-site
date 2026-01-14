@@ -9,49 +9,50 @@ title: "与ダメージ計算"
 
   <div class="atk-form">
 
-  <div class="form-row">
+    <div class="form-row">
       <label for="enemy-select">モンスター選択：</label>
-    {{< monster_select id="enemy-select" role="enemy" >}}
+      {{< monster_select id="enemy-select" role="enemy" >}}
+
+      <label>並び順：</label>
+      <select data-monster-order="enemy">
+        <option value="id-asc">図鑑番号（昇順）</option>
+        <option value="name-asc">名前（昇順）</option>
+        <option value="name-desc">名前（降順）</option>
+      </select>
     </div>
 
-  <div class="form-row">
+    <div class="form-row">
       <label for="monster-level">モンスターレベル：</label>
       <input type="number" id="monster-level" value="1" min="1">
     </div>
 
-  <label for="monster-order">並び順：</label>
-  <select id="monster-order">
-  <option value="id-asc" selected>図鑑番号（昇順）</option>
-  <option value="name-asc">名前（昇順）</option>
-  <option value="name-desc">名前（降順）</option>
-</select>
-
-  <div class="form-row">
+    <div class="form-row">
       <span>攻撃タイプ：</span>
       <label><input type="radio" name="attack-type" value="phys" checked> 物理（ATK）</label>
       <label><input type="radio" name="attack-type" value="magic"> 魔法（INT）</label>
     </div>
 
-  <div class="form-row">
+    <div class="form-row">
       <label for="atk">ATK：</label>
       <input type="number" id="atk" value="100" min="0">
     </div>
 
-  <div class="form-row">
+    <div class="form-row">
       <label for="int">INT：</label>
       <input type="number" id="int" value="100" min="0">
     </div>
 
-  <div class="form-row">
+    <div class="form-row">
       <label for="def">DEF：</label>
       <input type="number" id="def" value="0" min="0">
     </div>
 
-  <div class="form-row">
+    <div class="form-row">
       <label for="mdef">MDEF：</label>
       <input type="number" id="mdef" value="0" min="0">
     </div>
-    <button id="calc-btn">計算する</button>
+
+    <button id="calc-btn" type="button">計算する</button>
   </div>
 
   <div class="atk-result">
@@ -61,6 +62,7 @@ title: "与ダメージ計算"
   </div>
 </section>
 
+{{< rawhtml >}}
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const selectEl  = document.getElementById("enemy-select");
@@ -72,9 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultEl  = document.getElementById("result");
   const minlineEl = document.getElementById("minline");
   const calcBtn   = document.getElementById("calc-btn");
-  const vitDisplayEl = document.getElementById("vit-display"); // あるなら使う（必須にしない）
+  const vitDisplayEl = document.getElementById("vit-display"); // 任意（無くても動く）
 
-  // ここで止まると全部動かないので、vit-display は必須にしない
   if (!selectEl || !levelEl || !atkEl || !intEl || !defEl || !mdefEl || !resultEl || !minlineEl || !calcBtn) return;
 
   let baseDef = 0;
@@ -94,20 +95,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return checked ? checked.value : "phys";
   }
 
-  // value="def|mdef|vit" を読む
+  // 共通monster_selectの data-* を読む
   function loadMonsterBases() {
     const opt = selectEl.options[selectEl.selectedIndex];
-    const v = (opt?.value || "").trim();
-
-    if (!v.includes("|")) {
+    if (!opt || !opt.value) {
       baseDef = 0; baseMdef = 0; baseVit = 0;
       return;
     }
-
-    const [defStr, mdefStr, vitStr] = v.split("|");
-    baseDef  = Number(defStr || 0);
-    baseMdef = Number(mdefStr || 0);
-    baseVit  = Number(vitStr || 0);
+    baseDef  = Number(opt.dataset.def || 0);
+    baseMdef = Number(opt.dataset.mdef || 0);
+    baseVit  = Number(opt.dataset.vit || 0);
   }
 
   function recalcMonsterStats() {
@@ -166,31 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateMinLine();
   }
 
-  // --- 並び替え（ここは1回だけ定義・1回だけ登録） ---
-  function sortMonsterOptions(mode) {
-    const currentValue = selectEl.value;
-
-    const placeholder = selectEl.options[0];
-    const opts = Array.from(selectEl.options).slice(1);
-
-    opts.sort((a, b) => {
-      if (mode === "id") {
-        return Number(a.dataset.id || 0) - Number(b.dataset.id || 0);
-      } else {
-        const at = (a.dataset.title || "").trim();
-        const bt = (b.dataset.title || "").trim();
-        return at.localeCompare(bt, "ja");
-      }
-    });
-
-    selectEl.innerHTML = "";
-    selectEl.appendChild(placeholder);
-    opts.forEach(o => selectEl.appendChild(o));
-
-    selectEl.value = currentValue;
-  }
-
-  // --- イベント登録（1回だけ） ---
+  // --- イベント登録 ---
   selectEl.addEventListener("change", () => {
     levelEl.value = 1;
     onMonsterOrLevelChanged();
@@ -203,14 +176,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll('input[name="attack-type"]').forEach(radio => {
     radio.addEventListener("change", updateMinLine);
-  });
-
-  document.querySelectorAll('input[name="monster-sort"]').forEach(r => {
-    r.addEventListener("change", () => {
-      sortMonsterOptions(r.value);
-      // 並べ替え後も表示更新
-      onMonsterOrLevelChanged();
-    });
   });
 
   calcBtn.addEventListener("click", () => {
@@ -228,12 +193,9 @@ document.addEventListener("DOMContentLoaded", () => {
     updateMinLine();
   });
 
-  // 初期化（最初は図鑑番号順）
-  sortMonsterOptions("id");
+  // 初期化
   onMonsterOrLevelChanged();
 });
 </script>
-
-{{< rawhtml >}}
 <script src="/js/monster-order.js"></script>
 {{< /rawhtml >}}
