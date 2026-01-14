@@ -62,7 +62,7 @@ title: "与ダメージ計算"
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const selectEl  = document.getElementById("monster-select");
+  const selectEl  = document.getElementById("enemy-select");
   const levelEl   = document.getElementById("monster-level");
   const atkEl     = document.getElementById("atk");
   const intEl     = document.getElementById("int");
