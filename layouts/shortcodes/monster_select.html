@@ -1,14 +1,55 @@
-<select id="monster-select">
+{{/* -----------------------------------------------------------
+  monster_select.html (共通版)
+  使い方例:
+    {{< monster_select >}}
+    {{< monster_select id="enemy-select" role="enemy" >}}
+
+  - id: selectのid（default: "monster-select"）
+  - role: data-monster-select="role" を付与（後でJS結線に使う）
+  - 表示: [001] 名前
+  - value: RelPermalink
+  - data-* に必要情報を全部載せる
+------------------------------------------------------------ */}}
+
+{{ $id := .Get "id" | default "monster-select" }}
+{{ $role := .Get "role" | default "" }}
+
+<select id="{{ $id }}" {{ if $role }}data-monster-select="{{ $role }}"{{ end }}>
   <option value="">-- 選択してください --</option>
 
-  {{ $monsters := where site.RegularPages "Section" "monster" }}
-  {{ range $monsters }}
-    <option
-      value="{{ .Params.def }}|{{ .Params.mdef }}|{{ .Params.vit }}"
-      data-id="{{ .Params.id }}"
-      data-title="{{ .Title }}"
-    >
-      [{{ printf "%03d" .Params.id }}] {{ .Title }}
-    </option>
+  {{ $sec := site.GetPage "section" "monster" }}
+  {{ if $sec }}
+    {{ range sort $sec.Pages ".Params.id" "asc" }}
+      {{ $p := . }}
+
+      <option
+        value="{{ $p.RelPermalink }}"
+
+        data-id="{{ $p.Params.id }}"
+        data-name="{{ $p.Title }}"
+
+        data-attack-type="{{ $p.Params.attack_type }}"
+        data-attack-range="{{ $p.Params.attack_range }}"
+        data-element="{{ $p.Params.element }}"
+
+        data-vit="{{ $p.Params.vit }}"
+        data-spd="{{ $p.Params.spd }}"
+        data-atk="{{ $p.Params.atk }}"
+        data-int="{{ $p.Params.int }}"
+        data-def="{{ $p.Params.def }}"
+        data-mdef="{{ $p.Params.mdef }}"
+        data-luk="{{ $p.Params.luk }}"
+        data-mov="{{ $p.Params.mov }}"
+
+        data-exp="{{ $p.Params.exp }}"
+        data-gold="{{ $p.Params.gold }}"
+        data-rate="{{ $p.Params.rate }}"
+
+        data-level-shortcuts='{{ with $p.Params.level_shortcuts }}{{ . | jsonify }}{{ else }}[]{{ end }}'
+      >
+        {{ if $p.Params.id }}[{{ printf "%03d" $p.Params.id }}] {{ end }}{{ $p.Title }}
+      </option>
+
+    {{ end }}
   {{ end }}
 </select>
