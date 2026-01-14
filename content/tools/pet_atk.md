@@ -33,11 +33,12 @@ title: "ペット与ダメージ計算"
 
   <hr>
 
-  <div class="form-row">
-      <span>並び順：</span>
-      <label><input type="radio" name="sort-mode" value="id" checked> 図鑑番号</label>
-      <label><input type="radio" name="sort-mode" value="kana"> 五十音</label>
-  </div>
+  <label for="monster-order">並び順：</label>
+<select id="monster-order">
+  <option value="id-asc" selected>図鑑番号（昇順）</option>
+  <option value="name-asc">名前（昇順）</option>
+  <option value="name-desc">名前（降順）</option>
+</select>
 
   <div class="form-row">
       <label for="monster-select">攻撃対象モンスター：</label>
