@@ -41,8 +41,8 @@ title: "ペット与ダメージ計算"
 </select>
 
   <div class="form-row">
-      <label for="monster-select">攻撃対象モンスター：</label>
-      {{< monster_select_custom id="monster-select" >}}
+      <label for="enemy-select">攻撃対象モンスター：</label>
+    {{< monster_select id="enemy-select" role="enemy" >}}
   </div>
 
   <div class="form-row">
