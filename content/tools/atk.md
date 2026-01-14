@@ -19,11 +19,12 @@ title: "与ダメージ計算"
       <input type="number" id="monster-level" value="1" min="1">
     </div>
 
-  <div class="form-row">
-      <span>並び順：</span>
-      <label><input type="radio" name="monster-sort" value="id" checked> 図鑑番号</label>
-      <label><input type="radio" name="monster-sort" value="kana"> 五十音</label>
-    </div>
+  <label for="monster-order">並び順：</label>
+  <select id="monster-order">
+  <option value="id-asc" selected>図鑑番号（昇順）</option>
+  <option value="name-asc">名前（昇順）</option>
+  <option value="name-desc">名前（降順）</option>
+</select>
 
   <div class="form-row">
       <span>攻撃タイプ：</span>
