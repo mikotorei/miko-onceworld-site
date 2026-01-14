@@ -41,3 +41,7 @@ title: "命中回避計算ツール"
 {{< rawhtml >}}
 <script src="/js/luk-calc.js"></script>
 {{< /rawhtml >}}
+
+{{< rawhtml >}}
+<script src="/js/monster-order.js"></script>
+{{< /rawhtml >}}
