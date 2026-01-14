@@ -11,7 +11,7 @@ title: "与ダメージ計算"
 
   <div class="form-row">
       <label for="monster-select">モンスター選択：</label>
-      {{< monster_select >}}
+    {{< monster_select id="enemy-select" role="enemy" >}}
     </div>
 
   <div class="form-row">
