@@ -13,7 +13,7 @@ title: "ペット与ダメージ計算"
 
   <div class="form-row">
       <label for="pet-select">ペット選択：</label>
-      {{< monster_select_custom id="pet-select" >}}
+      {{< monster_select id="pet-select" role="pet" >}}
     </div>
 
   <div class="form-row">
@@ -37,9 +37,8 @@ title: "ペット与ダメージ計算"
       <label for="enemy-select">攻撃対象モンスター：</label>
       {{< monster_select id="enemy-select" role="enemy" >}}
 
-  <label>並び順：</label>
-      <!-- 既存の order.js 確定版に合わせる -->
-      <select id="monster-order" data-monster-order="enemy">
+  <label for="monster-order">並び順：</label>
+     <select id="monster-order" data-monster-order="enemy">
         <option value="id-asc" selected>図鑑番号（昇順）</option>
         <option value="name-asc">名前（昇順）</option>
         <option value="name-desc">名前（降順）</option>
@@ -84,7 +83,7 @@ title: "ペット与ダメージ計算"
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const petSelectEl = document.getElementById("pet-select");
-  const monsterSelectEl = document.getElementById("enemy-select"); // ★敵
+  const enemySelectEl = document.getElementById("enemy-select");
   const levelEl = document.getElementById("monster-level");
 
   const petTypeEl = document.getElementById("pet-type");
@@ -99,11 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const minlineEl = document.getElementById("minline");
   const calcBtn = document.getElementById("calc-btn");
 
-  // ★ よくあるLv UI
   const commonRow = document.getElementById("common-lv-row");
   const commonWrap = document.getElementById("common-lv-buttons");
 
-  if (!petSelectEl || !monsterSelectEl || !levelEl ||
+  if (!petSelectEl || !enemySelectEl || !levelEl ||
       !petTypeEl || !petAtkEl || !petIntEl ||
       !defEl || !mdefEl || !vitDisplayEl ||
       !resultEl || !minlineEl || !calcBtn) return;
@@ -116,26 +114,39 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.max(1, Number(levelEl.value || 1));
   }
 
-  // option の data-* を読む（monster_select_custom/pet-select は value形式が違うため既存維持）
-  function parseMonsterOption(selectEl) {
-    const opt = selectEl.options[selectEl.selectedIndex];
-    const v = (opt?.value || "").trim();
-    if (!v.includes("|")) return null;
+  // ★ ペット攻撃タイプ（monster_select の data-attack-type を使う）
+  function updatePetType() {
+    const opt = petSelectEl.options[petSelectEl.selectedIndex];
+    const t = opt?.dataset?.attackType || "";
+    petTypeEl.textContent = t || "---";
 
-    const [defStr, mdefStr, vitStr, atkType] = v.split("|");
-    return {
-      def: Number(defStr || 0),
-      mdef: Number(mdefStr || 0),
-      vit: Number(vitStr || 0),
-      attackType: (atkType || "").trim()
-    };
+    if (t === "物理") {
+      petAtkEl.disabled = false;
+      petAtkEl.style.opacity = "1";
+      petIntEl.disabled = true;
+      petIntEl.value = 0;
+      petIntEl.style.opacity = "0.5";
+    } else if (t === "魔法") {
+      petIntEl.disabled = false;
+      petIntEl.style.opacity = "1";
+      petAtkEl.disabled = true;
+      petAtkEl.value = 0;
+      petAtkEl.style.opacity = "0.5";
+    } else {
+      petAtkEl.disabled = true;
+      petIntEl.disabled = true;
+      petAtkEl.value = 0;
+      petIntEl.value = 0;
+      petAtkEl.style.opacity = "0.5";
+      petIntEl.style.opacity = "0.5";
+    }
   }
 
-  // ★敵モンスターの「よくあるLv」を描画（data-levels）
+  // ★ 敵「よくあるLv」描画（data-levels）
   function renderCommonLevels() {
     if (!commonRow || !commonWrap) return;
 
-    const opt = monsterSelectEl.options[monsterSelectEl.selectedIndex];
+    const opt = enemySelectEl.options[enemySelectEl.selectedIndex];
     const raw = opt?.dataset?.levels || "";
 
     const levels = String(raw)
@@ -171,11 +182,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- 対象モンスター：DEF/MDEF/VIT 自動反映（enemy-select は data-def等を使用） ---
+  // --- 敵のDEF/MDEF/VIT 自動反映 ---
   let baseDef = 0, baseMdef = 0, baseVit = 0;
 
-  function loadTargetBases() {
-    const opt = monsterSelectEl.options[monsterSelectEl.selectedIndex];
+  function loadEnemyBases() {
+    const opt = enemySelectEl.options[enemySelectEl.selectedIndex];
     if (!opt || !opt.value) {
       baseDef = 0; baseMdef = 0; baseVit = 0;
       return;
@@ -185,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
     baseVit  = Number(opt.dataset.vit || 0);
   }
 
-  function recalcTargetStats() {
+  function recalcEnemyStats() {
     const lv = getLv();
     if (!baseDef && !baseMdef && !baseVit) return;
 
@@ -198,44 +209,13 @@ document.addEventListener("DOMContentLoaded", () => {
     vitDisplayEl.textContent = vit * 18 + 100;
   }
 
-  function onTargetChanged() {
-    loadTargetBases();
-    recalcTargetStats();
+  function onEnemyOrLevelChanged() {
+    loadEnemyBases();
+    recalcEnemyStats();
+    updateMinLine();
   }
 
-  // --- ペット：攻撃タイプで入力欄を切替（既存維持） ---
-  function setPetType(type) {
-    petTypeEl.textContent = type || "---";
-
-    if (type === "物理") {
-      petAtkEl.disabled = false;
-      petAtkEl.style.opacity = "1";
-      petIntEl.disabled = true;
-      petIntEl.value = 0;
-      petIntEl.style.opacity = "0.5";
-    } else if (type === "魔法") {
-      petIntEl.disabled = false;
-      petIntEl.style.opacity = "1";
-      petAtkEl.disabled = true;
-      petAtkEl.value = 0;
-      petAtkEl.style.opacity = "0.5";
-    } else {
-      petAtkEl.disabled = true;
-      petIntEl.disabled = true;
-      petAtkEl.value = 0;
-      petIntEl.value = 0;
-      petAtkEl.style.opacity = "0.5";
-      petIntEl.style.opacity = "0.5";
-    }
-  }
-
-  function updatePetTypeFromSelection() {
-    const data = parseMonsterOption(petSelectEl);
-    const type = data ? data.attackType : "";
-    setPetType(type);
-  }
-
-  // --- ダメージ式（既存） ---
+  // --- ダメージ ---
   function calcPetPhysical(petAtk, def, mdef) {
     const raw = (petAtk * 1.75 - (def + mdef * 0.1)) * 4;
     return Math.max(0, Math.floor(raw));
@@ -259,15 +239,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateMinLine() {
-    const petData = parseMonsterOption(petSelectEl);
-    const type = petData ? petData.attackType : "";
-
+    const t = (petSelectEl.options[petSelectEl.selectedIndex]?.dataset?.attackType || "").trim();
     const def = Number(defEl.value || 0);
     const mdef = Number(mdefEl.value || 0);
 
-    if (type === "物理") {
+    if (t === "物理") {
       minlineEl.textContent = `確実に1以上出る最低ATK：${minPetAtkLine(def, mdef)}`;
-    } else if (type === "魔法") {
+    } else if (t === "魔法") {
       minlineEl.textContent = `確実に1以上出る最低INT：${minPetIntLine(def, mdef)}`;
     } else {
       minlineEl.textContent = "最低ライン：---";
@@ -276,51 +254,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- イベント ---
   petSelectEl.addEventListener("change", () => {
-    updatePetTypeFromSelection();
+    updatePetType();
     updateMinLine();
   });
 
-  monsterSelectEl.addEventListener("change", () => {
+  enemySelectEl.addEventListener("change", () => {
     levelEl.value = 1;
-    renderCommonLevels(); // ★追加
-    onTargetChanged();
-    updateMinLine();
+    renderCommonLevels();
+    onEnemyOrLevelChanged();
   });
 
   levelEl.addEventListener("input", () => {
-    recalcTargetStats();
+    recalcEnemyStats();
     updateMinLine();
   });
 
   calcBtn.addEventListener("click", () => {
-    const petData = parseMonsterOption(petSelectEl);
-    if (!petData) {
-      resultEl.textContent = 0;
-      return;
-    }
-
-    const type = petData.attackType;
+    const t = (petSelectEl.options[petSelectEl.selectedIndex]?.dataset?.attackType || "").trim();
     const def = Number(defEl.value || 0);
     const mdef = Number(mdefEl.value || 0);
 
     let dmg = 0;
-    if (type === "物理") {
-      dmg = calcPetPhysical(Number(petAtkEl.value || 0), def, mdef);
-    } else if (type === "魔法") {
-      dmg = calcPetMagic(Number(petIntEl.value || 0), def, mdef);
-    } else {
-      dmg = 0;
-    }
+    if (t === "物理") dmg = calcPetPhysical(Number(petAtkEl.value || 0), def, mdef);
+    else if (t === "魔法") dmg = calcPetMagic(Number(petIntEl.value || 0), def, mdef);
 
     resultEl.textContent = dmg;
     updateMinLine();
   });
 
-  // --- 初期化 ---
-  updatePetTypeFromSelection();
-  onTargetChanged();
-  renderCommonLevels(); // ★追加
-  updateMinLine();
+  // 初期化
+  updatePetType();
+  renderCommonLevels();
+  onEnemyOrLevelChanged();
 });
 </script>
 
