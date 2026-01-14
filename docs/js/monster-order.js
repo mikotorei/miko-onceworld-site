@@ -4,7 +4,6 @@
     return Number.isFinite(x) ? x : fallback;
   };
 
-  // selectの<option>をスナップショットして、並び替えの基準にする
   const snapshotOptions = (selectEl) =>
     Array.from(selectEl.options).map(o => ({
       value: o.value,
@@ -25,7 +24,6 @@
       selectEl.appendChild(o);
     }
 
-    // 選択中の値が存在すれば維持
     if (items.some(it => it.value === current)) selectEl.value = current;
   };
 
@@ -44,56 +42,68 @@
     return [...placeholder, ...list];
   };
 
-  // roleで結線（enemy/pet など）
-  const setupRole = (role) => {
-    const selectEl = document.querySelector(`[data-monster-select="${role}"]`);
-    const orderEl  = document.querySelector(`[data-monster-order="${role}"]`);
-    if (!selectEl || !orderEl) return;
+  // 1つのツール（section）内で、並び順selectと対象selectを結線する
+  const bindOne = (orderEl) => {
+    const container = orderEl.closest("section") || document;
 
-    const base = snapshotOptions(selectEl);
+    // data-monster-order="enemy" / "pet" / "both"
+    // 旧方式（id="monster-order"だけ）の場合は enemy 扱い
+    const role = orderEl.dataset.monsterOrder || "enemy";
+
+    const findSelect = (r) => {
+      // 新方式：data-monster-select（monster_select shortcodeのrole付与で付く）
+      let s = container.querySelector(`[data-monster-select="${r}"]`);
+      if (s) return s;
+
+      // 旧方式：id固定にフォールバック
+      if (r === "enemy") return container.querySelector("#enemy-select");
+      if (r === "pet") return container.querySelector("#pet-select");
+      return null;
+    };
 
     const apply = () => {
       const mode = orderEl.value || "id-asc";
-      rebuild(selectEl, sortItems(base, mode));
+
+      if (role === "both") {
+        const pet = findSelect("pet");
+        const enemy = findSelect("enemy");
+
+        if (pet) {
+          const base = snapshotOptions(pet);
+          rebuild(pet, sortItems(base, mode));
+        }
+        if (enemy) {
+          const base = snapshotOptions(enemy);
+          rebuild(enemy, sortItems(base, mode));
+        }
+        return;
+      }
+
+      const target = findSelect(role);
+      if (!target) return;
+
+      const base = snapshotOptions(target);
+      rebuild(target, sortItems(base, mode));
     };
 
     orderEl.addEventListener("change", apply);
-
-    // 戻る/再訪（bfcache）対策：復元された選択状態で再適用
-    window.addEventListener("pageshow", apply);
-
-    // 初期適用
-    apply();
+    window.addEventListener("pageshow", apply); // 戻る/再訪(bfcache)対策
+    apply(); // 初期適用
   };
 
-  // よく使うroleは全部張っておく（存在しないroleは無視される）
-  setupRole("enemy");
-  setupRole("pet");
+  const boot = () => {
+    // 新方式：data-monster-order を全部拾う
+    const dataOrders = Array.from(document.querySelectorAll("[data-monster-order]"));
+    // 旧方式：id="monster-order" も拾う（複数あってもOK）
+    const idOrders = Array.from(document.querySelectorAll("#monster-order"));
 
-  // ペット与ダメのように「1つの並び順で複数selectを動かす」ケース
-  // order: data-monster-order="both"
-  // 対象: #pet-select と #enemy-select（両方あれば両方）
-  const setupBoth = () => {
-    const orderEl = document.querySelector(`[data-monster-order="both"]`);
-    if (!orderEl) return;
-
-    const petSelect  = document.getElementById("pet-select");
-    const enemySelect = document.getElementById("enemy-select");
-    if (!petSelect && !enemySelect) return;
-
-    const petBase = petSelect ? snapshotOptions(petSelect) : null;
-    const enemyBase = enemySelect ? snapshotOptions(enemySelect) : null;
-
-    const apply = () => {
-      const mode = orderEl.value || "id-asc";
-      if (petSelect && petBase) rebuild(petSelect, sortItems(petBase, mode));
-      if (enemySelect && enemyBase) rebuild(enemySelect, sortItems(enemyBase, mode));
-    };
-
-    orderEl.addEventListener("change", apply);
-    window.addEventListener("pageshow", apply);
-    apply();
+    const all = [...new Set([...dataOrders, ...idOrders])];
+    all.forEach(bindOne);
   };
 
-  setupBoth();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
 })();
