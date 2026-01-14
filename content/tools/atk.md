@@ -9,11 +9,11 @@ title: "与ダメージ計算"
 
   <div class="atk-form">
 
-    <div class="form-row">
+  <div class="form-row">
       <label for="enemy-select">モンスター選択：</label>
       {{< monster_select id="enemy-select" role="enemy" >}}
 
-      <label>並び順：</label>
+  <label>並び順：</label>
       <select data-monster-order="enemy">
         <option value="id-asc">図鑑番号（昇順）</option>
         <option value="name-asc">名前（昇順）</option>
@@ -21,38 +21,38 @@ title: "与ダメージ計算"
       </select>
     </div>
 
-    <div class="form-row">
+  <div class="form-row">
       <label for="monster-level">モンスターレベル：</label>
       <input type="number" id="monster-level" value="1" min="1">
     </div>
 
-    <div class="form-row">
+  <div class="form-row">
       <span>攻撃タイプ：</span>
       <label><input type="radio" name="attack-type" value="phys" checked> 物理（ATK）</label>
       <label><input type="radio" name="attack-type" value="magic"> 魔法（INT）</label>
     </div>
 
-    <div class="form-row">
+  <div class="form-row">
       <label for="atk">ATK：</label>
       <input type="number" id="atk" value="100" min="0">
     </div>
 
-    <div class="form-row">
+  <div class="form-row">
       <label for="int">INT：</label>
       <input type="number" id="int" value="100" min="0">
     </div>
 
-    <div class="form-row">
+  <div class="form-row">
       <label for="def">DEF：</label>
       <input type="number" id="def" value="0" min="0">
     </div>
 
-    <div class="form-row">
+  <div class="form-row">
       <label for="mdef">MDEF：</label>
       <input type="number" id="mdef" value="0" min="0">
     </div>
 
-    <button id="calc-btn" type="button">計算する</button>
+  <button id="calc-btn" type="button">計算する</button>
   </div>
 
   <div class="atk-result">
