@@ -1,17 +1,20 @@
 <script>
-window.EQUIP_DB =
-{{- $pages := where site.RegularPages "Section" "db" -}}
-{{- $arr := slice -}}
-{{- range $pages -}}
-  {{- if hasPrefix .File.Path "db/equip/" -}}
-    {{- $arr = $arr | append (dict
-      "title" .Title
-      "slot" (.Params.slot | default "")
-      "series" (.Params.series | default "")
-      "base_add" (.Params.base_add | default dict)
-    ) -}}
+window.PET_DB =
+{{- $db := site.GetPage "section" "db" -}}
+{{- if $db -}}
+  {{- $arr := slice -}}
+  {{- range $db.RegularPagesRecursive -}}
+    {{- if hasPrefix .File.Path "db/pet-skill/" -}}
+      {{- $arr = $arr | append (dict
+        "title" .Title
+        "id" (.Params.id | default 0)
+        "stages" (.Params.stages | default slice)
+      ) -}}
+    {{- end -}}
   {{- end -}}
+  {{- $arr | jsonify -}}
+{{- else -}}
+  []
 {{- end -}}
-{{- $arr | jsonify -}}
 ;
 </script>
