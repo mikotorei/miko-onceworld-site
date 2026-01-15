@@ -1,21 +1,16 @@
 <script>
 window.ACC_DB =
-{{- $db := site.GetPage "section" "db" -}}
-{{- if $db -}}
-  {{- $arr := slice -}}
-  {{- range $db.RegularPagesRecursive -}}
-    {{- if hasPrefix .File.Path "db/acc/" -}}
-      {{- $arr = $arr | append (dict
-        "title" .Title
-        "flat_add" (.Params.flat_add | default dict)
-        "rate_add" (.Params.rate_add | default dict)
-        "final_add" (.Params.final_add | default dict)
-      ) -}}
-    {{- end -}}
+{{- $arr := slice -}}
+{{- range site.AllPages -}}
+  {{- if and .File (hasPrefix .File.Path "db/acc/") -}}
+    {{- $arr = $arr | append (dict
+      "title" .Title
+      "flat_add" (.Params.flat_add | default dict)
+      "rate_add" (.Params.rate_add | default dict)
+      "final_add" (.Params.final_add | default dict)
+    ) -}}
   {{- end -}}
-  {{- $arr | jsonify -}}
-{{- else -}}
-  []
 {{- end -}}
+{{- $arr | jsonify -}}
 ;
 </script>
