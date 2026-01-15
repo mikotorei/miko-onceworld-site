@@ -1,14 +1,15 @@
 <script>
-window.PET_DB =
+window.EQUIP_DB =
 {{- $db := site.GetPage "section" "db" -}}
 {{- if $db -}}
   {{- $arr := slice -}}
   {{- range $db.RegularPagesRecursive -}}
-    {{- if hasPrefix .File.Path "db/pet-skill/" -}}
+    {{- if hasPrefix .File.Path "db/equip/" -}}
       {{- $arr = $arr | append (dict
         "title" .Title
-        "id" (.Params.id | default 0)
-        "stages" (.Params.stages | default slice)
+        "slot" (.Params.slot | default "")
+        "series" (.Params.series | default "")
+        "base_add" (.Params.base_add | default dict)
       ) -}}
     {{- end -}}
   {{- end -}}
