@@ -8,6 +8,13 @@
     <language>ja-jp</language>
     <atom:link href="https://matsumoto0106.github.io/miko-onceworld-site/db/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>テストアーマー</title>
+      <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_body/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_body/</guid>
+      <description>&lt;p&gt;slot = &amp;ldquo;body&amp;rdquo;&#xA;series = &amp;ldquo;test-series&amp;rdquo;&lt;/p&gt;&#xA;&lt;p&gt;[base_add]&#xA;def = 30&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>テストガントレット</title>
       <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_arms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
