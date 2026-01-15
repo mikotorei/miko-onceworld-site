@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>主人公ステータス・シミュレーター（デバッグ） | OnceWorld(ワンスワ)miko</title>
+  <title>主人公ステータス・シミュレーター | OnceWorld(ワンスワ)miko</title>
 
   <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/style.css">
   <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/monster.css">
@@ -36,70 +36,306 @@
 <main>
   
 
-<h1>主人公ステータス・シミュレーター（デバッグ）</h1>
+<h1>主人公ステータス・シミュレーター</h1>
 
 <div class="tool-container">
-  <p class="note">
-  ※このページは「Hugoが認識しているページ一覧」を表示します（.Fileが取れない場合でも表示されます）。
-</p>
+  <div class="tool-box" id="status-sim">
+  <h2>主人公ステータス・シミュレーター</h2>
+  <!-- ===== ① プロテイン ===== -->
+  <section class="tool-result" style="margin-top:12px;">
+    <h3>① プロテイン</h3>
+<pre><code>&lt;div class=&quot;tool-row&quot;&gt;
+  &lt;label for=&quot;shaker&quot;&gt;シェイカー数：&lt;/label&gt;
+  &lt;input type=&quot;number&quot; id=&quot;shaker&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:90px;&quot;&gt;
+  &lt;span class=&quot;note&quot;&gt;個数 × (1 + シェイカー×0.01)&lt;/span&gt;
+&lt;/div&gt;
 
-<script>
-console.log("EQUIP_DB:", window.EQUIP_DB);
-console.log("ACC_DB:", window.ACC_DB);
-console.log("PET_DB:", window.PET_DB);
+&lt;div class=&quot;tool-row&quot; style=&quot;gap:8px; flex-wrap:wrap;&quot;&gt;
+  &lt;label&gt;VIT&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;prot-vit&quot; value=&quot;0&quot; min=&quot;0&quot; max=&quot;1000&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;SPD&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;prot-spd&quot; value=&quot;0&quot; min=&quot;0&quot; max=&quot;1000&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;ATK&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;prot-atk&quot; value=&quot;0&quot; min=&quot;0&quot; max=&quot;1000&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;INT&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;prot-int&quot; value=&quot;0&quot; min=&quot;0&quot; max=&quot;1000&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;DEF&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;prot-def&quot; value=&quot;0&quot; min=&quot;0&quot; max=&quot;1000&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;MDEF&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;prot-mdef&quot; value=&quot;0&quot; min=&quot;0&quot; max=&quot;1000&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;LUK&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;prot-luk&quot; value=&quot;0&quot; min=&quot;0&quot; max=&quot;1000&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;MOV&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;prot-mov&quot; value=&quot;0&quot; min=&quot;0&quot; max=&quot;1000&quot; style=&quot;width:80px;&quot;&gt;
+&lt;/div&gt;
+</code></pre>
+  </section>
+  <!-- ===== ② 振り分け ===== -->
+  <section class="tool-result" style="margin-top:12px;">
+    <h3>② 振り分けポイント</h3>
+    <p class="note">1pt = +1</p>
+<pre><code>&lt;div class=&quot;tool-row&quot; style=&quot;gap:8px; flex-wrap:wrap;&quot;&gt;
+  &lt;label&gt;VIT&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pt-vit&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;SPD&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pt-spd&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;ATK&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pt-atk&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;INT&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pt-int&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;DEF&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pt-def&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;MDEF&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pt-mdef&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;LUK&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pt-luk&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:80px;&quot;&gt;
+  &lt;label&gt;MOV&lt;/label&gt;&lt;input type=&quot;number&quot; id=&quot;pt-mov&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:80px;&quot;&gt;
+&lt;/div&gt;
+</code></pre>
+  </section>
+  <!-- ===== ③ 装備 ===== -->
+  <section class="tool-result" style="margin-top:12px;">
+    <h3>③ 装備</h3>
+<pre><code>&lt;div class=&quot;tool-row&quot;&gt;
+  &lt;label for=&quot;equip-enh&quot;&gt;強化数：&lt;/label&gt;
+  &lt;input type=&quot;number&quot; id=&quot;equip-enh&quot; value=&quot;0&quot; min=&quot;0&quot; style=&quot;width:90px;&quot;&gt;
+  &lt;span class=&quot;note&quot;&gt;基礎 × (1 + 強化×0.1)&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;tool-row&quot;&gt;&lt;label&gt;武器&lt;/label&gt;&lt;select id=&quot;equip-weapon&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+&lt;div class=&quot;tool-row&quot;&gt;&lt;label&gt;頭&lt;/label&gt;&lt;select id=&quot;equip-head&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+&lt;div class=&quot;tool-row&quot;&gt;&lt;label&gt;胴&lt;/label&gt;&lt;select id=&quot;equip-body&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+&lt;div class=&quot;tool-row&quot;&gt;&lt;label&gt;腕&lt;/label&gt;&lt;select id=&quot;equip-arms&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+&lt;div class=&quot;tool-row&quot;&gt;&lt;label&gt;脚&lt;/label&gt;&lt;select id=&quot;equip-legs&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+&lt;div class=&quot;tool-row&quot;&gt;&lt;label&gt;盾&lt;/label&gt;&lt;select id=&quot;equip-shield&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+
+&lt;div class=&quot;tool-row&quot;&gt;
+  &lt;label&gt;一致判定：&lt;/label&gt;
+  &lt;strong id=&quot;match-status&quot;&gt;---&lt;/strong&gt;
+&lt;/div&gt;
+</code></pre>
+  </section>
+  <!-- ===== 結果 ===== -->
+  <section class="tool-result" style="margin-top:12px;">
+    <h3>計算結果</h3>
+<pre><code>&lt;div class=&quot;tool-row&quot;&gt;
+  &lt;label&gt;VIT&lt;/label&gt;&lt;strong id=&quot;out-vit&quot;&gt;---&lt;/strong&gt;
+  &lt;label&gt;SPD&lt;/label&gt;&lt;strong id=&quot;out-spd&quot;&gt;---&lt;/strong&gt;
+  &lt;label&gt;ATK&lt;/label&gt;&lt;strong id=&quot;out-atk&quot;&gt;---&lt;/strong&gt;
+  &lt;label&gt;INT&lt;/label&gt;&lt;strong id=&quot;out-int&quot;&gt;---&lt;/strong&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;tool-row&quot;&gt;
+  &lt;label&gt;DEF&lt;/label&gt;&lt;strong id=&quot;out-def&quot;&gt;---&lt;/strong&gt;
+  &lt;label&gt;MDEF&lt;/label&gt;&lt;strong id=&quot;out-mdef&quot;&gt;---&lt;/strong&gt;
+  &lt;label&gt;LUK&lt;/label&gt;&lt;strong id=&quot;out-luk&quot;&gt;---&lt;/strong&gt;
+  &lt;label&gt;MOV&lt;/label&gt;&lt;strong id=&quot;out-mov&quot;&gt;---&lt;/strong&gt;
+&lt;/div&gt;
+</code></pre>
+  </section>
+</div>
+<!-- ===== DB を必ず先に埋め込む ===== -->
+<p><script>
+window.EQUIP_DB = [
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    "db\/equip\/test_body.md",
+  
+
+  
+    "db\/equip\/test_arms.md",
+  
+
+  
+    "db\/equip\/test_legs.md",
+  
+
+  
+    "db\/equip\/test_shield.md",
+  
+
+  
+    "db\/equip\/test_weapon.md",
+  
+
+  
+
+  
+    "db\/equip\/test_head.md",
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+];
 </script>
 
+<script>
+window.ACC_DB ="[]";
+</script>
 
-<details style="margin:12px 0;">
-  <summary>デバッグ：Pages（filter="", limit=60）</summary>
+<script>
+window.PET_DB ="[{\"id\":1,\"stages\":[{\"flat_add\":{\"atk\":10},\"unlock_lv\":31},{\"flat_add\":{\"atk\":20},\"unlock_lv\":71},{\"rate_add\":{\"atk\":0.1},\"unlock_lv\":121},{\"final_add\":{\"atk\":0.05},\"unlock_lv\":181}],\"title\":\"テストペット：攻撃支援\"}]";
+</script>
+</p>
+<!-- ===== JS は最後 ===== -->
 
-  <p style="margin:6px 0 0; font-size:12px;">
-    総ページ数（site.AllPages）：98
-  </p>
+<script src="https://matsumoto0106.github.io/miko-onceworld-site/js/status-sim.js"></script>
 
-  <pre style="white-space:pre-wrap; font-size:12px; line-height:1.4; margin-top:6px;">kind=page | rel=/monster/203/ | path=/monster/203 | file=monster/203.mdkind=taxonomy | rel=/categories/ | path=/categorieskind=taxonomy | rel=/tags/ | path=/tagskind=page | rel=/monster/45/ | path=/monster/45 | file=monster/45.mdkind=page | rel=/monster/23/ | path=/monster/23 | file=monster/23.mdkind=page | rel=/monster/164/ | path=/monster/164 | file=monster/164.mdkind=page | rel=/monster/241/ | path=/monster/241 | file=monster/241.mdkind=page | rel=/monster/201/ | path=/monster/201 | file=monster/201.mdkind=page | rel=/monster/84/ | path=/monster/84 | file=monster/84.mdkind=page | rel=/monster/163/ | path=/monster/163 | file=monster/163.mdkind=page | rel=/monster/47/ | path=/monster/47 | file=monster/47.mdkind=page | rel=/monster/91/ | path=/monster/91 | file=monster/91.mdkind=page | rel=/monster/202/ | path=/monster/202 | file=monster/202.mdkind=page | rel=/monster/26/ | path=/monster/26 | file=monster/26.mdkind=page | rel=/monster/87/ | path=/monster/87 | file=monster/87.mdkind=page | rel=/monster/12/ | path=/monster/12 | file=monster/12.mdkind=page | rel=/monster/70/ | path=/monster/70 | file=monster/70.mdkind=page | rel=/monster/5/ | path=/monster/5 | file=monster/5.mdkind=page | rel=/monster/66/ | path=/monster/66 | file=monster/66.mdkind=page | rel=/monster/4/ | path=/monster/4 | file=monster/4.mdkind=page | rel=/monster/1/ | path=/monster/1 | file=monster/1.mdkind=home | rel=/ | path=/ | file=_index.mdkind=page | rel=/monster/86/ | path=/monster/86 | file=monster/86.mdkind=page | rel=/monster/42/ | path=/monster/42 | file=monster/42.mdkind=page | rel=/monster/3/ | path=/monster/3 | file=monster/3.mdkind=page | rel=/monster/41/ | path=/monster/41 | file=monster/41.mdkind=page | rel=/monster/28/ | path=/monster/28 | file=monster/28.mdkind=page | rel=/monster/68/ | path=/monster/68 | file=monster/68.mdkind=page | rel=/monster/32/ | path=/monster/32 | file=monster/32.mdkind=page | rel=/monster/22/ | path=/monster/22 | file=monster/22.mdkind=page | rel=/monster/65/ | path=/monster/65 | file=monster/65.mdkind=section | rel=/tools/ | path=/tools | file=tools/_index.mdkind=page | rel=/monster/165/ | path=/monster/165 | file=monster/165.mdkind=page | rel=/monster/48/ | path=/monster/48 | file=monster/48.mdkind=page | rel=/db/equip/test_body/ | path=/db/equip/test_body | file=db/equip/test_body.mdkind=page | rel=/db/equip/test_arms/ | path=/db/equip/test_arms | file=db/equip/test_arms.mdkind=page | rel=/db/equip/test_legs/ | path=/db/equip/test_legs | file=db/equip/test_legs.mdkind=page | rel=/db/equip/test_shield/ | path=/db/equip/test_shield | file=db/equip/test_shield.mdkind=page | rel=/db/equip/test_weapon/ | path=/db/equip/test_weapon | file=db/equip/test_weapon.mdkind=page | rel=/db/pet-skill/test_pet_skill/ | path=/db/pet-skill/test_pet_skill | file=db/pet-skill/test_pet_skill.mdkind=page | rel=/db/equip/test_head/ | path=/db/equip/test_head | file=db/equip/test_head.mdkind=page | rel=/monster/242/ | path=/monster/242 | file=monster/242.mdkind=page | rel=/monster/71/ | path=/monster/71 | file=monster/71.mdkind=page | rel=/monster/85/ | path=/monster/85 | file=monster/85.mdkind=page | rel=/monster/10/ | path=/monster/10 | file=monster/10.mdkind=page | rel=/monster/30/ | path=/monster/30 | file=monster/30.mdkind=page | rel=/monster/46/ | path=/monster/46 | file=monster/46.mdkind=page | rel=/monster/31/ | path=/monster/31 | file=monster/31.mdkind=page | rel=/monster/90/ | path=/monster/90 | file=monster/90.mdkind=page | rel=/monster/69/ | path=/monster/69 | file=monster/69.mdkind=page | rel=/monster/88/ | path=/monster/88 | file=monster/88.mdkind=page | rel=/tools/pet_atk/ | path=/tools/pet_atk | file=tools/pet_atk.mdkind=page | rel=/monster/251/ | path=/monster/251 | file=monster/251.mdkind=page | rel=/monster/7/ | path=/monster/7 | file=monster/7.mdkind=page | rel=/monster/29/ | path=/monster/29 | file=monster/29.mdkind=page | rel=/monster/64/ | path=/monster/64 | file=monster/64.mdkind=page | rel=/monster/11/ | path=/monster/11 | file=monster/11.mdkind=page | rel=/monster/63/ | path=/monster/63 | file=monster/63.mdkind=page | rel=/monster/161/ | path=/monster/161 | file=monster/161.mdkind=page | rel=/monster/21/ | path=/monster/21 | file=monster/21.md</pre>
-
-  <p style="margin:6px 0 0; font-size:12px;">表示件数：60</p>
-</details>
-
-<hr>
-<details style="margin:12px 0;">
-  <summary>デバッグ：Pages（filter="monster", limit=120）</summary>
-
-  <p style="margin:6px 0 0; font-size:12px;">
-    総ページ数（site.AllPages）：98
-  </p>
-
-  <pre style="white-space:pre-wrap; font-size:12px; line-height:1.4; margin-top:6px;">kind=page | rel=/monster/203/ | path=/monster/203 | file=monster/203.mdkind=page | rel=/monster/45/ | path=/monster/45 | file=monster/45.mdkind=page | rel=/monster/23/ | path=/monster/23 | file=monster/23.mdkind=page | rel=/monster/164/ | path=/monster/164 | file=monster/164.mdkind=page | rel=/monster/241/ | path=/monster/241 | file=monster/241.mdkind=page | rel=/monster/201/ | path=/monster/201 | file=monster/201.mdkind=page | rel=/monster/84/ | path=/monster/84 | file=monster/84.mdkind=page | rel=/monster/163/ | path=/monster/163 | file=monster/163.mdkind=page | rel=/monster/47/ | path=/monster/47 | file=monster/47.mdkind=page | rel=/monster/91/ | path=/monster/91 | file=monster/91.mdkind=page | rel=/monster/202/ | path=/monster/202 | file=monster/202.mdkind=page | rel=/monster/26/ | path=/monster/26 | file=monster/26.mdkind=page | rel=/monster/87/ | path=/monster/87 | file=monster/87.mdkind=page | rel=/monster/12/ | path=/monster/12 | file=monster/12.mdkind=page | rel=/monster/70/ | path=/monster/70 | file=monster/70.mdkind=page | rel=/monster/5/ | path=/monster/5 | file=monster/5.mdkind=page | rel=/monster/66/ | path=/monster/66 | file=monster/66.mdkind=page | rel=/monster/4/ | path=/monster/4 | file=monster/4.mdkind=page | rel=/monster/1/ | path=/monster/1 | file=monster/1.mdkind=page | rel=/monster/86/ | path=/monster/86 | file=monster/86.mdkind=page | rel=/monster/42/ | path=/monster/42 | file=monster/42.mdkind=page | rel=/monster/3/ | path=/monster/3 | file=monster/3.mdkind=page | rel=/monster/41/ | path=/monster/41 | file=monster/41.mdkind=page | rel=/monster/28/ | path=/monster/28 | file=monster/28.mdkind=page | rel=/monster/68/ | path=/monster/68 | file=monster/68.mdkind=page | rel=/monster/32/ | path=/monster/32 | file=monster/32.mdkind=page | rel=/monster/22/ | path=/monster/22 | file=monster/22.mdkind=page | rel=/monster/65/ | path=/monster/65 | file=monster/65.mdkind=page | rel=/monster/165/ | path=/monster/165 | file=monster/165.mdkind=page | rel=/monster/48/ | path=/monster/48 | file=monster/48.mdkind=page | rel=/monster/242/ | path=/monster/242 | file=monster/242.mdkind=page | rel=/monster/71/ | path=/monster/71 | file=monster/71.mdkind=page | rel=/monster/85/ | path=/monster/85 | file=monster/85.mdkind=page | rel=/monster/10/ | path=/monster/10 | file=monster/10.mdkind=page | rel=/monster/30/ | path=/monster/30 | file=monster/30.mdkind=page | rel=/monster/46/ | path=/monster/46 | file=monster/46.mdkind=page | rel=/monster/31/ | path=/monster/31 | file=monster/31.mdkind=page | rel=/monster/90/ | path=/monster/90 | file=monster/90.mdkind=page | rel=/monster/69/ | path=/monster/69 | file=monster/69.mdkind=page | rel=/monster/88/ | path=/monster/88 | file=monster/88.mdkind=page | rel=/monster/251/ | path=/monster/251 | file=monster/251.mdkind=page | rel=/monster/7/ | path=/monster/7 | file=monster/7.mdkind=page | rel=/monster/29/ | path=/monster/29 | file=monster/29.mdkind=page | rel=/monster/64/ | path=/monster/64 | file=monster/64.mdkind=page | rel=/monster/11/ | path=/monster/11 | file=monster/11.mdkind=page | rel=/monster/63/ | path=/monster/63 | file=monster/63.mdkind=page | rel=/monster/161/ | path=/monster/161 | file=monster/161.mdkind=page | rel=/monster/21/ | path=/monster/21 | file=monster/21.mdkind=section | rel=/monster/ | path=/monster | file=monster/_index.mdkind=page | rel=/monster/51/ | path=/monster/51 | file=monster/51.mdkind=page | rel=/monster/2/ | path=/monster/2 | file=monster/2.mdkind=page | rel=/monster/49/ | path=/monster/49 | file=monster/49.mdkind=page | rel=/monster/204/ | path=/monster/204 | file=monster/204.mdkind=page | rel=/monster/25/ | path=/monster/25 | file=monster/25.mdkind=page | rel=/monster/24/ | path=/monster/24 | file=monster/24.mdkind=page | rel=/monster/13/ | path=/monster/13 | file=monster/13.mdkind=page | rel=/monster/50/ | path=/monster/50 | file=monster/50.mdkind=page | rel=/monster/61/ | path=/monster/61 | file=monster/61.mdkind=page | rel=/monster/62/ | path=/monster/62 | file=monster/62.mdkind=page | rel=/monster/67/ | path=/monster/67 | file=monster/67.mdkind=page | rel=/monster/53/ | path=/monster/53 | file=monster/53.mdkind=page | rel=/monster/252/ | path=/monster/252 | file=monster/252.mdkind=page | rel=/monster/166/ | path=/monster/166 | file=monster/166.mdkind=page | rel=/monster/72/ | path=/monster/72 | file=monster/72.mdkind=page | rel=/monster/44/ | path=/monster/44 | file=monster/44.mdkind=page | rel=/monster/93/ | path=/monster/93 | file=monster/93.mdkind=page | rel=/monster/162/ | path=/monster/162 | file=monster/162.mdkind=page | rel=/monster/89/ | path=/monster/89 | file=monster/89.mdkind=page | rel=/monster/81/ | path=/monster/81 | file=monster/81.mdkind=page | rel=/monster/83/ | path=/monster/83 | file=monster/83.mdkind=page | rel=/monster/82/ | path=/monster/82 | file=monster/82.mdkind=page | rel=/monster/56/ | path=/monster/56 | file=monster/56.mdkind=page | rel=/monster/96/ | path=/monster/96 | file=monster/96.mdkind=page | rel=/monster/76/ | path=/monster/76 | file=monster/76.mdkind=page | rel=/monster/16/ | path=/monster/16 | file=monster/16.mdkind=page | rel=/monster/36/ | path=/monster/36 | file=monster/36.mdkind=page | rel=/monster/43/ | path=/monster/43 | file=monster/43.mdkind=page | rel=/monster/54/ | path=/monster/54 | file=monster/54.mdkind=page | rel=/monster/52/ | path=/monster/52 | file=monster/52.mdkind=page | rel=/monster/6/ | path=/monster/6 | file=monster/6.mdkind=page | rel=/monster/27/ | path=/monster/27 | file=monster/27.mdkind=page | rel=/monster/33/ | path=/monster/33 | file=monster/33.md</pre>
-
-  <p style="margin:6px 0 0; font-size:12px;">表示件数：82</p>
-</details>
-
-<hr>
-<details style="margin:12px 0;">
-  <summary>デバッグ：Pages（filter="tools", limit=120）</summary>
-
-  <p style="margin:6px 0 0; font-size:12px;">
-    総ページ数（site.AllPages）：98
-  </p>
-
-  <pre style="white-space:pre-wrap; font-size:12px; line-height:1.4; margin-top:6px;">kind=section | rel=/tools/ | path=/tools | file=tools/_index.mdkind=page | rel=/tools/pet_atk/ | path=/tools/pet_atk | file=tools/pet_atk.mdkind=page | rel=/tools/atk/ | path=/tools/atk | file=tools/atk.mdkind=page | rel=/tools/status/ | path=/tools/status | file=tools/status.mdkind=page | rel=/tools/luk/ | path=/tools/luk | file=tools/luk.mdkind=page | rel=/tools/def/ | path=/tools/def | file=tools/def.md</pre>
-
-  <p style="margin:6px 0 0; font-size:12px;">表示件数：6</p>
-</details>
-
-<hr>
-<details style="margin:12px 0;">
-  <summary>デバッグ：Pages（filter="db", limit=200）</summary>
-
-  <p style="margin:6px 0 0; font-size:12px;">
-    総ページ数（site.AllPages）：98
-  </p>
-
-  <pre style="white-space:pre-wrap; font-size:12px; line-height:1.4; margin-top:6px;">kind=page | rel=/db/equip/test_body/ | path=/db/equip/test_body | file=db/equip/test_body.mdkind=page | rel=/db/equip/test_arms/ | path=/db/equip/test_arms | file=db/equip/test_arms.mdkind=page | rel=/db/equip/test_legs/ | path=/db/equip/test_legs | file=db/equip/test_legs.mdkind=page | rel=/db/equip/test_shield/ | path=/db/equip/test_shield | file=db/equip/test_shield.mdkind=page | rel=/db/equip/test_weapon/ | path=/db/equip/test_weapon | file=db/equip/test_weapon.mdkind=page | rel=/db/pet-skill/test_pet_skill/ | path=/db/pet-skill/test_pet_skill | file=db/pet-skill/test_pet_skill.mdkind=page | rel=/db/equip/test_head/ | path=/db/equip/test_head | file=db/equip/test_head.md</pre>
-
-  <p style="margin:6px 0 0; font-size:12px;">表示件数：7</p>
-</details>
 
 
 </div>
