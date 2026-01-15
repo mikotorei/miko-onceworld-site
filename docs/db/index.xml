@@ -8,52 +8,10 @@
     <language>ja-jp</language>
     <atom:link href="https://matsumoto0106.github.io/miko-onceworld-site/db/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>テストアーマー</title>
-      <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_body/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_body/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>テストガントレット</title>
-      <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_arms/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_arms/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>テストグリーブ</title>
-      <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_legs/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_legs/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>テストシールド</title>
-      <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_shield/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_shield/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>テストソード</title>
-      <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_weapon/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_weapon/</guid>
-      <description></description>
-    </item>
-    <item>
       <title>テストペット：攻撃支援</title>
       <link>https://matsumoto0106.github.io/miko-onceworld-site/db/pet-skill/test_pet_skill/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/pet-skill/test_pet_skill/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>テストヘルム</title>
-      <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_head/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_head/</guid>
       <description></description>
     </item>
   </channel>
