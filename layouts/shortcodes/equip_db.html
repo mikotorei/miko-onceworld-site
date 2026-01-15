@@ -2,7 +2,7 @@
 window.EQUIP_DB =
 {{- $arr := slice -}}
 {{- range site.AllPages -}}
-  {{- if and .File (hasPrefix .File.Path "db/equip/") -}}
+  {{- if and .File (in .File.Path "db/equip/") -}}
     {{- $arr = $arr | append (dict
       "title" .Title
       "slot" (.Params.slot | default "")
