@@ -8,11 +8,11 @@
     <language>ja-jp</language>
     <atom:link href="https://matsumoto0106.github.io/miko-onceworld-site/db/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>テストソード</title>
-      <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_weapons/</link>
+      <title>テストガントレット</title>
+      <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_arms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_weapons/</guid>
-      <description>&lt;p&gt;slot = &amp;ldquo;weapon&amp;rdquo;&#xA;series = &amp;ldquo;test-series&amp;rdquo;&lt;/p&gt;&#xA;&lt;p&gt;[base_add]&#xA;atk = 50&lt;/p&gt;</description>
+      <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_arms/</guid>
+      <description>&lt;p&gt;slot = &amp;ldquo;arms&amp;rdquo;&#xA;series = &amp;ldquo;test-series&amp;rdquo;&lt;/p&gt;&#xA;&lt;p&gt;[base_add]&#xA;atk = 15&#xA;def = 10&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
