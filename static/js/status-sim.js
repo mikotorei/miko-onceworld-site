@@ -1,13 +1,15 @@
-const EQUIP_DB = window.EQUIP_DB || [];
-const PET_DB   = window.PET_DB   || [];
-const ACC_DB   = window.ACC_DB   || [];
-(() => {
+document.addEventListener("DOMContentLoaded", () => {
   const STATS = ["vit","spd","atk","int","def","mdef","luk","mov"];
   const $ = (id) => document.getElementById(id);
   const n = (v, fb=0) => {
     const x = Number(v);
     return Number.isFinite(x) ? x : fb;
   };
+
+  // DB（shortcode で window に注入される想定）
+  const EQUIP_DB = Array.isArray(window.EQUIP_DB) ? window.EQUIP_DB : [];
+  const ACC_DB   = Array.isArray(window.ACC_DB)   ? window.ACC_DB   : [];
+  const PET_DB   = Array.isArray(window.PET_DB)   ? window.PET_DB   : [];
 
   // --- inputs ---
   const shakerEl = $("shaker");
@@ -42,11 +44,8 @@ const ACC_DB   = window.ACC_DB   || [];
   const outRealMdef = $("out-realmdef");
   const outDebug = $("out-debug");
 
+  // 必須要素チェック（ここで落ちるなら「DOMが無い」）
   if (!calcBtn) return;
-
-  const EQUIP_DB = Array.isArray(window.EQUIP_DB) ? window.EQUIP_DB : [];
-  const ACC_DB   = Array.isArray(window.ACC_DB) ? window.ACC_DB : [];
-  const PET_DB   = Array.isArray(window.PET_DB) ? window.PET_DB : [];
 
   // ---------- helpers ----------
   function addDict(dst, src, mul=1) {
@@ -77,14 +76,16 @@ const ACC_DB   = window.ACC_DB   || [];
     return base * (1 + enh * 0.1);
   }
 
-  // アクセ割合：基礎×(1+強化×0.01) で“割合値”自体が増える
+  // アクセ割合：基礎×(1+強化×0.01)
   function accRateScale(baseRate, enh) {
     return baseRate * (1 + enh * 0.01);
   }
 
   // ---------- UI build ----------
   function fillSelect(sel, items, placeholderText) {
+    if (!sel) return;
     sel.innerHTML = "";
+
     const p = document.createElement("option");
     p.value = "";
     p.textContent = placeholderText;
@@ -93,8 +94,7 @@ const ACC_DB   = window.ACC_DB   || [];
     items.forEach((it, idx) => {
       const o = document.createElement("option");
       o.value = String(idx);
-      o.textContent = it.title;
-      // datasetに必要情報を詰める
+      o.textContent = it.title || "(no title)";
       if (it.slot != null) o.dataset.slot = String(it.slot || "");
       if (it.series != null) o.dataset.series = String(it.series || "");
       if (it.match_mul != null) o.dataset.matchMul = String(it.match_mul || 1.0);
@@ -126,7 +126,6 @@ const ACC_DB   = window.ACC_DB   || [];
   }
 
   // ---------- collect ----------
-  // ① protein_effect = protein_count * (1 + shaker*0.01)
   function collectProtein() {
     const s = Math.max(0, n(shakerEl?.value, 0));
     const mul = 1 + s * 0.01;
@@ -139,14 +138,12 @@ const ACC_DB   = window.ACC_DB   || [];
     return { add, mul };
   }
 
-  // ② points
   function collectPoints() {
     const add = {};
     STATS.forEach(k => add[k] = Math.max(0, n(pts[k]?.value, 0)));
     return { add };
   }
 
-  // ③ equip add (実数)
   function collectEquip(enh) {
     const add = {};
     STATS.forEach(k => add[k] = 0);
@@ -157,17 +154,15 @@ const ACC_DB   = window.ACC_DB   || [];
       if (!opt || !opt.value) { picks[slot] = null; continue; }
       picks[slot] = JSON.parse(opt.dataset.payload || "{}");
       const base = picks[slot].base_add || {};
-      for (const k of Object.keys(base)) {
-        add[k] += equipScale(n(base[k]), enh);
-      }
+      for (const k of Object.keys(base)) add[k] += equipScale(n(base[k]), enh);
     }
     return { add, picks };
   }
 
-  // ④ match bonus（防具5部位が同シリーズなら、そのシリーズの match_mul を適用）
   function calcMatchMul(picks) {
     const armorSlots = ["head","body","arms","legs","shield"];
     const series = armorSlots.map(s => picks[s]?.series || "").filter(v => v);
+
     if (series.length !== 5) {
       if (matchStatusEl) matchStatusEl.textContent = "未一致（防具5部位が揃っていません）";
       return 1.0;
@@ -183,13 +178,8 @@ const ACC_DB   = window.ACC_DB   || [];
     return mul;
   }
 
-  // ⑤ flat add (アクセ実数 + ペット実数)
-  // ⑥ rate sum (アクセ割合 + ペット割合) → multiplier = 1 + sum
-  // ⑦ final rate sum (アクセ最終 + ペット最終) → multiplier = 1 + sum
   function collectAcc(enh) {
-    const flat = {};
-    const rate = {};
-    const final = {};
+    const flat = {}, rate = {}, final = {};
     STATS.forEach(k => { flat[k]=0; rate[k]=0; final[k]=0; });
 
     accSel.forEach(sel => {
@@ -197,27 +187,16 @@ const ACC_DB   = window.ACC_DB   || [];
       if (!opt || !opt.value) return;
       const it = JSON.parse(opt.dataset.payload || "{}");
 
-      // ⑤ 実数
-      for (const k of Object.keys(it.flat_add || {})) {
-        flat[k] += accFlatScale(n(it.flat_add[k]), enh);
-      }
-      // ⑥ 割合（％値自体が強化で増える）
-      for (const k of Object.keys(it.rate_add || {})) {
-        rate[k] += accRateScale(n(it.rate_add[k]), enh);
-      }
-      // ⑦ 最終割合（同上）
-      for (const k of Object.keys(it.final_add || {})) {
-        final[k] += accRateScale(n(it.final_add[k]), enh);
-      }
+      for (const k of Object.keys(it.flat_add || {}))  flat[k]  += accFlatScale(n(it.flat_add[k]), enh);
+      for (const k of Object.keys(it.rate_add || {}))  rate[k]  += accRateScale(n(it.rate_add[k]), enh);
+      for (const k of Object.keys(it.final_add || {})) final[k] += accRateScale(n(it.final_add[k]), enh);
     });
 
     return { flat, rate, final };
   }
 
   function collectPets() {
-    const flat = {};
-    const rate = {};
-    const final = {};
+    const flat = {}, rate = {}, final = {};
     STATS.forEach(k => { flat[k]=0; rate[k]=0; final[k]=0; });
 
     for (let i=0; i<3; i++) {
@@ -227,20 +206,18 @@ const ACC_DB   = window.ACC_DB   || [];
       const stage = petStageFromLv(lv);
 
       if (petStageLabel[i]) petStageLabel[i].textContent = `段階：${stage}`;
-
       if (!opt || !opt.value) continue;
+
       const pet = JSON.parse(opt.dataset.payload || "{}");
       const stages = Array.isArray(pet.stages) ? pet.stages : [];
 
-      // 段階分だけ累積
       for (let k=0; k<Math.min(stage, stages.length); k++) {
         const eff = stages[k] || {};
-        addDict(flat, eff.flat_add || {}, 1);
-        addDict(rate, eff.rate_add || {}, 1);
+        addDict(flat,  eff.flat_add  || {}, 1);
+        addDict(rate,  eff.rate_add  || {}, 1);
         addDict(final, eff.final_add || {}, 1);
       }
     }
-
     return { flat, rate, final };
   }
 
@@ -250,53 +227,43 @@ const ACC_DB   = window.ACC_DB   || [];
     const equipEnh = Math.max(0, n(equipEnhEl?.value, 0));
     const accEnh = Math.max(0, n(accEnhEl?.value, 0));
 
-    const p = collectProtein();     // ①
-    const t = collectPoints();      // ②
-    const e = collectEquip(equipEnh); // ③
-    const matchMul = calcMatchMul(e.picks); // ④
+    const p = collectProtein();
+    const t = collectPoints();
+    const e = collectEquip(equipEnh);
+    const matchMul = calcMatchMul(e.picks);
 
-    const acc = collectAcc(accEnh); // ⑤〜⑦(アクセ側)
-    const pets = collectPets();     // ⑤〜⑦(ペット側)
+    const acc = collectAcc(accEnh);
+    const pets = collectPets();
 
-    // 合算
-    const s1 = {}; // (①+②+③)
-    const sCore = {}; // ((①+②+③)*④)
-    const sPlusFlat = {}; // +⑤
-    const sumRate = {}; // ⑥(割合合計)
-    const sumFinal = {}; // ⑦(最終割合合計)
-    const result = {};
+    const s1 = {}, sCore = {}, sPlusFlat = {}, sumRate = {}, sumFinal = {}, result = {};
 
     STATS.forEach(k => {
       s1[k] = (n(p.add[k]) + n(t.add[k]) + n(e.add[k]));
       sCore[k] = s1[k] * matchMul;
 
-      const flat5 = n(acc.flat[k]) + n(pets.flat[k]); // ⑤
+      const flat5 = n(acc.flat[k]) + n(pets.flat[k]);
       sPlusFlat[k] = sCore[k] + flat5;
 
-      sumRate[k] = n(acc.rate[k]) + n(pets.rate[k]);     // ⑥（合計）
-      sumFinal[k] = n(acc.final[k]) + n(pets.final[k]);  // ⑦（合計）
+      sumRate[k] = n(acc.rate[k]) + n(pets.rate[k]);
+      sumFinal[k] = n(acc.final[k]) + n(pets.final[k]);
 
       const mul6 = rateMul(sumRate[k]);
       const mul7 = rateMul(sumFinal[k]);
 
-      // Q1: 最後に切り捨て
       result[k] = Math.floor(sPlusFlat[k] * mul6 * mul7);
     });
 
-    // 表示
     STATS.forEach(k => { if (out[k]) out[k].textContent = String(result[k]); });
 
-    // 実DEF / 実MDEF（式は後で差し替え）
     if (outRealDef) outRealDef.textContent = "---";
     if (outRealMdef) outRealMdef.textContent = "---";
 
-    // 検算用
     if (outDebug) {
       outDebug.textContent =
 `式：(((①+②+③)×④)+⑤)×⑥×⑦
-① protein: 個数×(1+shaker×0.01) / shaker=${shaker}
-③ equip: 基礎×(1+強化×0.1) / equip強化=${equipEnh}
-アクセ：実数×(1+強化×0.1), 割合×(1+強化×0.01) / acc強化=${accEnh}
+① shaker=${shaker}
+③ equip強化=${equipEnh}
+アクセ強化=${accEnh}
 ④ matchMul=${matchMul}
 
 ①(protein_add)
@@ -352,4 +319,4 @@ ${JSON.stringify(result, null, 2)}
   buildPetSelects();
   bindAutoRecalc();
   calcFinal();
-})();
+});
