@@ -1,16 +1,21 @@
 <script>
 window.EQUIP_DB =
-{{- $arr := slice -}}
-{{- range site.RegularPages -}}
-  {{- if and .File (hasPrefix .File.Path "db/equip/") -}}
-    {{- $arr = $arr | append (dict
-      "title" .Title
-      "slot" (.Params.slot | default "")
-      "series" (.Params.series | default "")
-      "base_add" (.Params.base_add | default dict)
-    ) -}}
+{{- $db := site.GetPage "section" "db" -}}
+{{- if $db -}}
+  {{- $arr := slice -}}
+  {{- range $db.RegularPagesRecursive -}}
+    {{- if hasPrefix .File.Path "db/equip/" -}}
+      {{- $arr = $arr | append (dict
+        "title" .Title
+        "slot" (.Params.slot | default "")
+        "series" (.Params.series | default "")
+        "base_add" (.Params.base_add | default dict)
+      ) -}}
+    {{- end -}}
   {{- end -}}
+  {{- $arr | jsonify -}}
+{{- else -}}
+  []
 {{- end -}}
-{{- $arr | jsonify -}}
 ;
 </script>
