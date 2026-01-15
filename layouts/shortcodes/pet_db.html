@@ -1,9 +1,9 @@
 <script>
 window.PET_DB =
-{{- $sec := site.GetPage "section" "db/pet-skill" -}}
+{{- $sec := site.GetPage "db/pet-skill" -}}
 {{- if $sec -}}
   {{- $arr := slice -}}
-  {{- range sort $sec.Pages ".Title" "asc" -}}
+  {{- range $sec.RegularPagesRecursive -}}
     {{- $arr = $arr | append (dict
       "title" .Title
       "id" (.Params.id | default 0)
