@@ -3,7 +3,7 @@ window.EQUIP_DB =
 {{- $pages := where site.RegularPages "Section" "db" -}}
 {{- $arr := slice -}}
 {{- range $pages -}}
-  {{- if eq .File.Dir "db/equip/" -}}
+  {{- if hasPrefix .File.Path "db/equip/" -}}
     {{- $arr = $arr | append (dict
       "title" .Title
       "slot" (.Params.slot | default "")
