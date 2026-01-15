@@ -15,11 +15,11 @@
       <description>&lt;p&gt;slot = &amp;ldquo;body&amp;rdquo;&#xA;series = &amp;ldquo;test-series&amp;rdquo;&lt;/p&gt;&#xA;&lt;p&gt;[base_add]&#xA;def = 30&lt;/p&gt;</description>
     </item>
     <item>
-      <title>テストアーム</title>
+      <title>テストガントレット</title>
       <link>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_arms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://matsumoto0106.github.io/miko-onceworld-site/db/equip/test_arms/</guid>
-      <description></description>
+      <description>&lt;p&gt;slot = &amp;ldquo;arms&amp;rdquo;&#xA;series = &amp;ldquo;test-series&amp;rdquo;&lt;/p&gt;&#xA;&lt;p&gt;[base_add]&#xA;atk = 15&#xA;def = 10&lt;/p&gt;</description>
     </item>
     <item>
       <title>テストシールド</title>
