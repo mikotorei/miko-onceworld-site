@@ -1,0 +1,18 @@
+<script>
+window.PET_DB =
+{{- $sec := site.GetPage "section" "db/pet-skill" -}}
+{{- if $sec -}}
+  {{- $arr := slice -}}
+  {{- range sort $sec.Pages ".Title" "asc" -}}
+    {{- $arr = $arr | append (dict
+      "title" .Title
+      "id" (.Params.id | default 0)
+      "stages" (.Params.stages | default slice)
+    ) -}}
+  {{- end -}}
+  {{- $arr | jsonify -}}
+{{- else -}}
+  []
+{{- end -}}
+;
+</script>
