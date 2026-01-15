@@ -39,35 +39,23 @@
 <h1>主人公ステータス・シミュレーター（デバッグ）</h1>
 
 <div class="tool-container">
-  <!-- DB埋め込み（JSより前） -->
-<p><script>
-window.EQUIP_DB ="[{\"base_add\":{\"def\":30},\"series\":\"test-series\",\"slot\":\"body\",\"title\":\"テストアーマー\"},{\"base_add\":{\"atk\":15,\"def\":10},\"series\":\"test-series\",\"slot\":\"arms\",\"title\":\"テストガントレット\"},{\"base_add\":{\"spd\":10},\"series\":\"test-series\",\"slot\":\"legs\",\"title\":\"テストグリーブ\"},{\"base_add\":{\"def\":25,\"mdef\":15},\"series\":\"test-series\",\"slot\":\"shield\",\"title\":\"テストシールド\"},{\"base_add\":{\"atk\":50},\"series\":\"test-series\",\"slot\":\"weapon\",\"title\":\"テストソード\"},{\"base_add\":{\"vit\":20},\"series\":\"test-series\",\"slot\":\"head\",\"title\":\"テストヘルム\"}]";
-</script>
-
-<script>
-window.ACC_DB ="[]";
-</script>
-
-<script>
-window.PET_DB ="[{\"id\":1,\"stages\":[{\"flat_add\":{\"atk\":10},\"unlock_lv\":31},{\"flat_add\":{\"atk\":20},\"unlock_lv\":71},{\"rate_add\":{\"atk\":0.1},\"unlock_lv\":121},{\"final_add\":{\"atk\":0.05},\"unlock_lv\":181}],\"title\":\"テストペット：攻撃支援\"}]";
-</script>
+  
+<p class="note" style="margin:8px 0;">
+  ※このページは「Hugoが認識しているページ一覧（File.Path）」を表示します。
 </p>
 
-<p id="db-debug" class="note" style="margin:8px 0;">
-  DB: ---
-</p>
-<script>
-(function(){
-  const e = (window.EQUIP_DB && Array.isArray(window.EQUIP_DB)) ? window.EQUIP_DB.length : 0;
-  const a = (window.ACC_DB && Array.isArray(window.ACC_DB)) ? window.ACC_DB.length : 0;
-  const p = (window.PET_DB && Array.isArray(window.PET_DB)) ? window.PET_DB.length : 0;
-  const el = document.getElementById("db-debug");
-  if (el) el.textContent = `DB: equip=${e}, acc=${a}, pet=${p}`;
-})();
-</script>
 
+<!-- まず “db/ に限らず” 全体のFile.Pathを見せる -->
+<details style="margin:12px 0;">
+  <summary>デバッグ：AllPages File.Path（filter="", limit=200）</summary>
 
-<!-- ここが本命：Hugoが見ている db/ の File.Path 一覧 -->
+  <pre style="white-space:pre-wrap; font-size:12px; line-height:1.4;">monster/203.mdmonster/45.mdmonster/23.mdmonster/164.mdmonster/241.mdmonster/201.mdmonster/84.mdmonster/163.mdmonster/47.mdmonster/91.mdmonster/202.mdmonster/26.mdmonster/87.mdmonster/12.mdmonster/70.mdmonster/5.mdmonster/66.mdmonster/4.mdmonster/1.md_index.mdmonster/86.mdmonster/42.mdmonster/3.mdmonster/41.mdmonster/28.mdmonster/68.mdmonster/32.mdmonster/22.mdmonster/65.mdtools/_index.mdmonster/165.mdmonster/48.mddb/equip/test_body.mddb/equip/test_arms.mddb/equip/test_legs.mddb/equip/test_shield.mddb/equip/test_weapon.mddb/pet-skill/test_pet_skill.mddb/equip/test_head.mdmonster/242.mdmonster/71.mdmonster/85.mdmonster/10.mdmonster/30.mdmonster/46.mdmonster/31.mdmonster/90.mdmonster/69.mdmonster/88.mdtools/pet_atk.mdmonster/251.mdmonster/7.mdmonster/29.mdmonster/64.mdmonster/11.mdmonster/63.mdmonster/161.mdmonster/21.mdmonster/_index.mdmonster/51.mdmonster/2.mdmonster/49.mdtools/atk.mdtools/status.mdmonster/204.mdmonster/25.mdmonster/24.mdmonster/13.mdtools/luk.mdmonster/50.mdmonster/61.mdmonster/62.mdmonster/67.mdmonster/53.mdmonster/252.mdmonster/166.mdmonster/72.mdmonster/44.mdmonster/93.mdmonster/162.mdmonster/89.mdmonster/81.mdmonster/83.mdmonster/82.mdmonster/56.mdmonster/96.mdmonster/76.mdmonster/16.mdmonster/36.mdmonster/43.mdmonster/54.mdtools/def.mdmonster/52.mdmonster/6.mdmonster/27.mdmonster/33.md</pre>
+
+  <p style="margin:6px 0 0; font-size:12px;">表示件数：96</p>
+</details>
+
+<hr>
+<!-- 次に db/ だけ抽出（比較用） -->
 <details style="margin:12px 0;">
   <summary>デバッグ：AllPages File.Path（filter="db/", limit=200）</summary>
 
@@ -76,14 +64,6 @@ window.PET_DB ="[{\"id\":1,\"stages\":[{\"flat_add\":{\"atk\":10},\"unlock_lv\":
   <p style="margin:6px 0 0; font-size:12px;">表示件数：7</p>
 </details>
 
-<hr>
-<div class="tool-box" id="status-sim">
-  <h2>主人公ステータス・シミュレーター（デバッグ）</h2>
-  <p class="note">
-    ※このページは「DBがHugoに認識されているか」を確認するためのデバッグ版です。<br>
-    上の一覧に <code>db/equip/</code> や <code>db/pet-skill/</code> が出るかを確認してください。
-  </p>
-</div>
 
 </div>
 
