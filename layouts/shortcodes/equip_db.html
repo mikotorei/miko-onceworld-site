@@ -1,16 +1,9 @@
 <script>
-window.EQUIP_DB =
-{{- $arr := slice -}}
-{{- range site.AllPages -}}
-  {{- if and .File (in .File.Path "db/equip/") -}}
-    {{- $arr = $arr | append (dict
-      "title" .Title
-      "slot" (.Params.slot | default "")
-      "series" (.Params.series | default "")
-      "base_add" (.Params.base_add | default dict)
-    ) -}}
-  {{- end -}}
-{{- end -}}
-{{- $arr | jsonify -}}
-;
+window.EQUIP_DB = [
+{{ range site.RegularPages }}
+  {{ if hasPrefix .File.Path "db/equip/" }}
+    "{{ .File.Path }}",
+  {{ end }}
+{{ end }}
+];
 </script>
