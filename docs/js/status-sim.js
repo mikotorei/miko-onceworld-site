@@ -42,7 +42,6 @@
   if (!calcBtn) return;
 
   const EQUIP_DB = Array.isArray(window.EQUIP_DB) ? window.EQUIP_DB : [];
-  if (matchStatusEl) matchStatusEl.textContent = `DB: equip=${EQUIP_DB.length}, pet=${PET_DB.length}, acc=${ACC_DB.length}`;
   const ACC_DB   = Array.isArray(window.ACC_DB) ? window.ACC_DB : [];
   const PET_DB   = Array.isArray(window.PET_DB) ? window.PET_DB : [];
 
@@ -344,6 +343,7 @@ ${JSON.stringify(result, null, 2)}
   }
 
   // init
+  if (matchStatusEl) matchStatusEl.textContent = `DB: equip=${EQUIP_DB.length}, pet=${PET_DB.length}, acc=${ACC_DB.length}`;
   buildEquipSelects();
   buildAccSelects();
   buildPetSelects();
