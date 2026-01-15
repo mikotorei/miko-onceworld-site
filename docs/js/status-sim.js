@@ -1,3 +1,6 @@
+const EQUIP_DB = window.EQUIP_DB || [];
+const PET_DB   = window.PET_DB   || [];
+const ACC_DB   = window.ACC_DB   || [];
 (() => {
   const STATS = ["vit","spd","atk","int","def","mdef","luk","mov"];
   const $ = (id) => document.getElementById(id);
