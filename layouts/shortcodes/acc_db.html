@@ -1,0 +1,19 @@
+<script>
+window.ACC_DB =
+{{- $sec := site.GetPage "section" "db/acc" -}}
+{{- if $sec -}}
+  {{- $arr := slice -}}
+  {{- range sort $sec.Pages ".Title" "asc" -}}
+    {{- $arr = $arr | append (dict
+      "title" .Title
+      "flat_add" (.Params.flat_add | default dict)     /* ⑤：実数 */
+      "rate_add" (.Params.rate_add | default dict)     /* ⑥：割合(加算して倍率化) */
+      "final_add" (.Params.final_add | default dict)   /* ⑦：最終割合(加算して倍率化) */
+    ) -}}
+  {{- end -}}
+  {{- $arr | jsonify -}}
+{{- else -}}
+  []
+{{- end -}}
+;
+</script>
