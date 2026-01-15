@@ -1,9 +1,10 @@
----
-title: "テストアーム"
-slot: "body"
-series: "テストシリーズ"
-match_mul: 1.10
-base_add:
-  vit: 20
-  def: 15
----
++++
+title = "テストガントレット"
++++
+
+slot = "arms"
+series = "test-series"
+
+[base_add]
+atk = 15
+def = 10
