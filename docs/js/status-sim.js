@@ -84,4 +84,253 @@ function resetProteinUI() {
 }
 
 // シェイカー補正を適用したプロテイン（端数は切り捨て）
-function applyShakerToProtein(raw
+function applyShakerToProtein(rawProtein, shakerCount) {
+  const out = makeZeroStats();
+  const mul = shakerMultiplier(shakerCount);
+  for (const k of PROTEIN_STATS) {
+    out[k] = Math.floor((rawProtein?.[k] ?? 0) * mul);
+  }
+  return out;
+}
+
+function proteinSummaryText(rawProtein, shakerCount, appliedProtein) {
+  const mul = shakerMultiplier(shakerCount);
+  const percent = Math.round((mul - 1) * 100); // shakerCountに等しい想定
+  const parts = [];
+
+  for (const k of PROTEIN_STATS) {
+    const raw = rawProtein?.[k] ?? 0;
+    const ap = appliedProtein?.[k] ?? 0;
+    if (raw !== 0 || ap !== 0) parts.push(`${k}: ${raw} → ${ap}`);
+  }
+
+  const head = `シェイカー：${shakerCount}（プロテイン効果 +${percent}%）`;
+  const body = parts.length ? `プロテイン補正（入力 → 適用後）：${parts.join(" / ")}` : `プロテイン補正：なし`;
+  return `${head}\n${body}\n※movは対象外`;
+}
+
+// ====== 基礎 ======
+function readBaseStatsFromUI() {
+  const out = makeZeroStats();
+  for (const k of STATS) out[k] = n($(`base_${k}`)?.value, 0);
+  return out;
+}
+function applyBaseStatsToUI(stats) {
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = stats?.[k] ?? 0;
+  }
+}
+function resetBaseStatsUI() {
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = "0";
+  }
+}
+
+// ====== TOML（簡易） ======
+function parseMiniToml(text) {
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l && l !== "+++" && !l.startsWith("#"));
+
+  const item = { base_add: {} };
+  let section = "";
+
+  for (const line of lines) {
+    const sec = line.match(/^\[(.+?)\]$/);
+    if (sec) { section = sec[1]; continue; }
+
+    const kv = line.match(/^([A-Za-z0-9_]+)\s*=\s*(.+)$/);
+    if (!kv) continue;
+
+    const key = kv[1];
+    let raw = kv[2].trim();
+    if (raw.startsWith('"') && raw.endsWith('"')) raw = raw.slice(1, -1);
+
+    const value = n(raw, raw);
+    if (section === "base_add") item.base_add[key] = n(value, 0);
+    else item[key] = value;
+  }
+
+  item.id = item.id || item.title || "unknown";
+  return item;
+}
+
+async function loadIndex(path) {
+  const url = abs(path);
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`404: ${url}`);
+  return await res.json();
+}
+async function loadToml(dir, file) {
+  const url = abs(`${dir}${file}`);
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`404: ${url}`);
+  return parseMiniToml(await res.text());
+}
+
+// ====== UI（select） ======
+function fillSelect(selectEl, items) {
+  selectEl.innerHTML = "";
+  selectEl.append(new Option("（なし）", ""));
+  for (const it of items) selectEl.append(new Option(it.title ?? it.id, it.id));
+}
+
+// ====== UI（表） ======
+function buildTableRows() {
+  const tbody = $("statsTbody");
+  if (!tbody) return false;
+
+  tbody.innerHTML = "";
+  for (const k of STATS) {
+    const tr = document.createElement("tr");
+    tr.dataset.stat = k;
+
+    const tdName = document.createElement("td");
+    tdName.textContent = k;
+
+    const tdBase = document.createElement("td");
+    tdBase.className = "num";
+    tdBase.dataset.col = "base";
+
+    const tdEquip = document.createElement("td");
+    tdEquip.className = "num";
+    tdEquip.dataset.col = "equip";
+
+    const tdTotal = document.createElement("td");
+    tdTotal.className = "num";
+    tdTotal.dataset.col = "total";
+
+    tr.append(tdName, tdBase, tdEquip, tdTotal);
+    tbody.appendChild(tr);
+  }
+  return true;
+}
+
+function renderTable(basePlusProtein, equip, total) {
+  const tbody = $("statsTbody");
+  if (!tbody) return;
+
+  for (const tr of tbody.querySelectorAll("tr")) {
+    const k = tr.dataset.stat;
+    const b = basePlusProtein?.[k] ?? 0;
+    const e = equip?.[k] ?? 0;
+    const t = total?.[k] ?? 0;
+
+    tr.querySelector('[data-col="base"]').textContent = String(b);
+    tr.querySelector('[data-col="equip"]').textContent = String(e);
+    tr.querySelector('[data-col="total"]').textContent = String(t);
+
+    tr.classList.toggle("active", b !== 0 || e !== 0);
+  }
+}
+
+// ====== main ======
+async function main() {
+  setErr("");
+
+  if (!buildTableRows()) {
+    setErr("statsTbody が見つかりません。status.md が置き換わっているか確認してください。");
+    return;
+  }
+
+  const saved = loadState();
+  const proteinInfo = $("proteinInfo");
+
+  // スロットロード：1つ失敗しても他は動く
+  const slotItems = {};
+  const loadErrors = [];
+
+  for (const s of SLOTS) {
+    const sel = $(`select_${s.key}`);
+    slotItems[s.key] = [];
+
+    if (!sel) {
+      loadErrors.push(`select_${s.key} が見つかりません`);
+      continue;
+    }
+
+    try {
+      const files = await loadIndex(s.indexUrl);
+      const items = [];
+      for (const f of files) items.push(await loadToml(s.itemDir, f));
+      slotItems[s.key] = items;
+
+      fillSelect(sel, items);
+      if (saved?.equip?.[s.key]) sel.value = saved.equip[s.key];
+    } catch (e) {
+      fillSelect(sel, []);
+      loadErrors.push(`${s.label} DB 読込失敗: ${String(e?.message ?? e)}`);
+    }
+
+    sel.addEventListener("change", recalc);
+  }
+
+  // 復元
+  applyBaseStatsToUI(saved?.base);
+  applyShakerToUI(saved?.shakerCount);
+  applyProteinToUI(saved?.proteinRaw);
+
+  for (const k of STATS) $(`base_${k}`)?.addEventListener("input", recalc);
+  for (const k of PROTEIN_STATS) $(`protein_${k}`)?.addEventListener("input", recalc);
+  $("shakerCount")?.addEventListener("input", recalc);
+
+  $("recalcBtn")?.addEventListener("click", recalc);
+  $("resetBtn")?.addEventListener("click", () => { resetBaseStatsUI(); recalc(); });
+
+  $("clearSaveBtn")?.addEventListener("click", () => {
+    clearState();
+    resetBaseStatsUI();
+    resetProteinUI();
+    applyShakerToUI(0);
+    for (const s of SLOTS) {
+      const sel = $(`select_${s.key}`);
+      if (sel) sel.value = "";
+    }
+    recalc();
+  });
+
+  function recalc() {
+    const baseRaw = readBaseStatsFromUI();
+
+    const shakerCount = readShakerFromUI();
+    const proteinRaw = readProteinRawFromUI();
+    const proteinApplied = applyShakerToProtein(proteinRaw, shakerCount);
+
+    const basePlusProtein = addStats(baseRaw, proteinApplied);
+
+    let equipSum = makeZeroStats();
+    const equipState = {};
+
+    for (const s of SLOTS) {
+      const sel = $(`select_${s.key}`);
+      const id = sel?.value || "";
+      equipState[s.key] = id;
+
+      const chosen = (slotItems[s.key] || []).find((it) => it.id === id);
+      equipSum = addStats(equipSum, chosen?.base_add ?? {});
+    }
+
+    const total = addStats(basePlusProtein, equipSum);
+
+    if (proteinInfo) {
+      proteinInfo.textContent = proteinSummaryText(proteinRaw, shakerCount, proteinApplied);
+    }
+
+    setErr(loadErrors.length ? loadErrors.join("\n") : "");
+
+    renderTable(basePlusProtein, equipSum, total);
+    saveState({ base: baseRaw, shakerCount, proteinRaw, equip: equipState });
+  }
+
+  recalc();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  main().catch((e) => {
+    console.error(e);
+    setErr(String(e?.message ?? e));
+  });
+});
