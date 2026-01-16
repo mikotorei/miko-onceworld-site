@@ -19,9 +19,31 @@ title: "主人公ステータス・シミュレーター"
   <hr />
 
   <h2>装備</h2>
-  <div class="row">
-    <label for="weaponSelect">武器</label>
-    <select id="weaponSelect"></select>
+
+  <div class="equip-grid">
+  <label>武器
+      <select id="select_weapon"></select>
+    </label>
+
+  <label>頭
+      <select id="select_head"></select>
+    </label>
+
+  <label>体
+      <select id="select_body"></select>
+    </label>
+
+   <label>腕
+      <select id="select_hands"></select>
+    </label>
+
+  <label>足
+      <select id="select_feet"></select>
+    </label>
+
+  <label>盾
+      <select id="select_shield"></select>
+    </label>
   </div>
 
   <div class="row">
@@ -40,7 +62,7 @@ title: "主人公ステータス・シミュレーター"
     </div>
 
   <div>
-      <div>装備加算（base_add）</div>
+      <div>装備加算（全枠合計 / base_add）</div>
       <pre id="equipBox">{}</pre>
     </div>
 
@@ -52,12 +74,17 @@ title: "主人公ステータス・シミュレーター"
 </div>
 
 <style>
-  .sim { max-width: 900px; }
+  .sim { max-width: 980px; }
   .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin: 8px 0; }
   .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
   .grid label { display:flex; justify-content:space-between; gap: 8px; align-items:center; }
   .grid input { width: 72px; }
-  .result-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+
+  .equip-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 8px 0; }
+  .equip-grid label { display:flex; justify-content:space-between; align-items:center; gap: 10px; }
+  .equip-grid select { min-width: 140px; }
+
+  .result-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
   pre { background: rgba(0,0,0,0.05); padding: 10px; border-radius: 8px; overflow:auto; }
 </style>
 
