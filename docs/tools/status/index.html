@@ -40,16 +40,19 @@
 
 <div class="tool-container">
   <div class="sim">
-  <h2>主人公 基礎ステータス</h2>
+  <h2>主人公 振り分けポイント</h2>
+  <div class="row">
+    <label>合計ポイント <input id="basePointTotal" type="number" inputmode="numeric" min="0" value="0" /></label>
+    <div id="basePointInfo" class="note"></div>
+  </div>
   <div class="grid">
-    <label>vit <input id="base_vit" type="number" inputmode="numeric" value="0" /></label>
-    <label>spd <input id="base_spd" type="number" inputmode="numeric" value="0" /></label>
-    <label>atk <input id="base_atk" type="number" inputmode="numeric" value="0" /></label>
-    <label>int <input id="base_int" type="number" inputmode="numeric" value="0" /></label>
-    <label>def <input id="base_def" type="number" inputmode="numeric" value="0" /></label>
-    <label>mdef <input id="base_mdef" type="number" inputmode="numeric" value="0" /></label>
-    <label>luk <input id="base_luk" type="number" inputmode="numeric" value="0" /></label>
-    <label>mov <input id="base_mov" type="number" inputmode="numeric" value="0" /></label>
+    <label>vit <input id="base_vit" type="number" inputmode="numeric" min="0" value="0" /></label>
+    <label>spd <input id="base_spd" type="number" inputmode="numeric" min="0" value="0" /></label>
+    <label>atk <input id="base_atk" type="number" inputmode="numeric" min="0" value="0" /></label>
+    <label>int <input id="base_int" type="number" inputmode="numeric" min="0" value="0" /></label>
+    <label>def <input id="base_def" type="number" inputmode="numeric" min="0" value="0" /></label>
+    <label>mdef <input id="base_mdef" type="number" inputmode="numeric" min="0" value="0" /></label>
+    <label>luk <input id="base_luk" type="number" inputmode="numeric" min="0" value="0" /></label>
   </div>
   <hr />
   <h2>プロテイン</h2>
@@ -78,7 +81,7 @@
   </div>
   <div class="row">
     <button id="recalcBtn" type="button">再計算</button>
-    <button id="resetBtn" type="button">基礎ステを0に戻す</button>
+    <button id="resetBtn" type="button">振り分けを0に戻す</button>
     <button id="clearSaveBtn" type="button">保存をクリア</button>
   </div>
   <hr />
@@ -98,11 +101,13 @@
 <style>
   .sim { max-width: 980px; }
   .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin: 8px 0; }
+  .note { opacity: .85; }
 
   .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
   .grid label { display:flex; justify-content:space-between; gap: 8px; align-items:center; }
   .grid input { width: 72px; }
 
+  #basePointTotal { width: 96px; }
   #shakerCount { width: 96px; }
 
   .protein-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 6px 0 8px; }
@@ -119,7 +124,6 @@
   .stats-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .stats-table tr.active { background: rgba(255, 230, 150, 0.35); }
 
-  /* エラーは通常非表示（出た時だけ表示） */
   .error { margin: 8px 0 0; color: #b00020; white-space: pre-wrap; display: none; }
   .error.is-visible { display: block; }
 </style>
