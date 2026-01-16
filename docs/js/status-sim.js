@@ -1,18 +1,18 @@
 // static/js/status-sim.js
-// 機能：武器＋防具5種の選択、基礎ステ入力、合計表示（表）
-// 追加：localStorage 保存/復元 + プロテイン（ステ別7種：mov除外）
+// 安定版：装備が一部404でも落ちず、画面にエラーを出す
+// 機能：基礎 + プロテイン(7種) + 装備(武器+防具5種) => 表表示 + 保存
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"]; // movなし
 const $ = (id) => document.getElementById(id);
 
 const SLOTS = [
-  { key: "weapon", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
-  { key: "head",   indexUrl: "/db/equip/armor/head/index.json",   itemDir: "/db/equip/armor/head/" },
-  { key: "body",   indexUrl: "/db/equip/armor/body/index.json",   itemDir: "/db/equip/armor/body/" },
-  { key: "hands",  indexUrl: "/db/equip/armor/hands/index.json",  itemDir: "/db/equip/armor/hands/" },
-  { key: "feet",   indexUrl: "/db/equip/armor/feet/index.json",   itemDir: "/db/equip/armor/feet/" },
-  { key: "shield", indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
+  { key: "weapon", label: "武器", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
+  { key: "head",   label: "頭",   indexUrl: "/db/equip/armor/head/index.json",   itemDir: "/db/equip/armor/head/" },
+  { key: "body",   label: "体",   indexUrl: "/db/equip/armor/body/index.json",   itemDir: "/db/equip/armor/body/" },
+  { key: "hands",  label: "腕",   indexUrl: "/db/equip/armor/hands/index.json",  itemDir: "/db/equip/armor/hands/" },
+  { key: "feet",   label: "足",   indexUrl: "/db/equip/armor/feet/index.json",   itemDir: "/db/equip/armor/feet/" },
+  { key: "shield", label: "盾",   indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
 ];
 
 // ====== 配信パス対応（GitHub Pagesなど） ======
@@ -28,17 +28,9 @@ const abs = (p) => `${ASSET_BASE}${p}`;
 
 // ====== localStorage ======
 const STORAGE_KEY = "status_sim_state_v4_table_protein_per_stat";
-
-function saveState(state) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-function loadState() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
-  catch { return {}; }
-}
-function clearState() {
-  localStorage.removeItem(STORAGE_KEY);
-}
+const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+const loadState = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; } };
+const clearState = () => localStorage.removeItem(STORAGE_KEY);
 
 // ====== util ======
 const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
@@ -53,11 +45,15 @@ function addStats(a, b) {
   return out;
 }
 
-// ====== プロテイン（ステ別） ======
+function setErr(text) {
+  const el = $("errBox");
+  if (el) el.textContent = text || "";
+}
+
+// ====== プロテイン ======
 function readProteinFromUI() {
   const out = makeZeroStats();
   for (const k of PROTEIN_STATS) out[k] = clamp0($(`protein_${k}`)?.value);
-  // mov は 0 のまま
   return out;
 }
 function applyProteinToUI(stats) {
@@ -79,6 +75,25 @@ function proteinSummaryText(p) {
     if (v !== 0) parts.push(`${k}+${v}`);
   }
   return parts.length ? `プロテイン補正：${parts.join(" / ")}（movは対象外）` : `プロテイン補正：なし（movは対象外）`;
+}
+
+// ====== 基礎 ======
+function readBaseStatsFromUI() {
+  const out = makeZeroStats();
+  for (const k of STATS) out[k] = n($(`base_${k}`)?.value, 0);
+  return out;
+}
+function applyBaseStatsToUI(stats) {
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = stats?.[k] ?? 0;
+  }
+}
+function resetBaseStatsUI() {
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = "0";
+  }
 }
 
 // ====== TOML（簡易） ======
@@ -112,45 +127,29 @@ function parseMiniToml(text) {
 }
 
 async function loadIndex(path) {
-  const res = await fetch(abs(path), { cache: "no-store" });
-  if (!res.ok) throw new Error(`index.json を読み込めません: ${path}`);
+  const url = abs(path);
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`404: ${url}`);
   return await res.json();
 }
 async function loadToml(dir, file) {
-  const res = await fetch(abs(`${dir}${file}`), { cache: "no-store" });
-  if (!res.ok) throw new Error(`TOML を読み込めません: ${file}`);
+  const url = abs(`${dir}${file}`);
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`404: ${url}`);
   return parseMiniToml(await res.text());
 }
 
-// ====== UI（入力/選択） ======
+// ====== UI（select） ======
 function fillSelect(selectEl, items) {
   selectEl.innerHTML = "";
   selectEl.append(new Option("（なし）", ""));
   for (const it of items) selectEl.append(new Option(it.title ?? it.id, it.id));
 }
 
-function readBaseStatsFromUI() {
-  const out = makeZeroStats();
-  for (const k of STATS) out[k] = n($(`base_${k}`)?.value, 0);
-  return out;
-}
-function applyBaseStatsToUI(stats) {
-  for (const k of STATS) {
-    const el = $(`base_${k}`);
-    if (el) el.value = stats?.[k] ?? 0;
-  }
-}
-function resetBaseStatsUI() {
-  for (const k of STATS) {
-    const el = $(`base_${k}`);
-    if (el) el.value = "0";
-  }
-}
-
 // ====== UI（表） ======
 function buildTableRows() {
   const tbody = $("statsTbody");
-  if (!tbody) return;
+  if (!tbody) return false;
 
   tbody.innerHTML = "";
   for (const k of STATS) {
@@ -175,6 +174,7 @@ function buildTableRows() {
     tr.append(tdName, tdBase, tdEquip, tdTotal);
     tbody.appendChild(tr);
   }
+  return true;
 }
 
 function renderTable(basePlusProtein, equip, total) {
@@ -197,26 +197,49 @@ function renderTable(basePlusProtein, equip, total) {
 
 // ====== main ======
 async function main() {
-  buildTableRows();
+  setErr("");
+
+  // 表がなければここで止めて、原因を画面に出す
+  if (!buildTableRows()) {
+    setErr("statsTbody が見つかりません。status.md が置き換わっているか確認してください。");
+    return;
+  }
 
   const saved = loadState();
   const proteinInfo = $("proteinInfo");
 
-  const slotItems = {};
-  for (const s of SLOTS) {
-    const files = await loadIndex(s.indexUrl);
-    const items = [];
-    for (const f of files) items.push(await loadToml(s.itemDir, f));
-    slotItems[s.key] = items;
+  // スロットロード：1つ失敗しても他は動く
+  const slotItems = {}; // key -> items[]
+  const loadErrors = [];
 
+  for (const s of SLOTS) {
     const sel = $(`select_${s.key}`);
-    if (sel) {
+    slotItems[s.key] = [];
+
+    // select自体がない場合はスキップ（ただし表は動く）
+    if (!sel) {
+      loadErrors.push(`select_${s.key} が見つかりません`);
+      continue;
+    }
+
+    try {
+      const files = await loadIndex(s.indexUrl);
+      const items = [];
+      for (const f of files) items.push(await loadToml(s.itemDir, f));
+      slotItems[s.key] = items;
+
       fillSelect(sel, items);
       if (saved?.equip?.[s.key]) sel.value = saved.equip[s.key];
-      sel.addEventListener("change", recalc);
+    } catch (e) {
+      // 失敗しても（なし）だけ入れて進行
+      fillSelect(sel, []);
+      loadErrors.push(`${s.label} DB 読込失敗: ${String(e?.message ?? e)}`);
     }
+
+    sel.addEventListener("change", recalc);
   }
 
+  // 基礎・プロテイン復元
   applyBaseStatsToUI(saved?.base);
   applyProteinToUI(saved?.protein);
 
@@ -247,14 +270,19 @@ async function main() {
 
     for (const s of SLOTS) {
       const sel = $(`select_${s.key}`);
-      const chosen = slotItems[s.key].find((it) => it.id === sel?.value);
-      equipState[s.key] = sel?.value || "";
+      const id = sel?.value || "";
+      equipState[s.key] = id;
+
+      const chosen = (slotItems[s.key] || []).find((it) => it.id === id);
       equipSum = addStats(equipSum, chosen?.base_add ?? {});
     }
 
     const total = addStats(basePlusProtein, equipSum);
 
     if (proteinInfo) proteinInfo.textContent = proteinSummaryText(protein);
+
+    // エラー表示（DBの404があればここで見える）
+    setErr(loadErrors.length ? loadErrors.join("\n") : "");
 
     renderTable(basePlusProtein, equipSum, total);
     saveState({ base: baseRaw, protein, equip: equipState });
@@ -266,7 +294,6 @@ async function main() {
 document.addEventListener("DOMContentLoaded", () => {
   main().catch((e) => {
     console.error(e);
-    const tbody = $("statsTbody");
-    if (tbody) tbody.innerHTML = `<tr><td colspan="4">${String(e?.message ?? e)}</td></tr>`;
+    setErr(String(e?.message ?? e));
   });
 });
