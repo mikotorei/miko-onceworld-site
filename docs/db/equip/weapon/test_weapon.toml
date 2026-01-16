@@ -4,5 +4,5 @@ slot = "weapon"
 series = "test-series"
 
 [base_add]
-atk = 50
+atk = 5000000000000000000000000000
 +++
