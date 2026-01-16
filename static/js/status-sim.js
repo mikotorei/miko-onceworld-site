@@ -1,6 +1,6 @@
 // static/js/status-sim.js
 // 機能：武器＋防具5種の選択、基礎ステ入力、合計表示
-// 追加：localStorage による保存 / 復元
+// 追加：localStorage 保存/復元 + 表形式表示（基礎/装備/合計）
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const $ = (id) => document.getElementById(id);
@@ -14,7 +14,7 @@ const SLOTS = [
   { key: "shield", indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
 ];
 
-// ====== 配信パス対応 ======
+// ====== 配信パス対応（GitHub Pagesなど） ======
 function getAssetBaseUrl() {
   const scriptEl = document.currentScript;
   if (!scriptEl || !scriptEl.src) return window.location.origin;
@@ -26,18 +26,17 @@ const ASSET_BASE = getAssetBaseUrl();
 const abs = (p) => `${ASSET_BASE}${p}`;
 
 // ====== localStorage ======
-const STORAGE_KEY = "status_sim_state_v1";
+const STORAGE_KEY = "status_sim_state_v2_table";
 
 function saveState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
-
 function loadState() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-  } catch {
-    return {};
-  }
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+  catch { return {}; }
+}
+function clearState() {
+  localStorage.removeItem(STORAGE_KEY);
 }
 
 // ====== util ======
@@ -46,16 +45,10 @@ const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
 function makeZeroStats() {
   return Object.fromEntries(STATS.map((k) => [k, 0]));
 }
-
 function addStats(a, b) {
   const out = { ...a };
   for (const k of STATS) out[k] = (out[k] ?? 0) + (b?.[k] ?? 0);
   return out;
-}
-
-function renderStats(obj) {
-  const ordered = Object.fromEntries(STATS.map((k) => [k, obj?.[k] ?? 0]));
-  return JSON.stringify(ordered, null, 2);
 }
 
 // ====== TOML（簡易） ======
@@ -93,14 +86,13 @@ async function loadIndex(path) {
   if (!res.ok) throw new Error(`index.json を読み込めません: ${path}`);
   return await res.json();
 }
-
 async function loadToml(dir, file) {
   const res = await fetch(abs(`${dir}${file}`), { cache: "no-store" });
   if (!res.ok) throw new Error(`TOML を読み込めません: ${file}`);
   return parseMiniToml(await res.text());
 }
 
-// ====== UI ======
+// ====== UI（入力/選択） ======
 function fillSelect(selectEl, items) {
   selectEl.innerHTML = "";
   selectEl.append(new Option("（なし）", ""));
@@ -112,19 +104,71 @@ function readBaseStatsFromUI() {
   for (const k of STATS) out[k] = n($(`base_${k}`)?.value, 0);
   return out;
 }
-
 function applyBaseStatsToUI(stats) {
   for (const k of STATS) {
     const el = $(`base_${k}`);
     if (el) el.value = stats?.[k] ?? 0;
   }
 }
+function resetBaseStatsUI() {
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = "0";
+  }
+}
+
+// ====== UI（表） ======
+function buildTableRows() {
+  const tbody = $("statsTbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+  for (const k of STATS) {
+    const tr = document.createElement("tr");
+    tr.dataset.stat = k;
+
+    const tdName = document.createElement("td");
+    tdName.textContent = k;
+
+    const tdBase = document.createElement("td");
+    tdBase.className = "num";
+    tdBase.dataset.col = "base";
+
+    const tdEquip = document.createElement("td");
+    tdEquip.className = "num";
+    tdEquip.dataset.col = "equip";
+
+    const tdTotal = document.createElement("td");
+    tdTotal.className = "num";
+    tdTotal.dataset.col = "total";
+
+    tr.append(tdName, tdBase, tdEquip, tdTotal);
+    tbody.appendChild(tr);
+  }
+}
+
+function renderTable(base, equip, total) {
+  const tbody = $("statsTbody");
+  if (!tbody) return;
+
+  for (const tr of tbody.querySelectorAll("tr")) {
+    const k = tr.dataset.stat;
+    const b = base?.[k] ?? 0;
+    const e = equip?.[k] ?? 0;
+    const t = total?.[k] ?? 0;
+
+    tr.querySelector('[data-col="base"]').textContent = String(b);
+    tr.querySelector('[data-col="equip"]').textContent = String(e);
+    tr.querySelector('[data-col="total"]').textContent = String(t);
+
+    // 変化がある行をハイライト（装備が付いてる or 基礎が0じゃない）
+    tr.classList.toggle("active", b !== 0 || e !== 0);
+  }
+}
 
 // ====== main ======
 async function main() {
-  const baseBox = $("baseBox");
-  const equipBox = $("equipBox");
-  const totalBox = $("totalBox");
+  buildTableRows();
 
   const saved = loadState();
 
@@ -145,28 +189,37 @@ async function main() {
 
   applyBaseStatsToUI(saved?.base);
 
-  for (const k of STATS) {
-    $(`base_${k}`)?.addEventListener("input", recalc);
-  }
+  for (const k of STATS) $(`base_${k}`)?.addEventListener("input", recalc);
+
+  $("recalcBtn")?.addEventListener("click", recalc);
+  $("resetBtn")?.addEventListener("click", () => { resetBaseStatsUI(); recalc(); });
+
+  $("clearSaveBtn")?.addEventListener("click", () => {
+    clearState();
+    resetBaseStatsUI();
+    for (const s of SLOTS) {
+      const sel = $(`select_${s.key}`);
+      if (sel) sel.value = "";
+    }
+    recalc();
+  });
 
   function recalc() {
     const base = readBaseStatsFromUI();
+
     let equipSum = makeZeroStats();
     const equipState = {};
 
     for (const s of SLOTS) {
       const sel = $(`select_${s.key}`);
-      const chosen = slotItems[s.key].find(it => it.id === sel?.value);
+      const chosen = slotItems[s.key].find((it) => it.id === sel?.value);
       equipState[s.key] = sel?.value || "";
       equipSum = addStats(equipSum, chosen?.base_add ?? {});
     }
 
     const total = addStats(base, equipSum);
 
-    baseBox.textContent = renderStats(base);
-    equipBox.textContent = renderStats(equipSum);
-    totalBox.textContent = renderStats(total);
-
+    renderTable(base, equipSum, total);
     saveState({ base, equip: equipState });
   }
 
@@ -174,9 +227,9 @@ async function main() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  main().catch(e => {
+  main().catch((e) => {
     console.error(e);
-    const totalBox = $("totalBox");
-    if (totalBox) totalBox.textContent = String(e);
+    const tbody = $("statsTbody");
+    if (tbody) tbody.innerHTML = `<tr><td colspan="4">${String(e?.message ?? e)}</td></tr>`;
   });
 });
