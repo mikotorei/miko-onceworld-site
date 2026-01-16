@@ -7,7 +7,7 @@ title: "主人公ステータス・シミュレーター"
   <h2>主人公 振り分けポイント</h2>
 
   <div class="row">
-    <label>合計ポイント <input id="basePointTotal" type="number" min="0" value="0"></label>
+    <label>total <input id="basePointTotal" type="number" min="0" value="0"></label>
     <div id="basePointInfo" class="note"></div>
   </div>
 
@@ -44,41 +44,41 @@ title: "主人公ステータス・シミュレーター"
   <h2>装備</h2>
 
   <div class="equip-grid">
-    <label>武器
+    <label>weapon
       <select id="select_weapon"></select>
-      Lv <input id="level_weapon" type="number" min="0" value="0">
+      <span class="lv">lv</span><input id="level_weapon" type="number" min="0" value="0">
     </label>
 
-    <label>頭
+    <label>head
   <select id="select_head"></select>
-      Lv <input id="level_head" type="number" min="0" value="0">
+      <span class="lv">lv</span><input id="level_head" type="number" min="0" value="0">
     </label>
 
-    <label>体
+    <label>body
   <select id="select_body"></select>
-      Lv <input id="level_body" type="number" min="0" value="0">
+      <span class="lv">lv</span><input id="level_body" type="number" min="0" value="0">
     </label>
 
-    <label>腕
+    <label>hands
   <select id="select_hands"></select>
-      Lv <input id="level_hands" type="number" min="0" value="0">
+      <span class="lv">lv</span><input id="level_hands" type="number" min="0" value="0">
     </label>
 
-    <label>足
+    <label>feet
   <select id="select_feet"></select>
-      Lv <input id="level_feet" type="number" min="0" value="0">
+      <span class="lv">lv</span><input id="level_feet" type="number" min="0" value="0">
     </label>
 
-    <label>盾
+    <label>shield
   <select id="select_shield"></select>
-      Lv <input id="level_shield" type="number" min="0" value="0">
+      <span class="lv">lv</span><input id="level_shield" type="number" min="0" value="0">
     </label>
   </div>
 
   <div class="row">
-    <button id="recalcBtn">再計算</button>
-    <button id="resetBtn">振り分けリセット</button>
-    <button id="clearSaveBtn">保存クリア</button>
+    <button id="recalcBtn" type="button">recalc</button>
+    <button id="resetBtn" type="button">reset</button>
+    <button id="clearSaveBtn" type="button">clear</button>
   </div>
 
   <div class="error" id="errBox"></div>
@@ -90,15 +90,46 @@ title: "主人公ステータス・シミュレーター"
   <table class="stats-table">
     <thead>
       <tr>
-        <th>ステ</th>
-        <th>基礎＋プロテイン</th>
-        <th>装備</th>
-        <th>合計</th>
+        <th>stat</th>
+        <th>base(+protein)</th>
+        <th>equip</th>
+        <th>total</th>
       </tr>
     </thead>
     <tbody id="statsTbody"></tbody>
   </table>
 
 </div>
+
+<style>
+  .sim { max-width: 980px; }
+  .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin: 8px 0; }
+  .note { opacity: .85; }
+
+  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .grid label { display:flex; justify-content:space-between; gap: 8px; align-items:center; }
+  .grid input { width: 72px; }
+
+  #basePointTotal, #shakerCount { width: 96px; }
+
+  .protein-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 6px 0 8px; }
+  .protein-grid label { display:flex; justify-content:space-between; align-items:center; gap: 10px; }
+  .protein-grid input { width: 96px; }
+
+  .equip-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin: 8px 0; }
+  .equip-grid label { display:flex; justify-content:space-between; align-items:center; gap: 10px; }
+  .equip-grid select { min-width: 140px; }
+  .equip-grid .lv { opacity:.7; }
+  .equip-grid input[type="number"] { width: 72px; }
+
+  .stats-table { width:100%; border-collapse: collapse; }
+  .stats-table th, .stats-table td { border: 1px solid rgba(0,0,0,0.15); padding: 8px 10px; }
+  .stats-table th { background: rgba(0,0,0,0.05); text-align: left; }
+  .stats-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .stats-table tr.active { background: rgba(255, 230, 150, 0.35); }
+
+  .error { margin: 8px 0 0; color: #b00020; white-space: pre-wrap; display: none; }
+  .error.is-visible { display: block; }
+</style>
 
 <script src="/js/status-sim.js"></script>
