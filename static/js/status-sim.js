@@ -1,19 +1,20 @@
 // static/js/status-sim.js
-// 目的：武器 + 防具5種（頭/体/腕/足/盾）を選択 → base_add を合算 → 基礎+装備を表示
+// 機能：武器＋防具5種の選択、基礎ステ入力、合計表示
+// 追加：localStorage による保存 / 復元
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const $ = (id) => document.getElementById(id);
 
 const SLOTS = [
-  { key: "weapon", label: "武器", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
-  { key: "head",   label: "頭",   indexUrl: "/db/equip/armor/head/index.json",   itemDir: "/db/equip/armor/head/" },
-  { key: "body",   label: "体",   indexUrl: "/db/equip/armor/body/index.json",   itemDir: "/db/equip/armor/body/" },
-  { key: "hands",  label: "腕",   indexUrl: "/db/equip/armor/hands/index.json",  itemDir: "/db/equip/armor/hands/" },
-  { key: "feet",   label: "足",   indexUrl: "/db/equip/armor/feet/index.json",   itemDir: "/db/equip/armor/feet/" },
-  { key: "shield", label: "盾",   indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
+  { key: "weapon", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
+  { key: "head",   indexUrl: "/db/equip/armor/head/index.json",   itemDir: "/db/equip/armor/head/" },
+  { key: "body",   indexUrl: "/db/equip/armor/body/index.json",   itemDir: "/db/equip/armor/body/" },
+  { key: "hands",  indexUrl: "/db/equip/armor/hands/index.json",  itemDir: "/db/equip/armor/hands/" },
+  { key: "feet",   indexUrl: "/db/equip/armor/feet/index.json",   itemDir: "/db/equip/armor/feet/" },
+  { key: "shield", indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
 ];
 
-// --- サブパス配信（GitHub Pagesなど）対応：/REPO_NAME を自動付与 ---
+// ====== 配信パス対応 ======
 function getAssetBaseUrl() {
   const scriptEl = document.currentScript;
   if (!scriptEl || !scriptEl.src) return window.location.origin;
@@ -22,12 +23,25 @@ function getAssetBaseUrl() {
   return `${u.origin}${basePath}`;
 }
 const ASSET_BASE = getAssetBaseUrl();
-const abs = (path) => `${ASSET_BASE}${path}`;
+const abs = (p) => `${ASSET_BASE}${p}`;
 
-function n(v, fb = 0) {
-  const x = Number(v);
-  return Number.isFinite(x) ? x : fb;
+// ====== localStorage ======
+const STORAGE_KEY = "status_sim_state_v1";
+
+function saveState(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
+
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+// ====== util ======
+const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
 
 function makeZeroStats() {
   return Object.fromEntries(STATS.map((k) => [k, 0]));
@@ -44,7 +58,7 @@ function renderStats(obj) {
   return JSON.stringify(ordered, null, 2);
 }
 
-// 用途限定 TOML パーサ（前回と同等）
+// ====== TOML（簡易） ======
 function parseMiniToml(text) {
   const lines = text
     .split(/\r?\n/)
@@ -63,13 +77,9 @@ function parseMiniToml(text) {
 
     const key = kv[1];
     let raw = kv[2].trim();
-
     if (raw.startsWith('"') && raw.endsWith('"')) raw = raw.slice(1, -1);
 
-    const num = Number(raw);
-    const value =
-      Number.isFinite(num) && raw !== "" && !raw.includes('"') ? num : raw;
-
+    const value = n(raw, raw);
     if (section === "base_add") item.base_add[key] = n(value, 0);
     else item[key] = value;
   }
@@ -78,40 +88,23 @@ function parseMiniToml(text) {
   return item;
 }
 
-async function loadIndex(indexPath) {
-  const url = abs(indexPath);
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`index.json を読み込めません: ${url}`);
-  return await res.json(); // ["file.toml", ...]
+async function loadIndex(path) {
+  const res = await fetch(abs(path), { cache: "no-store" });
+  if (!res.ok) throw new Error(`index.json を読み込めません: ${path}`);
+  return await res.json();
 }
 
-async function loadToml(dirPath, filename) {
-  const url = abs(`${dirPath}${filename}`);
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`TOML を読み込めません: ${url}`);
-  const text = await res.text();
-  return parseMiniToml(text);
+async function loadToml(dir, file) {
+  const res = await fetch(abs(`${dir}${file}`), { cache: "no-store" });
+  if (!res.ok) throw new Error(`TOML を読み込めません: ${file}`);
+  return parseMiniToml(await res.text());
 }
 
+// ====== UI ======
 function fillSelect(selectEl, items) {
   selectEl.innerHTML = "";
-
-  const opt0 = document.createElement("option");
-  opt0.value = "";
-  opt0.textContent = "（なし）";
-  selectEl.appendChild(opt0);
-
-  for (const it of items) {
-    const opt = document.createElement("option");
-    opt.value = it.id;
-    opt.textContent = it.title ?? it.id;
-    selectEl.appendChild(opt);
-  }
-}
-
-function findById(items, id) {
-  if (!id) return null;
-  return items.find((it) => it.id === id) ?? null;
+  selectEl.append(new Option("（なし）", ""));
+  for (const it of items) selectEl.append(new Option(it.title ?? it.id, it.id));
 }
 
 function readBaseStatsFromUI() {
@@ -120,24 +113,22 @@ function readBaseStatsFromUI() {
   return out;
 }
 
-function resetBaseStatsUI() {
+function applyBaseStatsToUI(stats) {
   for (const k of STATS) {
     const el = $(`base_${k}`);
-    if (el) el.value = "0";
+    if (el) el.value = stats?.[k] ?? 0;
   }
 }
 
+// ====== main ======
 async function main() {
   const baseBox = $("baseBox");
   const equipBox = $("equipBox");
   const totalBox = $("totalBox");
-  const recalcBtn = $("recalcBtn");
-  const resetBtn = $("resetBtn");
 
-  if (!baseBox || !equipBox || !totalBox) return;
+  const saved = loadState();
 
-  // スロットごとのアイテム一覧をロード
-  const slotItems = {}; // key -> items[]
+  const slotItems = {};
   for (const s of SLOTS) {
     const files = await loadIndex(s.indexUrl);
     const items = [];
@@ -145,16 +136,28 @@ async function main() {
     slotItems[s.key] = items;
 
     const sel = $(`select_${s.key}`);
-    if (sel) fillSelect(sel, items);
+    if (sel) {
+      fillSelect(sel, items);
+      if (saved?.equip?.[s.key]) sel.value = saved.equip[s.key];
+      sel.addEventListener("change", recalc);
+    }
   }
 
-  const recalc = () => {
-    const base = readBaseStatsFromUI();
+  applyBaseStatsToUI(saved?.base);
 
+  for (const k of STATS) {
+    $(`base_${k}`)?.addEventListener("input", recalc);
+  }
+
+  function recalc() {
+    const base = readBaseStatsFromUI();
     let equipSum = makeZeroStats();
+    const equipState = {};
+
     for (const s of SLOTS) {
       const sel = $(`select_${s.key}`);
-      const chosen = findById(slotItems[s.key], sel?.value);
+      const chosen = slotItems[s.key].find(it => it.id === sel?.value);
+      equipState[s.key] = sel?.value || "";
       equipSum = addStats(equipSum, chosen?.base_add ?? {});
     }
 
@@ -163,22 +166,17 @@ async function main() {
     baseBox.textContent = renderStats(base);
     equipBox.textContent = renderStats(equipSum);
     totalBox.textContent = renderStats(total);
-  };
 
-  // 入力変化で自動再計算
-  for (const k of STATS) $(`base_${k}`)?.addEventListener("input", recalc);
-  for (const s of SLOTS) $(`select_${s.key}`)?.addEventListener("change", recalc);
-
-  recalcBtn?.addEventListener("click", recalc);
-  resetBtn?.addEventListener("click", () => { resetBaseStatsUI(); recalc(); });
+    saveState({ base, equip: equipState });
+  }
 
   recalc();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  main().catch((e) => {
-    const totalBox = $("totalBox");
-    if (totalBox) totalBox.textContent = String(e?.message ?? e);
+  main().catch(e => {
     console.error(e);
+    const totalBox = $("totalBox");
+    if (totalBox) totalBox.textContent = String(e);
   });
 });
