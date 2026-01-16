@@ -81,7 +81,7 @@ title: "主人公ステータス・シミュレーター"
   .sim { max-width: 980px; }
   .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin: 8px 0; }
   .hint { opacity: .75; font-size: .95em; margin: 6px 0 8px; }
-  .note { margin: 8px 0 0; opacity: .85; }
+  .note { margin: 8px 0 0; opacity: .85; white-space: pre-wrap; }
   .error { margin: 8px 0 0; color: #b00020; white-space: pre-wrap; }
 
   .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
