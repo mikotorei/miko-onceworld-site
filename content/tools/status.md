@@ -49,28 +49,28 @@ title: "主人公ステータス・シミュレーター"
       <span class="lv">lv</span><input id="level_weapon" type="number" min="0" value="0">
     </label>
 
-    <label>head
-  <select id="select_head"></select>
+  <label>head
+    <select id="select_head"></select>
       <span class="lv">lv</span><input id="level_head" type="number" min="0" value="0">
     </label>
 
-    <label>body
-  <select id="select_body"></select>
+  <label>body
+    <select id="select_body"></select>
       <span class="lv">lv</span><input id="level_body" type="number" min="0" value="0">
     </label>
 
-    <label>hands
-  <select id="select_hands"></select>
+  <label>hands
+    <select id="select_hands"></select>
       <span class="lv">lv</span><input id="level_hands" type="number" min="0" value="0">
     </label>
 
-    <label>feet
-  <select id="select_feet"></select>
+  <label>feet
+    <select id="select_feet"></select>
       <span class="lv">lv</span><input id="level_feet" type="number" min="0" value="0">
     </label>
 
-    <label>shield
-  <select id="select_shield"></select>
+  <label>shield
+    <select id="select_shield"></select>
       <span class="lv">lv</span><input id="level_shield" type="number" min="0" value="0">
     </label>
   </div>
