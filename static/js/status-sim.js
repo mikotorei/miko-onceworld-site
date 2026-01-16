@@ -33,7 +33,6 @@ function renderStats(obj) {
  *  atk = 50
  */
 function parseMiniToml(text) {
-  // Hugoの front matter みたいに +++ が入ってても、行として無視する
   const lines = text
     .split(/\r?\n/)
     .map((l) => l.trim())
@@ -55,14 +54,13 @@ function parseMiniToml(text) {
     const key = kv[1];
     let raw = kv[2].trim();
 
-    // 文字列 "..." を剥がす
     if (raw.startsWith('"') && raw.endsWith('"')) {
       raw = raw.slice(1, -1);
     }
 
-    // 数値化できるものは数値に
     const num = Number(raw);
-    const value = Number.isFinite(num) && raw !== "" && !raw.includes('"') ? num : raw;
+    const value =
+      Number.isFinite(num) && raw !== "" && !raw.includes('"') ? num : raw;
 
     if (section === "base_add") {
       item.base_add[key] = Number.isFinite(Number(value)) ? Number(value) : value;
@@ -71,7 +69,6 @@ function parseMiniToml(text) {
     }
   }
 
-  // select の value に使うキー（id がない場合の保険）
   item.id = item.id || item.title || "unknown";
   return item;
 }
@@ -79,7 +76,7 @@ function parseMiniToml(text) {
 async function loadWeaponIndex() {
   const res = await fetch("/db/equip/weapon/index.json", { cache: "no-store" });
   if (!res.ok) throw new Error("index.json を読み込めません: /db/equip/weapon/index.json");
-  return await res.json(); // ["test_weapon.toml", ...]
+  return await res.json();
 }
 
 async function loadWeaponToml(filename) {
@@ -117,14 +114,11 @@ async function main() {
 
   if (!weaponSelect || !resultBox) return;
 
-  // 1) weapon/index.json から読み込み対象を取得
   const files = await loadWeaponIndex();
 
-  // 2) TOML を全部ロードして items にする
   const items = [];
   for (const f of files) items.push(await loadWeaponToml(f));
 
-  // 3) UI へ反映
   fillSelect(weaponSelect, items);
 
   const recalc = () => {
