@@ -1,9 +1,10 @@
 // static/js/status-sim.js
-// 見た目は最小限（注釈・倍率表示なし）
-// 機能：基礎 + プロテイン(7種) + シェイカー(共通倍率) + 装備(武器+防具5種) => 表表示 + 保存
+// 基礎ステ=振り分けポイント（movなし）
+// プロテイン・シェイカー・装備・表表示・保存は維持
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
-const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"]; // movなし
+const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];      // movなし
+const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];   // movなし
 const $ = (id) => document.getElementById(id);
 
 const SLOTS = [
@@ -15,7 +16,7 @@ const SLOTS = [
   { key: "shield", label: "盾",   indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
 ];
 
-// ====== 配信パス対応（GitHub Pagesなど） ======
+// --- 配信パス対応 ---
 function getAssetBaseUrl() {
   const scriptEl = document.currentScript;
   if (!scriptEl || !scriptEl.src) return window.location.origin;
@@ -26,13 +27,13 @@ function getAssetBaseUrl() {
 const ASSET_BASE = getAssetBaseUrl();
 const abs = (p) => `${ASSET_BASE}${p}`;
 
-// ====== localStorage ======
-const STORAGE_KEY = "status_sim_state_v6_min_ui_protein_shaker";
+// --- localStorage ---
+const STORAGE_KEY = "status_sim_state_v7_points_no_mov";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; } };
 const clearState = () => localStorage.removeItem(STORAGE_KEY);
 
-// ====== util ======
+// --- util ---
 const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
 const clamp0 = (v) => Math.max(0, n(v, 0));
 
@@ -45,7 +46,7 @@ function addStats(a, b) {
   return out;
 }
 
-// ====== エラー表示（必要な時だけ） ======
+// --- エラー表示（必要時のみ） ---
 function setErr(text) {
   const el = $("errBox");
   if (!el) return;
@@ -54,19 +55,47 @@ function setErr(text) {
   el.classList.toggle("is-visible", msg.length > 0);
 }
 
-// ====== シェイカー ======
-function readShakerFromUI() {
-  return clamp0($("shakerCount")?.value);
+// --- 振り分けポイント ---
+function readBasePointTotal() {
+  return clamp0($("basePointTotal")?.value);
 }
-function applyShakerToUI(v) {
-  const el = $("shakerCount");
+function applyBasePointTotal(v) {
+  const el = $("basePointTotal");
   if (el) el.value = String(clamp0(v ?? 0));
 }
-function shakerMultiplier(shakerCount) {
-  return 1 + 0.01 * clamp0(shakerCount);
+function readBasePointsFromUI() {
+  const out = makeZeroStats();
+  for (const k of BASE_STATS) out[k] = clamp0($(`base_${k}`)?.value);
+  // mov は常に0
+  out.mov = 0;
+  return out;
+}
+function applyBasePointsToUI(stats) {
+  for (const k of BASE_STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = String(clamp0(stats?.[k] ?? 0));
+  }
+}
+function resetBasePointsUI() {
+  for (const k of BASE_STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = "0";
+  }
+}
+function renderPointInfo(total, points) {
+  const used = BASE_STATS.reduce((s, k) => s + (points?.[k] ?? 0), 0);
+  const remain = total - used;
+  const info = $("basePointInfo");
+  if (info) info.textContent = `使用 ${used} / 残り ${remain}`;
+  return { used, remain };
 }
 
-// ====== プロテイン（ステ別） ======
+// --- シェイカー ---
+function readShakerFromUI() { return clamp0($("shakerCount")?.value); }
+function applyShakerToUI(v) { const el = $("shakerCount"); if (el) el.value = String(clamp0(v ?? 0)); }
+function shakerMultiplier(shakerCount) { return 1 + 0.01 * clamp0(shakerCount); }
+
+// --- プロテイン（ステ別） ---
 function readProteinRawFromUI() {
   const out = makeZeroStats();
   for (const k of PROTEIN_STATS) out[k] = clamp0($(`protein_${k}`)?.value);
@@ -84,36 +113,14 @@ function resetProteinUI() {
     if (el) el.value = "0";
   }
 }
-// シェイカー補正（端数切り捨て）
 function applyShakerToProtein(rawProtein, shakerCount) {
   const out = makeZeroStats();
   const mul = shakerMultiplier(shakerCount);
-  for (const k of PROTEIN_STATS) {
-    out[k] = Math.floor((rawProtein?.[k] ?? 0) * mul);
-  }
+  for (const k of PROTEIN_STATS) out[k] = Math.floor((rawProtein?.[k] ?? 0) * mul);
   return out;
 }
 
-// ====== 基礎 ======
-function readBaseStatsFromUI() {
-  const out = makeZeroStats();
-  for (const k of STATS) out[k] = n($(`base_${k}`)?.value, 0);
-  return out;
-}
-function applyBaseStatsToUI(stats) {
-  for (const k of STATS) {
-    const el = $(`base_${k}`);
-    if (el) el.value = stats?.[k] ?? 0;
-  }
-}
-function resetBaseStatsUI() {
-  for (const k of STATS) {
-    const el = $(`base_${k}`);
-    if (el) el.value = "0";
-  }
-}
-
-// ====== TOML（簡易） ======
+// --- TOML（簡易） ---
 function parseMiniToml(text) {
   const lines = text
     .split(/\r?\n/)
@@ -142,7 +149,6 @@ function parseMiniToml(text) {
   item.id = item.id || item.title || "unknown";
   return item;
 }
-
 async function loadIndex(path) {
   const url = abs(path);
   const res = await fetch(url, { cache: "no-store" });
@@ -155,15 +161,13 @@ async function loadToml(dir, file) {
   if (!res.ok) throw new Error(`404: ${url}`);
   return parseMiniToml(await res.text());
 }
-
-// ====== UI（select） ======
 function fillSelect(selectEl, items) {
   selectEl.innerHTML = "";
   selectEl.append(new Option("（なし）", ""));
   for (const it of items) selectEl.append(new Option(it.title ?? it.id, it.id));
 }
 
-// ====== UI（表） ======
+// --- 表 ---
 function buildTableRows() {
   const tbody = $("statsTbody");
   if (!tbody) return false;
@@ -193,7 +197,6 @@ function buildTableRows() {
   }
   return true;
 }
-
 function renderTable(basePlusProtein, equip, total) {
   const tbody = $("statsTbody");
   if (!tbody) return;
@@ -212,7 +215,7 @@ function renderTable(basePlusProtein, equip, total) {
   }
 }
 
-// ====== main ======
+// --- main ---
 async function main() {
   setErr("");
 
@@ -221,12 +224,9 @@ async function main() {
     return;
   }
 
-  // 主要入力欄の存在チェック（欠けてたら静かにエラーだけ出す）
-  if (!$("shakerCount")) setErr("shakerCount が見つかりません（status.md の置き換え漏れの可能性）");
-
   const saved = loadState();
 
-  // スロットロード：1つ失敗しても他は動く
+  // 装備ロード（失敗しても進行）
   const slotItems = {};
   const loadErrors = [];
 
@@ -234,10 +234,7 @@ async function main() {
     const sel = $(`select_${s.key}`);
     slotItems[s.key] = [];
 
-    if (!sel) {
-      loadErrors.push(`select_${s.key} が見つかりません`);
-      continue;
-    }
+    if (!sel) { loadErrors.push(`select_${s.key} が見つかりません`); continue; }
 
     try {
       const files = await loadIndex(s.indexUrl);
@@ -256,20 +253,24 @@ async function main() {
   }
 
   // 復元
-  applyBaseStatsToUI(saved?.base);
+  applyBasePointTotal(saved?.basePointTotal);
+  applyBasePointsToUI(saved?.basePoints);
   applyShakerToUI(saved?.shakerCount);
   applyProteinToUI(saved?.proteinRaw);
 
-  for (const k of STATS) $(`base_${k}`)?.addEventListener("input", recalc);
+  // リスナー
+  $("basePointTotal")?.addEventListener("input", recalc);
+  for (const k of BASE_STATS) $(`base_${k}`)?.addEventListener("input", recalc);
   for (const k of PROTEIN_STATS) $(`protein_${k}`)?.addEventListener("input", recalc);
   $("shakerCount")?.addEventListener("input", recalc);
 
   $("recalcBtn")?.addEventListener("click", recalc);
-  $("resetBtn")?.addEventListener("click", () => { resetBaseStatsUI(); recalc(); });
+  $("resetBtn")?.addEventListener("click", () => { resetBasePointsUI(); recalc(); });
 
   $("clearSaveBtn")?.addEventListener("click", () => {
     clearState();
-    resetBaseStatsUI();
+    applyBasePointTotal(0);
+    resetBasePointsUI();
     resetProteinUI();
     applyShakerToUI(0);
     for (const s of SLOTS) {
@@ -280,13 +281,15 @@ async function main() {
   });
 
   function recalc() {
-    const baseRaw = readBaseStatsFromUI();
+    const basePointTotal = readBasePointTotal();
+    const basePoints = readBasePointsFromUI();
+    const { remain } = renderPointInfo(basePointTotal, basePoints);
 
     const shakerCount = readShakerFromUI();
     const proteinRaw = readProteinRawFromUI();
     const proteinApplied = applyShakerToProtein(proteinRaw, shakerCount);
 
-    const basePlusProtein = addStats(baseRaw, proteinApplied);
+    const basePlusProtein = addStats(basePoints, proteinApplied);
 
     let equipSum = makeZeroStats();
     const equipState = {};
@@ -302,11 +305,14 @@ async function main() {
 
     const total = addStats(basePlusProtein, equipSum);
 
-    // 通常は非表示。問題がある時だけ出す
-    setErr(loadErrors.length ? loadErrors.join("\n") : "");
+    // エラー表示：DBエラー or ポイント超過
+    const errs = [];
+    if (loadErrors.length) errs.push(...loadErrors);
+    if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
+    setErr(errs.join("\n"));
 
     renderTable(basePlusProtein, equipSum, total);
-    saveState({ base: baseRaw, shakerCount, proteinRaw, equip: equipState });
+    saveState({ basePointTotal, basePoints, shakerCount, proteinRaw, equip: equipState });
   }
 
   recalc();
