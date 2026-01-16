@@ -1,5 +1,9 @@
+// static/js/status-sim.js
+// 見た目は最小限（注釈・倍率表示なし）
+// 機能：基礎 + プロテイン(7種) + シェイカー(共通倍率) + 装備(武器+防具5種) => 表表示 + 保存
+
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
-const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
+const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"]; // movなし
 const $ = (id) => document.getElementById(id);
 
 const SLOTS = [
@@ -11,6 +15,7 @@ const SLOTS = [
   { key: "shield", label: "盾",   indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
 ];
 
+// ====== 配信パス対応（GitHub Pagesなど） ======
 function getAssetBaseUrl() {
   const scriptEl = document.currentScript;
   if (!scriptEl || !scriptEl.src) return window.location.origin;
@@ -21,29 +26,37 @@ function getAssetBaseUrl() {
 const ASSET_BASE = getAssetBaseUrl();
 const abs = (p) => `${ASSET_BASE}${p}`;
 
-const STORAGE_KEY = "status_sim_state_v5_table_protein_shaker";
+// ====== localStorage ======
+const STORAGE_KEY = "status_sim_state_v6_min_ui_protein_shaker";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; } };
 const clearState = () => localStorage.removeItem(STORAGE_KEY);
 
+// ====== util ======
 const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
 const clamp0 = (v) => Math.max(0, n(v, 0));
 
-function makeZeroStats() { return Object.fromEntries(STATS.map((k) => [k, 0])); }
+function makeZeroStats() {
+  return Object.fromEntries(STATS.map((k) => [k, 0]));
+}
 function addStats(a, b) {
   const out = { ...a };
   for (const k of STATS) out[k] = (out[k] ?? 0) + (b?.[k] ?? 0);
   return out;
 }
 
+// ====== エラー表示（必要な時だけ） ======
 function setErr(text) {
   const el = $("errBox");
-  if (el) el.textContent = text || "";
+  if (!el) return;
+  const msg = (text || "").trim();
+  el.textContent = msg;
+  el.classList.toggle("is-visible", msg.length > 0);
 }
 
+// ====== シェイカー ======
 function readShakerFromUI() {
-  const el = $("shakerCount");
-  return clamp0(el?.value);
+  return clamp0($("shakerCount")?.value);
 }
 function applyShakerToUI(v) {
   const el = $("shakerCount");
@@ -53,6 +66,7 @@ function shakerMultiplier(shakerCount) {
   return 1 + 0.01 * clamp0(shakerCount);
 }
 
+// ====== プロテイン（ステ別） ======
 function readProteinRawFromUI() {
   const out = makeZeroStats();
   for (const k of PROTEIN_STATS) out[k] = clamp0($(`protein_${k}`)?.value);
@@ -70,41 +84,61 @@ function resetProteinUI() {
     if (el) el.value = "0";
   }
 }
+// シェイカー補正（端数切り捨て）
 function applyShakerToProtein(rawProtein, shakerCount) {
   const out = makeZeroStats();
   const mul = shakerMultiplier(shakerCount);
-  for (const k of PROTEIN_STATS) out[k] = Math.floor((rawProtein?.[k] ?? 0) * mul);
+  for (const k of PROTEIN_STATS) {
+    out[k] = Math.floor((rawProtein?.[k] ?? 0) * mul);
+  }
   return out;
 }
 
-function proteinInfoText(rawProtein, shakerCount, appliedProtein) {
-  const mul = shakerMultiplier(shakerCount);
-  const head = `シェイカー: ${shakerCount}  倍率: x${mul.toFixed(2)}（+${(mul - 1).toFixed(2)}）`;
-  const lines = [];
-  for (const k of PROTEIN_STATS) {
-    const raw = rawProtein?.[k] ?? 0;
-    const ap = appliedProtein?.[k] ?? 0;
-    if (raw !== 0 || ap !== 0) lines.push(`${k}: ${raw} → ${ap}`);
+// ====== 基礎 ======
+function readBaseStatsFromUI() {
+  const out = makeZeroStats();
+  for (const k of STATS) out[k] = n($(`base_${k}`)?.value, 0);
+  return out;
+}
+function applyBaseStatsToUI(stats) {
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = stats?.[k] ?? 0;
   }
-  return lines.length ? `${head}\n${lines.join("\n")}\n※movは対象外` : `${head}\nプロテイン補正：なし\n※movは対象外`;
+}
+function resetBaseStatsUI() {
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = "0";
+  }
 }
 
+// ====== TOML（簡易） ======
 function parseMiniToml(text) {
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l && l !== "+++" && !l.startsWith("#"));
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l && l !== "+++" && !l.startsWith("#"));
+
   const item = { base_add: {} };
   let section = "";
+
   for (const line of lines) {
     const sec = line.match(/^\[(.+?)\]$/);
     if (sec) { section = sec[1]; continue; }
+
     const kv = line.match(/^([A-Za-z0-9_]+)\s*=\s*(.+)$/);
     if (!kv) continue;
+
     const key = kv[1];
     let raw = kv[2].trim();
     if (raw.startsWith('"') && raw.endsWith('"')) raw = raw.slice(1, -1);
+
     const value = n(raw, raw);
     if (section === "base_add") item.base_add[key] = n(value, 0);
     else item[key] = value;
   }
+
   item.id = item.id || item.title || "unknown";
   return item;
 }
@@ -122,15 +156,18 @@ async function loadToml(dir, file) {
   return parseMiniToml(await res.text());
 }
 
+// ====== UI（select） ======
 function fillSelect(selectEl, items) {
   selectEl.innerHTML = "";
   selectEl.append(new Option("（なし）", ""));
   for (const it of items) selectEl.append(new Option(it.title ?? it.id, it.id));
 }
 
+// ====== UI（表） ======
 function buildTableRows() {
   const tbody = $("statsTbody");
   if (!tbody) return false;
+
   tbody.innerHTML = "";
   for (const k of STATS) {
     const tr = document.createElement("tr");
@@ -160,6 +197,7 @@ function buildTableRows() {
 function renderTable(basePlusProtein, equip, total) {
   const tbody = $("statsTbody");
   if (!tbody) return;
+
   for (const tr of tbody.querySelectorAll("tr")) {
     const k = tr.dataset.stat;
     const b = basePlusProtein?.[k] ?? 0;
@@ -174,53 +212,39 @@ function renderTable(basePlusProtein, equip, total) {
   }
 }
 
-function readBaseStatsFromUI() {
-  const out = makeZeroStats();
-  for (const k of STATS) out[k] = n($(`base_${k}`)?.value, 0);
-  return out;
-}
-function applyBaseStatsToUI(stats) {
-  for (const k of STATS) {
-    const el = $(`base_${k}`);
-    if (el) el.value = stats?.[k] ?? 0;
-  }
-}
-function resetBaseStatsUI() {
-  for (const k of STATS) {
-    const el = $(`base_${k}`);
-    if (el) el.value = "0";
-  }
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
+// ====== main ======
+async function main() {
   setErr("");
 
   if (!buildTableRows()) {
-    setErr("statsTbody が見つかりません。status.md を置き換えたか確認してください。");
+    setErr("statsTbody が見つかりません（status.md の置き換え漏れの可能性）");
     return;
   }
 
-  // ★ここが今回の核心：shakerCount 要素が無いと絶対に倍率が 1 のまま
-  if (!$("shakerCount")) {
-    setErr("shakerCount（シェイカー入力欄）が見つかりません。status.md の置き換え漏れの可能性があります。");
-  }
+  // 主要入力欄の存在チェック（欠けてたら静かにエラーだけ出す）
+  if (!$("shakerCount")) setErr("shakerCount が見つかりません（status.md の置き換え漏れの可能性）");
 
   const saved = loadState();
-  const proteinInfo = $("proteinInfo");
 
+  // スロットロード：1つ失敗しても他は動く
   const slotItems = {};
   const loadErrors = [];
 
   for (const s of SLOTS) {
     const sel = $(`select_${s.key}`);
     slotItems[s.key] = [];
-    if (!sel) { loadErrors.push(`select_${s.key} が見つかりません`); continue; }
+
+    if (!sel) {
+      loadErrors.push(`select_${s.key} が見つかりません`);
+      continue;
+    }
 
     try {
       const files = await loadIndex(s.indexUrl);
       const items = [];
       for (const f of files) items.push(await loadToml(s.itemDir, f));
       slotItems[s.key] = items;
+
       fillSelect(sel, items);
       if (saved?.equip?.[s.key]) sel.value = saved.equip[s.key];
     } catch (e) {
@@ -231,6 +255,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     sel.addEventListener("change", recalc);
   }
 
+  // 復元
   applyBaseStatsToUI(saved?.base);
   applyShakerToUI(saved?.shakerCount);
   applyProteinToUI(saved?.proteinRaw);
@@ -241,19 +266,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   $("recalcBtn")?.addEventListener("click", recalc);
   $("resetBtn")?.addEventListener("click", () => { resetBaseStatsUI(); recalc(); });
+
   $("clearSaveBtn")?.addEventListener("click", () => {
     clearState();
     resetBaseStatsUI();
     resetProteinUI();
     applyShakerToUI(0);
-    for (const s of SLOTS) { const sel = $(`select_${s.key}`); if (sel) sel.value = ""; }
+    for (const s of SLOTS) {
+      const sel = $(`select_${s.key}`);
+      if (sel) sel.value = "";
+    }
     recalc();
   });
 
   function recalc() {
     const baseRaw = readBaseStatsFromUI();
-    const shakerCount = readShakerFromUI();
 
+    const shakerCount = readShakerFromUI();
     const proteinRaw = readProteinRawFromUI();
     const proteinApplied = applyShakerToProtein(proteinRaw, shakerCount);
 
@@ -261,22 +290,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let equipSum = makeZeroStats();
     const equipState = {};
+
     for (const s of SLOTS) {
       const sel = $(`select_${s.key}`);
       const id = sel?.value || "";
       equipState[s.key] = id;
+
       const chosen = (slotItems[s.key] || []).find((it) => it.id === id);
       equipSum = addStats(equipSum, chosen?.base_add ?? {});
     }
 
     const total = addStats(basePlusProtein, equipSum);
 
-    if (proteinInfo) proteinInfo.textContent = proteinInfoText(proteinRaw, shakerCount, proteinApplied);
-    setErr((loadErrors.length ? loadErrors.join("\n") : "") + ( $("shakerCount") ? "" : "\nshakerCount が見つかりません（status.md未更新の可能性）" ));
+    // 通常は非表示。問題がある時だけ出す
+    setErr(loadErrors.length ? loadErrors.join("\n") : "");
 
     renderTable(basePlusProtein, equipSum, total);
     saveState({ base: baseRaw, shakerCount, proteinRaw, equip: equipState });
   }
 
   recalc();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  main().catch((e) => {
+    console.error(e);
+    setErr(String(e?.message ?? e));
+  });
 });
