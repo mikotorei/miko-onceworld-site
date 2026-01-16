@@ -21,6 +21,13 @@ title: "主人公ステータス・シミュレーター"
   <h2>プロテイン（ステータス別）</h2>
   <div class="hint">※ mov は対象外（入力欄なし）</div>
 
+  <div class="row">
+    <label>プロテインシェイカー（共通）
+      <input id="shakerCount" type="number" inputmode="numeric" min="0" value="0" />
+    </label>
+    <div class="hint">所持数 1 につきプロテイン効果 +1%</div>
+  </div>
+
   <div class="protein-grid">
     <label>vit <input id="protein_vit" type="number" inputmode="numeric" min="0" value="0" /></label>
     <label>spd <input id="protein_spd" type="number" inputmode="numeric" min="0" value="0" /></label>
@@ -80,6 +87,8 @@ title: "主人公ステータス・シミュレーター"
   .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
   .grid label { display:flex; justify-content:space-between; gap: 8px; align-items:center; }
   .grid input { width: 72px; }
+
+  #shakerCount { width: 96px; }
 
   .protein-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 6px 0 8px; }
   .protein-grid label { display:flex; justify-content:space-between; align-items:center; gap: 10px; }
