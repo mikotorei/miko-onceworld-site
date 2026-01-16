@@ -1,8 +1,30 @@
 // static/js/status-sim.js
 // 目的：weapon を選ぶ → base_add（加算）だけ反映して表示する（最小構成）
+// 重要：GitHub Pages などサブパス配信でも動くように、script の URL から配信ルートを推定する
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const $ = (id) => document.getElementById(id);
+
+/**
+ * 配信ルート（/REPO_NAME など）を含めた「静的ファイルの基点」を返す
+ * 例:
+ *  - https://example.github.io/REPO/js/status-sim.js を読んでいれば
+ *    => https://example.github.io/REPO
+ *  - ルート配信なら => https://example.github.io
+ */
+function getAssetBaseUrl() {
+  const scriptEl = document.currentScript;
+  if (!scriptEl || !scriptEl.src) {
+    // 念のためのフォールバック（通常ここには来ない）
+    return window.location.origin;
+  }
+  const u = new URL(scriptEl.src, window.location.href);
+  // /REPO/js/status-sim.js -> /REPO
+  const basePath = u.pathname.replace(/\/js\/status-sim\.js$/, "");
+  return `${u.origin}${basePath}`;
+}
+
+const ASSET_BASE = getAssetBaseUrl();
 
 function makeZeroStats() {
   return Object.fromEntries(STATS.map((k) => [k, 0]));
@@ -54,9 +76,7 @@ function parseMiniToml(text) {
     const key = kv[1];
     let raw = kv[2].trim();
 
-    if (raw.startsWith('"') && raw.endsWith('"')) {
-      raw = raw.slice(1, -1);
-    }
+    if (raw.startsWith('"') && raw.endsWith('"')) raw = raw.slice(1, -1);
 
     const num = Number(raw);
     const value =
@@ -74,14 +94,16 @@ function parseMiniToml(text) {
 }
 
 async function loadWeaponIndex() {
-  const res = await fetch("/db/equip/weapon/index.json", { cache: "no-store" });
-  if (!res.ok) throw new Error("index.json を読み込めません: /db/equip/weapon/index.json");
+  const url = `${ASSET_BASE}/db/equip/weapon/index.json`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`index.json を読み込めません: ${url}`);
   return await res.json();
 }
 
 async function loadWeaponToml(filename) {
-  const res = await fetch(`/db/equip/weapon/${filename}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`TOML を読み込めません: ${filename}`);
+  const url = `${ASSET_BASE}/db/equip/weapon/${filename}`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`TOML を読み込めません: ${url}`);
   const text = await res.text();
   return parseMiniToml(text);
 }
