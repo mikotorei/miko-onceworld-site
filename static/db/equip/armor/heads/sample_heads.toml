@@ -1,0 +1,7 @@
++++
+title = "サンプルグローブ"
+slot = "hands"
+
+[base_add]
+atk = 2
++++
