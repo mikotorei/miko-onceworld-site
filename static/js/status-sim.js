@@ -1,30 +1,22 @@
 // static/js/status-sim.js
-// 目的：weapon を選ぶ → base_add（加算）だけ反映して表示する（最小構成）
-// 重要：GitHub Pages などサブパス配信でも動くように、script の URL から配信ルートを推定する
+// B: 主人公の基礎ステ入力 + 装備加算（base_add） + 合計表示
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const $ = (id) => document.getElementById(id);
 
-/**
- * 配信ルート（/REPO_NAME など）を含めた「静的ファイルの基点」を返す
- * 例:
- *  - https://example.github.io/REPO/js/status-sim.js を読んでいれば
- *    => https://example.github.io/REPO
- *  - ルート配信なら => https://example.github.io
- */
 function getAssetBaseUrl() {
   const scriptEl = document.currentScript;
-  if (!scriptEl || !scriptEl.src) {
-    // 念のためのフォールバック（通常ここには来ない）
-    return window.location.origin;
-  }
+  if (!scriptEl || !scriptEl.src) return window.location.origin;
   const u = new URL(scriptEl.src, window.location.href);
-  // /REPO/js/status-sim.js -> /REPO
   const basePath = u.pathname.replace(/\/js\/status-sim\.js$/, "");
   return `${u.origin}${basePath}`;
 }
-
 const ASSET_BASE = getAssetBaseUrl();
+
+function n(v, fb = 0) {
+  const x = Number(v);
+  return Number.isFinite(x) ? x : fb;
+}
 
 function makeZeroStats() {
   return Object.fromEntries(STATS.map((k) => [k, 0]));
@@ -36,10 +28,6 @@ function addStats(a, b) {
   return out;
 }
 
-function itemToAddStats(item) {
-  return addStats(makeZeroStats(), item?.base_add ?? {});
-}
-
 function renderStats(obj) {
   const ordered = Object.fromEntries(STATS.map((k) => [k, obj?.[k] ?? 0]));
   return JSON.stringify(ordered, null, 2);
@@ -47,10 +35,8 @@ function renderStats(obj) {
 
 /**
  * 超ミニTOMLパーサ（今回の用途限定）
- * 対応する形式：
  *  title = "..."
  *  slot = "weapon"
- *  series = "..."
  *  [base_add]
  *  atk = 50
  */
@@ -129,36 +115,68 @@ function findById(items, id) {
   return items.find((it) => it.id === id) ?? null;
 }
 
+function readBaseStatsFromUI() {
+  const out = makeZeroStats();
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    out[k] = n(el?.value, 0);
+  }
+  return out;
+}
+
+function resetBaseStatsUI() {
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = "0";
+  }
+}
+
 async function main() {
   const weaponSelect = $("weaponSelect");
-  const resultBox = $("resultBox");
+  const baseBox = $("baseBox");
+  const equipBox = $("equipBox");
+  const totalBox = $("totalBox");
   const recalcBtn = $("recalcBtn");
+  const resetBtn = $("resetBtn");
 
-  if (!weaponSelect || !resultBox) return;
+  if (!weaponSelect || !baseBox || !equipBox || !totalBox) return;
 
   const files = await loadWeaponIndex();
-
-  const items = [];
-  for (const f of files) items.push(await loadWeaponToml(f));
-
-  fillSelect(weaponSelect, items);
+  const weaponItems = [];
+  for (const f of files) weaponItems.push(await loadWeaponToml(f));
+  fillSelect(weaponSelect, weaponItems);
 
   const recalc = () => {
-    const w = findById(items, weaponSelect.value);
-    const added = itemToAddStats(w);
-    resultBox.textContent = renderStats(added);
+    const base = readBaseStatsFromUI();
+    const w = findById(weaponItems, weaponSelect.value);
+    const equip = addStats(makeZeroStats(), w?.base_add ?? {});
+    const total = addStats(base, equip);
+
+    baseBox.textContent = renderStats(base);
+    equipBox.textContent = renderStats(equip);
+    totalBox.textContent = renderStats(total);
   };
 
+  // 入力変化で自動再計算
+  for (const k of STATS) {
+    const el = $(`base_${k}`);
+    el?.addEventListener("input", recalc);
+  }
   weaponSelect.addEventListener("change", recalc);
   recalcBtn?.addEventListener("click", recalc);
+
+  resetBtn?.addEventListener("click", () => {
+    resetBaseStatsUI();
+    recalc();
+  });
 
   recalc();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   main().catch((e) => {
-    const resultBox = $("resultBox");
-    if (resultBox) resultBox.textContent = String(e?.message ?? e);
+    const totalBox = $("totalBox");
+    if (totalBox) totalBox.textContent = String(e?.message ?? e);
     console.error(e);
   });
 });
