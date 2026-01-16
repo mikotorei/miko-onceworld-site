@@ -52,13 +52,9 @@
     <label>mov <input id="base_mov" type="number" inputmode="numeric" value="0" /></label>
   </div>
   <hr />
-  <h2>プロテイン（ステータス別）</h2>
-  <div class="hint">※ mov は対象外（入力欄なし）</div>
+  <h2>プロテイン</h2>
   <div class="row">
-    <label>プロテインシェイカー（共通）
-      <input id="shakerCount" type="number" inputmode="numeric" min="0" value="0" />
-    </label>
-    <div class="hint">所持数 1 につきプロテイン効果 +1%</div>
+    <label>shaker <input id="shakerCount" type="number" inputmode="numeric" min="0" value="0" /></label>
   </div>
   <div class="protein-grid">
     <label>vit <input id="protein_vit" type="number" inputmode="numeric" min="0" value="0" /></label>
@@ -69,7 +65,6 @@
     <label>mdef <input id="protein_mdef" type="number" inputmode="numeric" min="0" value="0" /></label>
     <label>luk <input id="protein_luk" type="number" inputmode="numeric" min="0" value="0" /></label>
   </div>
-  <div class="note" id="proteinInfo"></div>
   <div class="error" id="errBox"></div>
   <hr />
   <h2>装備</h2>
@@ -103,9 +98,6 @@
 <style>
   .sim { max-width: 980px; }
   .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin: 8px 0; }
-  .hint { opacity: .75; font-size: .95em; margin: 6px 0 8px; }
-  .note { margin: 8px 0 0; opacity: .85; white-space: pre-wrap; }
-  .error { margin: 8px 0 0; color: #b00020; white-space: pre-wrap; }
 
   .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
   .grid label { display:flex; justify-content:space-between; gap: 8px; align-items:center; }
@@ -126,6 +118,10 @@
   .stats-table th { background: rgba(0,0,0,0.05); text-align: left; }
   .stats-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .stats-table tr.active { background: rgba(255, 230, 150, 0.35); }
+
+  /* エラーは通常非表示（出た時だけ表示） */
+  .error { margin: 8px 0 0; color: #b00020; white-space: pre-wrap; display: none; }
+  .error.is-visible { display: block; }
 </style>
 <script src="https://matsumoto0106.github.io/miko-onceworld-site/js/status-sim.js"></script>
 
