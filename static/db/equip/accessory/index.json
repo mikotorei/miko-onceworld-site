@@ -1,3 +1,5 @@
 [
-  "test_accessory.toml"
+  "test_acc_flat.toml",
+  "test_acc_rate.toml",
+  "test_acc_both.toml"
 ]
