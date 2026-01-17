@@ -1,0 +1,11 @@
++++
+id = "Hellfirehead"
+title = "獄炎兜"
+slot = "head"
+series = "Hellfire"
++++
+
+[base_add]
+atk = 140
+int = 140
+luk = 100
