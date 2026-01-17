@@ -103,33 +103,124 @@ title: "主人公ステータス・シミュレーター"
 
 <style>
   .sim { max-width: 980px; }
-  .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin: 8px 0; }
-  .note { opacity: .85; }
 
-  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-  .grid label { display:flex; justify-content:space-between; gap: 8px; align-items:center; }
-  .grid input { width: 72px; }
+  h2 { margin: 16px 0 10px; }
+  hr { margin: 14px 0; opacity: .4; }
 
-  #basePointTotal, #shakerCount { width: 96px; }
+  .row {
+    display:flex;
+    gap:12px;
+    align-items:center;
+    flex-wrap:wrap;
+    margin: 8px 0;
+  }
 
-  .protein-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 6px 0 8px; }
-  .protein-grid label { display:flex; justify-content:space-between; align-items:center; gap: 10px; }
-  .protein-grid input { width: 96px; }
+  .note { opacity: .8; }
 
-  .equip-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin: 8px 0; }
-  .equip-grid label { display:flex; justify-content:space-between; align-items:center; gap: 10px; }
-  .equip-grid select { min-width: 140px; }
-  .equip-grid .lv { opacity:.7; }
-  .equip-grid input[type="number"] { width: 72px; }
+  /* ラベル内の並びを安定化 */
+  label {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    padding: 6px 10px;
+    border: 1px solid rgba(0,0,0,.12);
+    border-radius: 10px;
+    background: rgba(0,0,0,.02);
+  }
 
-  .stats-table { width:100%; border-collapse: collapse; }
-  .stats-table th, .stats-table td { border: 1px solid rgba(0,0,0,0.15); padding: 8px 10px; }
-  .stats-table th { background: rgba(0,0,0,0.05); text-align: left; }
-  .stats-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  .stats-table tr.active { background: rgba(255, 230, 150, 0.35); }
+  input[type="number"], select {
+    border: 1px solid rgba(0,0,0,.18);
+    border-radius: 10px;
+    padding: 6px 10px;
+    background: #fff;
+  }
 
-  .error { margin: 8px 0 0; color: #b00020; white-space: pre-wrap; display: none; }
+  input[type="number"] {
+    width: 84px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  select {
+    min-width: 160px;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  /* グリッド（PCは複数列、スマホは自動で落ちる） */
+  .grid, .protein-grid, .equip-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin: 6px 0 8px;
+  }
+
+  /* 装備だけ少し広め */
+  .equip-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .equip-grid label {
+    justify-content:flex-start;
+  }
+
+  .equip-grid select {
+    flex: 1;
+    max-width: none;
+  }
+
+  .equip-grid .lv {
+    opacity:.65;
+    margin-left: 8px;
+  }
+
+  /* ボタン */
+  button {
+    border: 1px solid rgba(0,0,0,.18);
+    border-radius: 12px;
+    padding: 8px 12px;
+    background: #fff;
+    cursor: pointer;
+  }
+  button:hover { background: rgba(0,0,0,.04); }
+
+  /* 表 */
+  .stats-table {
+    width:100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+  .stats-table th, .stats-table td {
+    border: 1px solid rgba(0,0,0,0.12);
+    padding: 8px 10px;
+  }
+  .stats-table th {
+    background: rgba(0,0,0,0.05);
+    text-align: left;
+  }
+  .stats-table td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats-table tr.active { background: rgba(255, 230, 150, 0.25); }
+
+  /* エラー */
+  .error {
+    margin: 8px 0 0;
+    color: #b00020;
+    white-space: pre-wrap;
+    display: none;
+  }
   .error.is-visible { display: block; }
+
+  /* スマホ：さらにタップしやすく */
+  @media (max-width: 520px) {
+    input[type="number"] { width: 96px; }
+    label { padding: 8px 12px; }
+    button { width: 100%; }
+  }
 </style>
 
 <script src="/js/status-sim.js"></script>
