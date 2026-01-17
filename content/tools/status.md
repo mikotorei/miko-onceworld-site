@@ -2,96 +2,334 @@
 title: "主人公ステータス・シミュレーター"
 ---
 
-<style>
-  .sim-wrap{max-width:980px;margin:0 auto;padding:12px}
-  .sim-card{border:1px solid #ddd;border-radius:10px;padding:12px;margin:12px 0}
-  .sim-grid{display:grid;grid-template-columns:1fr;gap:10px}
-  @media(min-width:860px){.sim-grid{grid-template-columns:1fr 1fr}}
-  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .row label{min-width:90px}
-  select,input{max-width:100%;padding:6px 8px;border:1px solid #ccc;border-radius:8px}
-  input[type="number"]{width:110px}
-  .small{font-size:12px;opacity:.75}
-  table{width:100%;border-collapse:collapse}
-  th,td{border-bottom:1px solid #eee;padding:8px}
-  th{background:#fff}
-  td.num{text-align:right;font-variant-numeric:tabular-nums}
-</style>
+<div class="sim">
 
-<div class="sim-wrap">
+<h2>主人公 振り分けポイント</h2>
 
-  <div class="sim-card">
-    <div class="sim-grid">
-      <div>
-        <div class="small">ステ振り（movは固定）</div>
-        <div class="row"><label>vit</label><input id="base_vit" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>spd</label><input id="base_spd" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>atk</label><input id="base_atk" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>int</label><input id="base_int" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>def</label><input id="base_def" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>mdef</label><input id="base_mdef" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>luk</label><input id="base_luk" type="number" min="0" step="1" value="0"></div>
-        <div class="small">mov は内部で固定（JS側）</div>
-      </div>
-      <div>
-        <div class="small">プロテイン（mov除外）</div>
-        <div class="row"><label>シェイカー</label><input id="shakerCount" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>vit</label><input id="protein_vit" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>spd</label><input id="protein_spd" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>atk</label><input id="protein_atk" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>int</label><input id="protein_int" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>def</label><input id="protein_def" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>mdef</label><input id="protein_mdef" type="number" min="0" step="1" value="0"></div>
-        <div class="row"><label>luk</label><input id="protein_luk" type="number" min="0" step="1" value="0"></div>
-      </div>
+<div class="row">
+  <label class="pill">合計 <input id="basePointTotal" type="number" min="0" value="0"></label>
+  <div id="basePointInfo" class="note"></div>
+</div>
+
+<div class="grid">
+  <label class="pill">vit <input id="base_vit" type="number" min="0" value="0"></label>
+  <label class="pill">spd <input id="base_spd" type="number" min="0" value="0"></label>
+  <label class="pill">atk <input id="base_atk" type="number" min="0" value="0"></label>
+  <label class="pill">int <input id="base_int" type="number" min="0" value="0"></label>
+  <label class="pill">def <input id="base_def" type="number" min="0" value="0"></label>
+  <label class="pill">mdef <input id="base_mdef" type="number" min="0" value="0"></label>
+  <label class="pill">luk <input id="base_luk" type="number" min="0" value="0"></label>
+</div>
+
+<hr>
+
+<h2>結果</h2>
+
+<table class="stats-table">
+  <thead>
+    <tr>
+      <th>ステ</th>
+      <th>基礎＋プロテイン</th>
+      <th>装備</th>
+      <th>合計</th>
+    </tr>
+  </thead>
+  <tbody id="statsTbody"></tbody>
+</table>
+
+<div class="row buttons">
+  <button id="recalcBtn" type="button">再計算</button>
+  <button id="resetBtn" type="button">振り分けリセット</button>
+  <button id="clearSaveBtn" type="button">保存クリア</button>
+</div>
+
+<div class="error" id="errBox"></div>
+
+<hr>
+
+<details class="fold" id="foldProtein">
+<summary>プロテイン</summary>
+
+<div class="row">
+  <label class="pill">シェイカー <input id="shakerCount" type="number" min="0" value="0"></label>
+</div>
+
+<div class="grid">
+  <label class="pill">vit <input id="protein_vit" type="number" min="0" value="0"></label>
+  <label class="pill">spd <input id="protein_spd" type="number" min="0" value="0"></label>
+  <label class="pill">atk <input id="protein_atk" type="number" min="0" value="0"></label>
+  <label class="pill">int <input id="protein_int" type="number" min="0" value="0"></label>
+  <label class="pill">def <input id="protein_def" type="number" min="0" value="0"></label>
+  <label class="pill">mdef <input id="protein_mdef" type="number" min="0" value="0"></label>
+  <label class="pill">luk <input id="protein_luk" type="number" min="0" value="0"></label>
+</div>
+</details>
+
+<details class="fold" id="foldEquip" open>
+<summary>装備</summary>
+
+<div class="equip-grid">
+
+  <div class="equip-row">
+    <div class="slot">武器</div>
+    <div class="main"><select id="select_weapon"></select></div>
+    <div class="lvtag">+</div>
+    <div class="lvbox"><input id="level_weapon" type="number" min="0" value="0"></div>
+  </div>
+
+  <div class="equip-row">
+    <div class="slot">頭</div>
+    <div class="main"><select id="select_head"></select></div>
+    <div class="lvtag">+</div>
+    <div class="lvbox"><input id="level_head" type="number" min="0" value="0"></div>
+  </div>
+
+  <div class="equip-row">
+    <div class="slot">体</div>
+    <div class="main"><select id="select_body"></select></div>
+    <div class="lvtag">+</div>
+    <div class="lvbox"><input id="level_body" type="number" min="0" value="0"></div>
+  </div>
+
+  <div class="equip-row">
+    <div class="slot">腕</div>
+    <div class="main"><select id="select_hands"></select></div>
+    <div class="lvtag">+</div>
+    <div class="lvbox"><input id="level_hands" type="number" min="0" value="0"></div>
+  </div>
+
+  <div class="equip-row">
+    <div class="slot">足</div>
+    <div class="main"><select id="select_feet"></select></div>
+    <div class="lvtag">+</div>
+    <div class="lvbox"><input id="level_feet" type="number" min="0" value="0"></div>
+  </div>
+
+  <div class="equip-row">
+    <div class="slot">盾</div>
+    <div class="main"><select id="select_shield"></select></div>
+    <div class="lvtag">+</div>
+    <div class="lvbox"><input id="level_shield" type="number" min="0" value="0"></div>
+  </div>
+
+  <div class="equip-row">
+    <div class="slot">アクセ1</div>
+    <div class="main"><select id="select_accessory1"></select></div>
+    <div class="lvtag">Lv</div>
+    <div class="lvbox"><input id="level_accessory1" type="number" min="1" value="1"></div>
+  </div>
+
+  <div class="equip-row">
+    <div class="slot">アクセ2</div>
+    <div class="main"><select id="select_accessory2"></select></div>
+    <div class="lvtag">Lv</div>
+    <div class="lvbox"><input id="level_accessory2" type="number" min="1" value="1"></div>
+  </div>
+
+  <div class="equip-row">
+    <div class="slot">アクセ3</div>
+    <div class="main"><select id="select_accessory3"></select></div>
+    <div class="lvtag">Lv</div>
+    <div class="lvbox"><input id="level_accessory3" type="number" min="1" value="1"></div>
+  </div>
+
+</div>
+</details>
+
+<!-- ★ここから追加：ペット（UIのみ） -->
+<details class="fold" id="foldPet" open>
+<summary>ペットスキル</summary>
+
+<div class="equip-grid">
+
+  <div class="equip-row pet-row">
+    <div class="slot">ペット1</div>
+    <div class="main"><select id="select_pet1"></select></div>
+    <div class="lvtag">段階</div>
+    <div class="lvbox">
+      <select id="stage_pet1">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
     </div>
   </div>
 
-  <div class="sim-card">
-    <div class="small">装備（武器＋防具）</div>
-    <div class="row">
-      <label>武器</label>
-      <select id="select_weapon"></select>
-      <span class="small">+<input id="level_weapon" type="number" min="0" step="1" value="0"></span>
-    </div>
-    <div class="row"><label>頭</label><select id="select_head"></select><span class="small">+<input id="level_head" type="number" min="0" step="1" value="0"></span></div>
-    <div class="row"><label>胴</label><select id="select_body"></select><span class="small">+<input id="level_body" type="number" min="0" step="1" value="0"></span></div>
-    <div class="row"><label>手</label><select id="select_hands"></select><span class="small">+<input id="level_hands" type="number" min="0" step="1" value="0"></span></div>
-    <div class="row"><label>足</label><select id="select_feet"></select><span class="small">+<input id="level_feet" type="number" min="0" step="1" value="0"></span></div>
-    <div class="row"><label>盾</label><select id="select_shield"></select><span class="small">+<input id="level_shield" type="number" min="0" step="1" value="0"></span></div>
-    <div class="small" style="margin-top:10px">アクセ（最大3枠）</div>
-    <div class="row"><label>アクセ1</label><select id="select_accessory1"></select><span class="small">Lv<input id="level_accessory1" type="number" min="1" step="1" value="1"></span></div>
-    <div class="row"><label>アクセ2</label><select id="select_accessory2"></select><span class="small">Lv<input id="level_accessory2" type="number" min="1" step="1" value="1"></span></div>
-    <div class="row"><label>アクセ3</label><select id="select_accessory3"></select><span class="small">Lv<input id="level_accessory3" type="number" min="1" step="1" value="1"></span></div>
-    <div class="small" style="margin-top:10px">ペット（最大3体）</div>
-    <div class="row">
-      <label>ペット1</label><select id="select_pet1"></select>
-      <span class="small">段階</span><input id="stage_pet1" type="number" min="0" max="4" step="1" value="0">
-    </div>
-    <div class="row">
-      <label>ペット2</label><select id="select_pet2"></select>
-      <span class="small">段階</span><input id="stage_pet2" type="number" min="0" max="4" step="1" value="0">
-    </div>
-    <div class="row">
-      <label>ペット3</label><select id="select_pet3"></select>
-      <span class="small">段階</span><input id="stage_pet3" type="number" min="0" max="4" step="1" value="0">
+  <div class="equip-row pet-row">
+    <div class="slot">ペット2</div>
+    <div class="main"><select id="select_pet2"></select></div>
+    <div class="lvtag">段階</div>
+    <div class="lvbox">
+      <select id="stage_pet2">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
     </div>
   </div>
 
-  <div class="sim-card">
-    <table>
-      <thead>
-        <tr>
-          <th>stat</th>
-          <th class="num">基礎+プロテイン</th>
-          <th class="num">装備/実数</th>
-          <th class="num">合計</th>
-        </tr>
-      </thead>
-      <tbody id="statsTbody"></tbody>
-    </table>
+  <div class="equip-row pet-row">
+    <div class="slot">ペット3</div>
+    <div class="main"><select id="select_pet3"></select></div>
+    <div class="lvtag">段階</div>
+    <div class="lvbox">
+      <select id="stage_pet3">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+    </div>
   </div>
 
 </div>
 
-<script defer src="/js/status-sim.js"></script>
+<div class="note" style="margin-top:6px; opacity:.75;">
+  段階：0=未解放 / 1=Lv31 / 2=Lv71 / 3=Lv121 / 4=Lv181
+</div>
+</details>
+
+</div>
+
+<style>
+  .sim { max-width: 980px; }
+  hr { margin: 14px 0; opacity: .4; }
+
+  .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin: 8px 0; }
+  .note { opacity: .8; }
+
+  .pill{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; padding: 6px 10px;
+    border: 1px solid rgba(0,0,0,.12);
+    border-radius: 12px;
+    background: rgba(0,0,0,.02);
+  }
+
+  input[type="number"], select{
+    border: 1px solid rgba(0,0,0,.18);
+    border-radius: 12px;
+    padding: 6px 10px;
+    background: #fff;
+  }
+
+  .sim * { box-sizing: border-box; }
+  select { min-width: 0; max-width: 100%; }
+
+  input[type="number"]{
+    width: 84px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap:10px;
+    margin: 6px 0 8px;
+  }
+
+  .fold{
+    border: 1px solid rgba(0,0,0,.12);
+    border-radius: 14px;
+    padding: 8px 10px;
+    background: rgba(0,0,0,.01);
+    margin: 10px 0;
+  }
+  .fold > summary{
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    padding: 4px 2px;
+  }
+  .fold[open] > summary { margin-bottom: 8px; }
+
+  .equip-grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:10px;
+    margin: 6px 0 8px;
+  }
+
+  .equip-row{
+    display:grid;
+    grid-template-columns: 72px 1fr 44px 120px;
+    gap:10px;
+    align-items:center;
+
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,.12);
+    border-radius: 12px;
+    background: rgba(0,0,0,.02);
+  }
+
+  .equip-row .slot{
+    opacity: .85;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .equip-row .main{ min-width: 0; }
+  .equip-row .main select{ width: 100%; }
+
+  .equip-row .lvtag{
+    opacity: .65;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .equip-row .lvbox input,
+  .equip-row .lvbox select{
+    width: 100%;
+  }
+
+  .buttons{ margin-top: 10px; }
+  button{
+    border: 1px solid rgba(0,0,0,.18);
+    border-radius: 12px;
+    padding: 8px 12px;
+    background: #fff;
+    cursor: pointer;
+  }
+  button:hover{ background: rgba(0,0,0,.04); }
+
+  .stats-table{
+    width:100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+  .stats-table th, .stats-table td{
+    border: 1px solid rgba(0,0,0,0.12);
+    padding: 8px 10px;
+  }
+  .stats-table th{ background: rgba(0,0,0,0.05); text-align:left; }
+  .stats-table td.num{ text-align:right; font-variant-numeric: tabular-nums; }
+
+  .error{ margin: 8px 0 0; color: #b00020; white-space: pre-wrap; display: none; }
+  .error.is-visible{ display: block; }
+
+  @media (max-width: 520px){
+    input[type="number"]{ width: 96px; }
+    button{ width: 100%; }
+
+    .equip-row{
+      grid-template-columns: 64px 1fr;
+      grid-template-areas:
+        "slot main"
+        "lvtag lvbox";
+      row-gap: 8px;
+    }
+    .equip-row .slot { grid-area: slot; }
+    .equip-row .main { grid-area: main; }
+    .equip-row .lvtag{ grid-area: lvtag; text-align:left; padding-left: 2px; }
+    .equip-row .lvbox{ grid-area: lvbox; }
+  }
+</style>
+
+<script src="/js/status-sim.js"></script>
