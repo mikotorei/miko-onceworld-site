@@ -1,0 +1,13 @@
++++
+id = "test_acc_both"
+title = "テストアクセ（実数＋割合）"
+slot = "accessory"
+series = ""
++++
+
+[base_add]
+atk = 10
+def = 5
+
+[base_rate]
+atk = 5
