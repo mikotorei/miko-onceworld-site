@@ -12,13 +12,13 @@ title: "主人公ステータス・シミュレーター"
 </div>
 
 <div class="grid">
-  <label class="pill">vit <input id="base_vit" type="number" min="0" value="0"></label>
-  <label class="pill">spd <input id="base_spd" type="number" min="0" value="0"></label>
-  <label class="pill">atk <input id="base_atk" type="number" min="0" value="0"></label>
-  <label class="pill">int <input id="base_int" type="number" min="0" value="0"></label>
-  <label class="pill">def <input id="base_def" type="number" min="0" value="0"></label>
-  <label class="pill">mdef <input id="base_mdef" type="number" min="0" value="0"></label>
-  <label class="pill">luk <input id="base_luk" type="number" min="0" value="0"></label>
+  <label class="pill">vit <input id="base_vit" type="number" min="1" value="1"></label>
+  <label class="pill">spd <input id="base_spd" type="number" min="1" value="1"></label>
+  <label class="pill">atk <input id="base_atk" type="number" min="1" value="1"></label>
+  <label class="pill">int <input id="base_int" type="number" min="1" value="1"></label>
+  <label class="pill">def <input id="base_def" type="number" min="1" value="1"></label>
+  <label class="pill">mdef <input id="base_mdef" type="number" min="1" value="1"></label>
+  <label class="pill">luk <input id="base_luk" type="number" min="1" value="1"></label>
 </div>
 
 <hr>
