@@ -1,0 +1,10 @@
++++
+id = "Platinumbody"
+title = "プラチナアーマー"
+slot = "body"
+series = "Platinum"
++++
+[base_add]
+vit = 115
+def = 40
+mdef = 88
