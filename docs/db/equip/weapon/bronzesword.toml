@@ -1,0 +1,9 @@
++++
+id = "bronzesword"
+title = "銅の剣"
+slot = "weapon"
++++
+
+[base_add]
+spd = 9
+atk = 27
