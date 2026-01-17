@@ -65,65 +65,109 @@ title: "主人公ステータス・シミュレーター"
 </div>
 </details>
 
-<details class="fold" id="foldEquip">
+<details class="fold" id="foldEquip" open>
 <summary>装備</summary>
 
 <div class="equip-grid">
 
-  <label class="equip-row">
-    <span class="slot">武器</span>
-    <select id="select_weapon"></select>
-    <span class="lv">+</span><input id="level_weapon" type="number" min="0" value="0">
-  </label>
+  <div class="equip-row">
+    <div class="slot">武器</div>
+    <div class="main">
+      <select id="select_weapon"></select>
+    </div>
+    <div class="lvtag">+</div>
+    <div class="lvbox">
+      <input id="level_weapon" type="number" min="0" value="0">
+    </div>
+  </div>
 
-  <label class="equip-row">
-    <span class="slot">頭</span>
-    <select id="select_head"></select>
-    <span class="lv">+</span><input id="level_head" type="number" min="0" value="0">
-  </label>
+  <div class="equip-row">
+    <div class="slot">頭</div>
+    <div class="main">
+      <select id="select_head"></select>
+    </div>
+    <div class="lvtag">+</div>
+    <div class="lvbox">
+      <input id="level_head" type="number" min="0" value="0">
+    </div>
+  </div>
 
-  <label class="equip-row">
-    <span class="slot">体</span>
-    <select id="select_body"></select>
-    <span class="lv">+</span><input id="level_body" type="number" min="0" value="0">
-  </label>
+  <div class="equip-row">
+    <div class="slot">体</div>
+    <div class="main">
+      <select id="select_body"></select>
+    </div>
+    <div class="lvtag">+</div>
+    <div class="lvbox">
+      <input id="level_body" type="number" min="0" value="0">
+    </div>
+  </div>
 
-  <label class="equip-row">
-    <span class="slot">腕</span>
-    <select id="select_hands"></select>
-    <span class="lv">+</span><input id="level_hands" type="number" min="0" value="0">
-  </label>
+  <div class="equip-row">
+    <div class="slot">腕</div>
+    <div class="main">
+      <select id="select_hands"></select>
+    </div>
+    <div class="lvtag">+</div>
+    <div class="lvbox">
+      <input id="level_hands" type="number" min="0" value="0">
+    </div>
+  </div>
 
-  <label class="equip-row">
-    <span class="slot">足</span>
-    <select id="select_feet"></select>
-    <span class="lv">+</span><input id="level_feet" type="number" min="0" value="0">
-  </label>
+  <div class="equip-row">
+    <div class="slot">足</div>
+    <div class="main">
+      <select id="select_feet"></select>
+    </div>
+    <div class="lvtag">+</div>
+    <div class="lvbox">
+      <input id="level_feet" type="number" min="0" value="0">
+    </div>
+  </div>
 
-  <label class="equip-row">
-    <span class="slot">盾</span>
-    <select id="select_shield"></select>
-    <span class="lv">+</span><input id="level_shield" type="number" min="0" value="0">
-  </label>
+  <div class="equip-row">
+    <div class="slot">盾</div>
+    <div class="main">
+      <select id="select_shield"></select>
+    </div>
+    <div class="lvtag">+</div>
+    <div class="lvbox">
+      <input id="level_shield" type="number" min="0" value="0">
+    </div>
+  </div>
 
-  <!-- アクセ3枠：Lv1が基礎 -->
-  <label class="equip-row">
-    <span class="slot">アクセ1</span>
-    <select id="select_accessory1"></select>
-    <span class="lv">Lv</span><input id="level_accessory1" type="number" min="1" value="1">
-  </label>
+  <div class="equip-row">
+    <div class="slot">アクセ1</div>
+    <div class="main">
+      <select id="select_accessory1"></select>
+    </div>
+    <div class="lvtag">Lv</div>
+    <div class="lvbox">
+      <input id="level_accessory1" type="number" min="1" value="1">
+    </div>
+  </div>
 
-  <label class="equip-row">
-    <span class="slot">アクセ2</span>
-    <select id="select_accessory2"></select>
-    <span class="lv">Lv</span><input id="level_accessory2" type="number" min="1" value="1">
-  </label>
+  <div class="equip-row">
+    <div class="slot">アクセ2</div>
+    <div class="main">
+      <select id="select_accessory2"></select>
+    </div>
+    <div class="lvtag">Lv</div>
+    <div class="lvbox">
+      <input id="level_accessory2" type="number" min="1" value="1">
+    </div>
+  </div>
 
-  <label class="equip-row">
-    <span class="slot">アクセ3</span>
-    <select id="select_accessory3"></select>
-    <span class="lv">Lv</span><input id="level_accessory3" type="number" min="1" value="1">
-  </label>
+  <div class="equip-row">
+    <div class="slot">アクセ3</div>
+    <div class="main">
+      <select id="select_accessory3"></select>
+    </div>
+    <div class="lvtag">Lv</div>
+    <div class="lvbox">
+      <input id="level_accessory3" type="number" min="1" value="1">
+    </div>
+  </div>
 
 </div>
 </details>
@@ -151,15 +195,15 @@ title: "主人公ステータス・シミュレーター"
     padding: 6px 10px;
     background: #fff;
   }
+
+  /* ★はみ出し対策（重要） */
+  .sim * { box-sizing: border-box; }
+  select { min-width: 0; max-width: 100%; }
+
   input[type="number"]{
     width: 84px;
     text-align: right;
     font-variant-numeric: tabular-nums;
-  }
-  select{
-    min-width: 160px;
-    width: 100%;
-    max-width: 420px;
   }
 
   .grid{
@@ -184,18 +228,48 @@ title: "主人公ステータス・シミュレーター"
   }
   .fold[open] > summary { margin-bottom: 8px; }
 
-  .equip-grid{ display:grid; grid-template-columns: 1fr; gap:10px; margin: 6px 0 8px; }
+  /* ---- 装備：崩れないグリッド ---- */
+  .equip-grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:10px;
+    margin: 6px 0 8px;
+  }
+
   .equip-row{
-    display:flex; align-items:center; gap:10px;
-    padding: 8px 10px;
+    display:grid;
+    grid-template-columns: 72px 1fr 28px 96px;
+    gap:10px;
+    align-items:center;
+
+    padding: 10px;
     border: 1px solid rgba(0,0,0,.12);
     border-radius: 12px;
     background: rgba(0,0,0,.02);
   }
-  .equip-row .slot{ width: 64px; opacity: .8; }
-  .equip-row select{ flex: 1; max-width: none; }
-  .equip-row .lv{ opacity: .65; }
-  .equip-row input[type="number"]{ width: 76px; }
+
+  .equip-row .slot{
+    opacity: .85;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .equip-row .main{
+    min-width: 0; /* ★selectのはみ出し防止 */
+  }
+  .equip-row .main select{
+    width: 100%;
+  }
+
+  .equip-row .lvtag{
+    opacity: .65;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .equip-row .lvbox input{
+    width: 100%;
+  }
 
   .buttons{ margin-top: 10px; }
   button{
@@ -219,16 +293,26 @@ title: "主人公ステータス・シミュレーター"
   }
   .stats-table th{ background: rgba(0,0,0,0.05); text-align:left; }
   .stats-table td.num{ text-align:right; font-variant-numeric: tabular-nums; }
-  .stats-table tr.active{ background: rgba(255, 230, 150, 0.25); }
 
   .error{ margin: 8px 0 0; color: #b00020; white-space: pre-wrap; display: none; }
   .error.is-visible{ display: block; }
 
+  /* ---- スマホ：2段にして操作性UP ---- */
   @media (max-width: 520px){
     input[type="number"]{ width: 96px; }
-    .equip-row .slot{ width: 56px; }
-    .equip-row input[type="number"]{ width: 86px; }
     button{ width: 100%; }
+
+    .equip-row{
+      grid-template-columns: 64px 1fr;
+      grid-template-areas:
+        "slot main"
+        "lvtag lvbox";
+      row-gap: 8px;
+    }
+    .equip-row .slot { grid-area: slot; }
+    .equip-row .main { grid-area: main; }
+    .equip-row .lvtag{ grid-area: lvtag; text-align:left; padding-left: 2px; }
+    .equip-row .lvbox{ grid-area: lvbox; }
   }
 </style>
 
