@@ -332,4 +332,4 @@ title: "主人公ステータス・シミュレーター"
   }
 </style>
 
-<script defer src="/js/status-sim.js"></script>
+<script src="/js/status-sim.js"></script>
