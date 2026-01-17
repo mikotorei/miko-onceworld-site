@@ -70,6 +70,7 @@ title: "主人公ステータス・シミュレーター"
 <summary>装備</summary>
 
 <div class="equip-grid">
+
   <label class="equip-row">
     <span class="slot">武器</span>
     <select id="select_weapon"></select>
@@ -105,6 +106,13 @@ title: "主人公ステータス・シミュレーター"
     <select id="select_shield"></select>
     <span class="lv">+</span><input id="level_shield" type="number" min="0" value="0">
   </label>
+
+  <label class="equip-row">
+    <span class="slot">アクセ</span>
+    <select id="select_accessory"></select>
+    <span class="lv">+</span><input id="level_accessory" type="number" min="0" value="0">
+  </label>
+
 </div>
 
 </details>
@@ -114,7 +122,6 @@ title: "主人公ステータス・シミュレーター"
 <style>
   .sim { max-width: 980px; }
   hr { margin: 14px 0; opacity: .4; }
-
   .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin: 8px 0; }
   .note { opacity: .8; }
 
