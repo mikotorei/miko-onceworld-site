@@ -186,11 +186,6 @@ title: "主人公ステータス・シミュレーター"
       </select>
     </div>
   </div>
-
-</div>
-
-<div class="note" style="margin-top:6px; opacity:.75;">
-  段階：0=未解放 / 1=Lv31 / 2=Lv71 / 3=Lv121 / 4=Lv181
 </div>
 </details>
 
