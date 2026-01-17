@@ -1,15 +1,14 @@
 // static/js/status-sim.js
-// GitHub Pages対応（リポジトリ名配下でもOK） + 装備Lvスケール
-// スケール式：mov除外の各ステに対し  base × (1 + lv × 0.1) を適用（切り捨て）
+// GitHub Pages対応 + 装備Lvスケール
+// スケール式：mov除外の各ステに対し base × (1 + lv × 0.1)（切り捨て）
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
-const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"]; // movなし
-const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"]; // movなし
-const SCALE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"]; // movなし
+const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
+const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
+const SCALE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
 
 const $ = (id) => document.getElementById(id);
 
-// --- 配信パス対応（ここが今回の修正の核心） ---
 function getAssetBaseUrl() {
   const scriptEl = document.currentScript;
   if (!scriptEl || !scriptEl.src) return window.location.origin;
@@ -20,7 +19,6 @@ function getAssetBaseUrl() {
 const ASSET_BASE = getAssetBaseUrl();
 const abs = (p) => `${ASSET_BASE}${p}`;
 
-// --- 装備DB ---
 const SLOTS = [
   { key: "weapon", label: "weapon", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
   { key: "head", label: "head", indexUrl: "/db/equip/armor/head/index.json", itemDir: "/db/equip/armor/head/" },
@@ -30,7 +28,6 @@ const SLOTS = [
   { key: "shield", label: "shield", indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
 ];
 
-// --- localStorage ---
 const STORAGE_KEY = "status_sim_state_v8_equip_scale_abs";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
@@ -39,7 +36,6 @@ const loadState = () => {
 };
 const clearState = () => localStorage.removeItem(STORAGE_KEY);
 
-// --- util ---
 const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
 const clamp0 = (v) => Math.max(0, n(v, 0));
 
@@ -60,7 +56,6 @@ function setErr(text) {
   el.classList.toggle("is-visible", msg.length > 0);
 }
 
-// --- fetch（404をJSONパースしないように安全化） ---
 async function fetchJSON(url) {
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`404: ${url}`);
@@ -72,7 +67,6 @@ async function fetchText(url) {
   return await res.text();
 }
 
-// --- TOML（簡易） ---
 function parseMiniToml(text) {
   const lines = text
     .split(/\r?\n/)
@@ -103,7 +97,6 @@ function parseMiniToml(text) {
   return item;
 }
 
-// --- 装備スケール：mov除外でスケール、movはそのまま加算 ---
 function scaleEquipBaseAdd(baseAdd, level) {
   const out = makeZeroStats();
   const lv = clamp0(level);
@@ -112,16 +105,13 @@ function scaleEquipBaseAdd(baseAdd, level) {
   for (const k of SCALE_STATS) {
     out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
   }
-  // movはスケール対象外（そのまま）
   out.mov = baseAdd?.mov ?? 0;
-
   return out;
 }
 
-// --- UI ---
 function fillSelect(selectEl, items) {
   selectEl.innerHTML = "";
-  selectEl.append(new Option("(none)", ""));
+  selectEl.append(new Option("（なし）", ""));
   for (const it of items) selectEl.append(new Option(it.title ?? it.id, it.id));
 }
 
@@ -174,7 +164,6 @@ function renderTable(basePlusProtein, equip, total) {
   }
 }
 
-// --- 振り分けポイント ---
 function readBasePointTotal() {
   return clamp0($("basePointTotal")?.value);
 }
@@ -204,11 +193,10 @@ function renderPointInfo(total, points) {
   const used = BASE_STATS.reduce((s, k) => s + (points?.[k] ?? 0), 0);
   const remain = total - used;
   const info = $("basePointInfo");
-  if (info) info.textContent = `used ${used} / remain ${remain}`;
+  if (info) info.textContent = `使用 ${used} / 残り ${remain}`;
   return { used, remain };
 }
 
-// --- プロテイン + シェイカー ---
 function readShaker() {
   return clamp0($("shakerCount")?.value);
 }
@@ -243,18 +231,16 @@ function applyShakerToProtein(raw, shakerCount) {
   return out;
 }
 
-// --- main ---
 async function main() {
   setErr("");
 
   if (!buildTableRows()) {
-    setErr("statsTbody not found");
+    setErr("statsTbody が見つかりません");
     return;
   }
 
   const saved = loadState();
 
-  // 装備DB読み込み（スロットごとに失敗しても進む）
   const slotItems = {};
   const loadErrors = [];
 
@@ -292,13 +278,11 @@ async function main() {
     lv.addEventListener("input", recalc);
   }
 
-  // 復元（基礎/プロテイン/シェイカー/ポイント合計）
   applyBasePointTotal(saved?.basePointTotal);
   applyBasePointsToUI(saved?.basePoints);
   applyShaker(saved?.shakerCount);
   applyProteinRaw(saved?.proteinRaw);
 
-  // リスナー
   $("basePointTotal")?.addEventListener("input", recalc);
   for (const k of BASE_STATS) $(`base_${k}`)?.addEventListener("input", recalc);
   $("shakerCount")?.addEventListener("input", recalc);
@@ -329,7 +313,7 @@ async function main() {
     const basePointTotal = readBasePointTotal();
     const basePoints = readBasePointsFromUI();
     const { remain } = renderPointInfo(basePointTotal, basePoints);
-    if (remain < 0) errs.push(`points overflow: ${remain}`);
+    if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
     const shakerCount = readShaker();
     const proteinRaw = readProteinRaw();
