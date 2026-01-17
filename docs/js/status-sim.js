@@ -1,14 +1,16 @@
 // static/js/status-sim.js
-// GitHub Pages対応 + 装備Lvスケール
-// スケール式：mov除外の各ステに対し base × (1 + lv × 0.1)（切り捨て）
+// GitHub Pages対応 + 装備Lvスケール + 防具5部位シリーズ一致でセット効果（x1.1）
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
 const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
 const SCALE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
 
+const ARMOR_KEYS = ["head", "body", "hands", "feet", "shield"]; // セット判定対象（防具5部位）
+
 const $ = (id) => document.getElementById(id);
 
+// --- 配信パス対応（GitHub PagesでもOK） ---
 function getAssetBaseUrl() {
   const scriptEl = document.currentScript;
   if (!scriptEl || !scriptEl.src) return window.location.origin;
@@ -19,6 +21,7 @@ function getAssetBaseUrl() {
 const ASSET_BASE = getAssetBaseUrl();
 const abs = (p) => `${ASSET_BASE}${p}`;
 
+// --- 装備DB ---
 const SLOTS = [
   { key: "weapon", label: "weapon", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
   { key: "head", label: "head", indexUrl: "/db/equip/armor/head/index.json", itemDir: "/db/equip/armor/head/" },
@@ -28,7 +31,8 @@ const SLOTS = [
   { key: "shield", label: "shield", indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
 ];
 
-const STORAGE_KEY = "status_sim_state_v8_equip_scale_abs";
+// --- localStorage ---
+const STORAGE_KEY = "status_sim_state_v9_set_bonus_armor5";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
@@ -36,6 +40,7 @@ const loadState = () => {
 };
 const clearState = () => localStorage.removeItem(STORAGE_KEY);
 
+// --- util ---
 const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
 const clamp0 = (v) => Math.max(0, n(v, 0));
 
@@ -47,6 +52,11 @@ function addStats(a, b) {
   for (const k of STATS) out[k] = (out[k] ?? 0) + (b?.[k] ?? 0);
   return out;
 }
+function mulStatsFloor(stats, mul) {
+  const out = makeZeroStats();
+  for (const k of STATS) out[k] = Math.floor((stats?.[k] ?? 0) * mul);
+  return out;
+}
 
 function setErr(text) {
   const el = $("errBox");
@@ -56,6 +66,7 @@ function setErr(text) {
   el.classList.toggle("is-visible", msg.length > 0);
 }
 
+// --- fetch（404を安全に扱う） ---
 async function fetchJSON(url) {
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`404: ${url}`);
@@ -67,6 +78,7 @@ async function fetchText(url) {
   return await res.text();
 }
 
+// --- TOML（簡易） ---
 function parseMiniToml(text) {
   const lines = text
     .split(/\r?\n/)
@@ -97,6 +109,7 @@ function parseMiniToml(text) {
   return item;
 }
 
+// --- 装備Lvスケール（mov除外） ---
 function scaleEquipBaseAdd(baseAdd, level) {
   const out = makeZeroStats();
   const lv = clamp0(level);
@@ -105,10 +118,32 @@ function scaleEquipBaseAdd(baseAdd, level) {
   for (const k of SCALE_STATS) {
     out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
   }
+  // movはスケール対象外：そのまま
   out.mov = baseAdd?.mov ?? 0;
   return out;
 }
 
+// --- セット判定（防具5部位が同シリーズ） ---
+function getArmorSetSeries(slotItems, equipState) {
+  // 5部位すべて装備していて、シリーズが全て一致している時だけ series を返す
+  let series = null;
+
+  for (const key of ARMOR_KEYS) {
+    const id = equipState?.[key]?.id || "";
+    if (!id) return null;
+
+    const item = (slotItems[key] || []).find((it) => it.id === id);
+    if (!item) return null;
+
+    const s = String(item.series ?? "").trim();
+    if (!s) return null; // series未設定は発動不可にする（安全）
+    if (series === null) series = s;
+    if (series !== s) return null;
+  }
+  return series; // 発動中のシリーズ名
+}
+
+// --- UI ---
 function fillSelect(selectEl, items) {
   selectEl.innerHTML = "";
   selectEl.append(new Option("（なし）", ""));
@@ -164,6 +199,7 @@ function renderTable(basePlusProtein, equip, total) {
   }
 }
 
+// --- 振り分け ---
 function readBasePointTotal() {
   return clamp0($("basePointTotal")?.value);
 }
@@ -189,24 +225,23 @@ function resetBasePointsUI() {
     if (el) el.value = "0";
   }
 }
-function renderPointInfo(total, points) {
+function renderPointInfo(total, points, setSeries) {
   const used = BASE_STATS.reduce((s, k) => s + (points?.[k] ?? 0), 0);
   const remain = total - used;
   const info = $("basePointInfo");
-  if (info) info.textContent = `使用 ${used} / 残り ${remain}`;
+  if (info) {
+    info.textContent = setSeries
+      ? `使用 ${used} / 残り ${remain}（セット効果:ON）`
+      : `使用 ${used} / 残り ${remain}`;
+  }
   return { used, remain };
 }
 
-function readShaker() {
-  return clamp0($("shakerCount")?.value);
-}
-function applyShaker(v) {
-  const el = $("shakerCount");
-  if (el) el.value = String(clamp0(v ?? 0));
-}
-function shakerMul(shakerCount) {
-  return 1 + 0.01 * clamp0(shakerCount);
-}
+// --- プロテイン + シェイカー ---
+function readShaker() { return clamp0($("shakerCount")?.value); }
+function applyShaker(v) { const el = $("shakerCount"); if (el) el.value = String(clamp0(v ?? 0)); }
+function shakerMul(shakerCount) { return 1 + 0.01 * clamp0(shakerCount); }
+
 function readProteinRaw() {
   const out = makeZeroStats();
   for (const k of PROTEIN_STATS) out[k] = clamp0($(`protein_${k}`)?.value);
@@ -231,6 +266,7 @@ function applyShakerToProtein(raw, shakerCount) {
   return out;
 }
 
+// --- main ---
 async function main() {
   setErr("");
 
@@ -311,17 +347,14 @@ async function main() {
     if (loadErrors.length) errs.push(...loadErrors);
 
     const basePointTotal = readBasePointTotal();
-    const basePoints = readBasePointsFromUI();
-    const { remain } = renderPointInfo(basePointTotal, basePoints);
-    if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
+    const basePointsRaw = readBasePointsFromUI();
 
     const shakerCount = readShaker();
     const proteinRaw = readProteinRaw();
-    const proteinApplied = applyShakerToProtein(proteinRaw, shakerCount);
+    const proteinAppliedRaw = applyShakerToProtein(proteinRaw, shakerCount);
 
-    const basePlusProtein = addStats(basePoints, proteinApplied);
-
-    let equipSum = makeZeroStats();
+    // まず装備（Lvスケール込み）を合算し、equipStateも組み立てる
+    let equipSumRaw = makeZeroStats();
     const equipState = {};
 
     for (const s of SLOTS) {
@@ -337,9 +370,23 @@ async function main() {
       if (!chosen) continue;
 
       const scaled = scaleEquipBaseAdd(chosen.base_add ?? {}, level);
-      equipSum = addStats(equipSum, scaled);
+      equipSumRaw = addStats(equipSumRaw, scaled);
     }
 
+    // セット判定（防具5部位 series一致）
+    const setSeries = getArmorSetSeries(slotItems, equipState);
+    const setMul = setSeries ? 1.1 : 1.0;
+
+    // used/remain 表示（セットON表示もここで）
+    const { remain } = renderPointInfo(basePointTotal, basePointsRaw, setSeries);
+    if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
+
+    // セット効果：ステ振り/プロテイン/装備それぞれに x1.1
+    const basePoints = setMul === 1.0 ? basePointsRaw : mulStatsFloor(basePointsRaw, setMul);
+    const proteinApplied = setMul === 1.0 ? proteinAppliedRaw : mulStatsFloor(proteinAppliedRaw, setMul);
+    const equipSum = setMul === 1.0 ? equipSumRaw : mulStatsFloor(equipSumRaw, setMul);
+
+    const basePlusProtein = addStats(basePoints, proteinApplied);
     const total = addStats(basePlusProtein, equipSum);
 
     setErr(errs.join("\n"));
@@ -347,7 +394,7 @@ async function main() {
 
     saveState({
       basePointTotal,
-      basePoints,
+      basePoints: basePointsRaw, // 入力そのものは生値で保存
       shakerCount,
       proteinRaw,
       equip: equipState,
