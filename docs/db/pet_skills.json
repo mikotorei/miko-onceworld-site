@@ -1,36 +1,2725 @@
 {
   "pets": [
     {
-      "id": "pet_test_flat",
-      "name": "テストペット（実数）",
+      "id": "1",
+      "name": "グリーンスライム",
       "stages": [
-        { "base_add": {}, "base_rate": {} },
-        { "base_add": { "atk": 10 }, "base_rate": {} },
-        { "base_add": { "atk": 20 }, "base_rate": {} },
-        { "base_add": { "atk": 30 }, "base_rate": {} },
-        { "base_add": { "atk": 40 }, "base_rate": {} }
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 140
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 140
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 140
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "vit": 35
+          }
+        }
       ]
     },
     {
-      "id": "pet_test_rate",
-      "name": "テストペット（割合）",
+      "id": "2",
+      "name": "レッドゴブリン",
       "stages": [
-        { "base_add": {}, "base_rate": {} },
-        { "base_add": {}, "base_rate": { "atk": 5 } },
-        { "base_add": {}, "base_rate": { "atk": 10 } },
-        { "base_add": {}, "base_rate": { "atk": 15 } },
-        { "base_add": {}, "base_rate": { "atk": 20 } }
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 115
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 315
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 25
+          },
+          "final_rate": {}
+        }
       ]
     },
     {
-      "id": "pet_test_both",
-      "name": "テストペット（実数＋割合）",
+      "id": "3",
+      "name": "ゴブリンメイジ",
       "stages": [
-        { "base_add": {}, "base_rate": {} },
-        { "base_add": { "atk": 10, "def": 5 }, "base_rate": { "atk": 5 } },
-        { "base_add": { "atk": 20, "def": 10 }, "base_rate": { "atk": 6 } },
-        { "base_add": { "atk": 30, "def": 15 }, "base_rate": { "atk": 7 } },
-        { "base_add": { "atk": 40, "def": 20 }, "base_rate": { "atk": 8 } }
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 95
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 220
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 25
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "キメラタートル",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 25
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 300
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 450
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 1350
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "鉄罠花",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 20
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "ペンギンソルジャー",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 25
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 325
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 25
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "ハネスライム",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mov": 2
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 220
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 320
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 1820
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "name": "ボスゴブリン",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 280
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 280
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 280
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 980
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "name": "ギガントオーク",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 30
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "name": "古代魚　ザコーン",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "vit": 5
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "vit": 5
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "vit": 20
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "vit": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "name": "マッドカエル",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 145
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 145
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "22",
+      "name": "ダークメイジ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 75
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 275
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 30
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "name": "アリクイロード",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 85
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 250
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 20
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "25",
+      "name": "動く墓",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 350
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 1450
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "26",
+      "name": "オルトロス",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 345
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 25
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "27",
+      "name": "雪だるまん",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 200
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 1500
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "28",
+      "name": "シカファイター",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 70
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 370
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 500
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 900
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "29",
+      "name": "ペンギンロード",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 10
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "30",
+      "name": "パンダ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 420
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 1920
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "31",
+      "name": "ファントムツリー",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 70
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 270
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 15
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "32",
+      "name": "スノーモケラ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 500
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 500
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 20
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "33",
+      "name": "零の者",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "int": 5
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "int": 5
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "36",
+      "name": "禁域の巨木",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "41",
+      "name": "ゴブリン特攻隊",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 360
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 960
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "42",
+      "name": "ゴブリンクルー",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 30
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 30
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 35
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "43",
+      "name": "紅サソリ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 110
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 25
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "luk": 1
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "luk": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "44",
+      "name": "死戦士マミー",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 50
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 100
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 100
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 1000
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "46",
+      "name": "ファイヤーメイジ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 10
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 330
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 550
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "47",
+      "name": "エジプトアシュラ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 50
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 9
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 11
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 760
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "48",
+      "name": "デザートイッヌ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 25
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 200
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 200
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 2000
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "50",
+      "name": "天狗",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 5
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "luk": 3
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "luk": 17
+          }
+        }
+      ]
+    },
+    {
+      "id": "52",
+      "name": "邪黒龍",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 225
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 225
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 525
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 1025
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "53",
+      "name": "捧げし者",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 1
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 1
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 1
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 77
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "54",
+      "name": "聡明神　トモダチ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "luk": 10
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "luk": 10
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "61",
+      "name": "居住者A",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 180
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 180
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 330
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 35
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "62",
+      "name": "居住者B",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 170
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 170
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 300
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 35
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "63",
+      "name": "ホネ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 5
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 695
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 450
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 1500
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "64",
+      "name": "ボーンバトラー",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 100
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 1880
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "65",
+      "name": "ダイコンに見えるダイコン",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 666
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "luk": 666
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "luk": 5
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "luk": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "66",
+      "name": "クリーチャーアイ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 70
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 370
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 450
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 1450
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "67",
+      "name": "悪夢の石像",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 355
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 15
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "68",
+      "name": "スカルウィスプ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 135
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 135
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 20
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "71",
+      "name": "ネクロプリンセス",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 25
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "72",
+      "name": "朽ちざる竜骸　イゾ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "atk": 1
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "atk": 1
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "76",
+      "name": "禁域のクマヌイ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 2000
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 2000
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "81",
+      "name": "烈火鼠",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 80
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 260
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 35
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "82",
+      "name": "燃えてる何か",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 140
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 240
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 30
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "84",
+      "name": "ウォーデン",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "atk": 80
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 25
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 600
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 25
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "85",
+      "name": "バーニングロック",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 170
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 25
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 750
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 35
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "86",
+      "name": "ケルベロス",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 5
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 30
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 5
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 30
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "87",
+      "name": "ガチキメラ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 500
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 700
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 900
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mdef": 1500
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "88",
+      "name": "フレイムボーン",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 15
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "89",
+      "name": "炎鬼",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 75
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "int": 375
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 775
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 1325
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "91",
+      "name": "エレファントパラディン",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 700
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "vit": 900
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 45
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "92",
+      "name": "赫竜王",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "93",
+      "name": "残燃モエコ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "spd": 10
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "spd": 10
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "spd": 15
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "96",
+      "name": "禁域のヴァルネシア",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "161",
+      "name": "ホムラウマ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "mov": 3
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 1000
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 1000
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "spd": 1000
+          },
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "162",
+      "name": "深淵灯魚",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 20
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "163",
+      "name": "うねうね",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "vit": 15
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "164",
+      "name": "イージスリエル",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 15
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "165",
+      "name": "デーモンブレイド",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 15
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 15
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "166",
+      "name": "時空龍クロノゼリウス",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "spd": 25
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {
+            "atk": 25
+          }
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "201",
+      "name": "イグニス・シスター",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "def": 30
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "mdef": 30
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "202",
+      "name": "オルド･クラウセス",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 30
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 30
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "203",
+      "name": "BOX",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 10
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {
+            "def": 100
+          },
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "204",
+      "name": "冥王ノクタール",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 1
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 1
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "241",
+      "name": "イグニシア",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 40
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "spd": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "242",
+      "name": "ヌー",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 40
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "243",
+      "name": "ミニハム",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 40
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 20
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "246",
+      "name": "スラガール(物理)",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk": 60
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
+      ]
+    },
+    {
+      "id": "247",
+      "name": "スラガール(魔法)",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "int": 60
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        }
       ]
     }
   ]
