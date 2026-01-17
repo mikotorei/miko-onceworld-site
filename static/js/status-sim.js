@@ -1,5 +1,6 @@
 // static/js/status-sim.js
 // 安定版：アクセ3枠（Lv1基礎）＋ペット3体（段階0〜4）計算反映（ステップ5）
+// ★改善：ペットを選択したら、段階が0のとき自動で1にする（操作性向上）
 //
 // 武器/防具：+0が基礎（×1.0）、+1から補正
 //   実数スケール：基礎×(1+強化×0.1)（mov除外）
@@ -56,7 +57,7 @@ function setErr(text) {
   el.textContent = msg;
   el.classList.toggle("is-visible", msg.length > 0);
 }
-function flashInfo(msg, ms = 1200) {
+function flashInfo(msg, ms = 900) {
   setErr(msg);
   window.setTimeout(() => setErr(""), ms);
 }
@@ -120,7 +121,6 @@ function parseMiniToml(text) {
 }
 
 /* ---------- スケール ---------- */
-// 武器/防具：+0基礎、movはスケール対象外
 function scaleEquipBaseAdd(baseAdd, enhance) {
   const lv = clamp0(enhance);
   const mul = 1 + lv * 0.1;
@@ -131,7 +131,6 @@ function scaleEquipBaseAdd(baseAdd, enhance) {
   return out;
 }
 
-// アクセ実数：Lv1基礎（内部=Lv-1）
 function scaleAccFlatLv1Base(baseAdd, displayLv) {
   const internal = clamp1(displayLv) - 1;
   const mul = 1 + internal * 0.1;
@@ -141,13 +140,12 @@ function scaleAccFlatLv1Base(baseAdd, displayLv) {
   return out;
 }
 
-// アクセ割合(%): Lv1基礎（内部=Lv-1）
 function scaleAccRatePercentLv1Base(baseRate, displayLv) {
   const internal = clamp1(displayLv) - 1;
   const mul = 1 + internal * 0.01;
 
   const out = makeZeroStats();
-  for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul; // 小数OK
+  for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul;
   return out;
 }
 
@@ -238,7 +236,7 @@ function renderTable(basePlusProtein, equipDisplay, total) {
 }
 
 /* ---------- 保存 ---------- */
-const STORAGE_KEY = "status_sim_state_acc3_lv1base_petcalc_v1";
+const STORAGE_KEY = "status_sim_state_acc3_lv1base_petcalc_v2";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
@@ -256,18 +254,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const petDB = await fetchJSON(abs("/db/pet_skills.json"));
     petList = Array.isArray(petDB?.pets) ? petDB.pets : [];
-    flashInfo(`pet_skills.json 読み込みOK：${petList.length}体`, 900);
+    flashInfo(`pet_skills.json 読み込みOK：${petList.length}体`, 700);
   } catch (e) {
     flashInfo(`pet_skills.json 読み込み失敗：${String(e?.message ?? e)}`, 4000);
   }
 
-  // ペットselectへ反映
+  // ペットselectへ反映 + 復元
   for (const k of PET_KEYS) {
     fillSelect($(`select_${k}`), petList, (p) => p.name ?? p.id);
     const sel = $(`select_${k}`);
     const stg = $(`stage_${k}`);
     if (sel) sel.value = saved?.pets?.[k]?.id ?? "";
     if (stg) stg.value = String(clampStage(saved?.pets?.[k]?.stage ?? 0));
+  }
+
+  // ★操作性：ペットを選んだら段階が0のとき自動で1にする
+  for (const k of PET_KEYS) {
+    const sel = $(`select_${k}`);
+    const stg = $(`stage_${k}`);
+    if (!sel || !stg) continue;
+    sel.addEventListener("change", () => {
+      const pid = sel.value || "";
+      if (pid && String(stg.value) === "0") stg.value = "1";
+      recalc();
+    });
   }
 
   // ---- 装備DB読み込み ----
@@ -299,7 +309,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // selectの反映（武器防具）
   for (const key of ["weapon", "head", "body", "hands", "feet", "shield"]) {
     fillSelect($(`select_${key}`), slotItems[key] || [], (it) => it.title ?? it.id);
     const sel = $(`select_${key}`);
@@ -308,7 +317,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (lv) lv.value = String(clamp0(saved?.equip?.[key]?.lv ?? 0));
   }
 
-  // selectの反映（アクセ3枠）
   for (const akey of ACCESSORY_KEYS) {
     fillSelect($(`select_${akey}`), slotItems.accessory || [], (it) => it.title ?? it.id);
     const sel = $(`select_${akey}`);
@@ -317,7 +325,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (lv) lv.value = String(clamp1(saved?.equip?.[akey]?.lv ?? 1));
   }
 
-  // 振り分け・プロテイン復元
   if ($("basePointTotal")) $("basePointTotal").value = String(clamp0(saved?.basePointTotal ?? 0));
   for (const k of BASE_STATS) {
     const el = $(`base_${k}`);
@@ -329,7 +336,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (el) el.value = String(clamp0(saved?.proteinRaw?.[k] ?? 0));
   }
 
-  // ボタン
   $("recalcBtn")?.addEventListener("click", recalc);
   $("resetBtn")?.addEventListener("click", () => {
     for (const k of BASE_STATS) {
@@ -412,7 +418,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const basePlusProtein = addStats(basePoints, proteinApplied);
     const sumBeforeAcc = addStats(basePlusProtein, equipSum);
 
-    // --- アクセ ---
     let accFlat = makeZeroStats();
     let accRate = makeZeroStats();
 
@@ -448,14 +453,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       petRate = addStats(petRate, summed.rate);
     }
 
-    // 実数：アクセ＋ペットを同タイミングで加算
     const sumAfterFlat = addStats(addStats(sumBeforeAcc, accFlat), petFlat);
-
-    // 割合：アクセ＋ペットを合算して最後に乗算
     const totalRate = addStats(accRate, petRate);
     const total = applyRateToStatsFloor(sumAfterFlat, totalRate);
 
-    // 表示用：装備列＝武器防具＋アクセ実数＋ペット実数（割合は合計に反映）
     const equipDisplay = addStats(addStats(equipSum, accFlat), petFlat);
 
     setErr(errs.join("\n"));
