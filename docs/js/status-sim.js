@@ -306,7 +306,7 @@ async function main() {
     } catch (e) {
       fillSelect(sel, []);
       sel.value = "";
-      lv.value = "0";
+      lv.value = "1";
       loadErrors.push(`${s.key}: ${String(e?.message ?? e)}`);
     }
 
