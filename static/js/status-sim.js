@@ -1,6 +1,6 @@
 // static/js/status-sim.js
 // 安定版：アクセ3枠（Lv1基礎）＋表表示復旧版
-// ★ステップ2：pet_skills.json を読み込んで件数を表示（UI/計算にはまだ未反映）
+// ★ステップ4：ペットUIへDB反映＋保存/復元（計算はまだ未反映）
 //
 // 武器/防具：+0が基礎（×1.0）、+1から補正
 //   実数スケール：基礎×(1+強化×0.1)（mov除外）
@@ -12,8 +12,10 @@
 //   割合：基礎×(1+内部×0.01) を、その後に乗算（1 + %/100）
 //   アクセはセット効果対象外
 //
-// ペット（ステップ2）
-//   /db/pet_skills.json を読み込み、読み込み可否だけ errBox に3秒表示
+// ペット（ステップ4）
+//   /db/pet_skills.json を読み込み、ペット1〜3のselectへ反映
+//   段階(0〜4)を保存/復元/保存クリア対応
+//   ※計算にはまだ使わない
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -21,6 +23,7 @@ const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
 const SCALE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
 const ARMOR_KEYS = ["head", "body", "hands", "feet", "shield"];
 const ACCESSORY_KEYS = ["accessory1", "accessory2", "accessory3"];
+const PET_KEYS = ["pet1", "pet2", "pet3"];
 
 const $ = (id) => document.getElementById(id);
 
@@ -28,6 +31,7 @@ const $ = (id) => document.getElementById(id);
 const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
 const clamp0 = (v) => Math.max(0, n(v, 0));
 const clamp1 = (v) => Math.max(1, n(v, 1));
+const clampStage = (v) => Math.max(0, Math.min(4, n(v, 0)));
 
 function makeZeroStats() {
   return Object.fromEntries(STATS.map((k) => [k, 0]));
@@ -51,7 +55,7 @@ function setErr(text) {
   el.textContent = msg;
   el.classList.toggle("is-visible", msg.length > 0);
 }
-function flashInfo(msg, ms = 3000) {
+function flashInfo(msg, ms = 2500) {
   setErr(msg);
   window.setTimeout(() => setErr(""), ms);
 }
@@ -175,11 +179,14 @@ function getArmorSetSeries(slotItems, equipState) {
 }
 
 /* ---------- UI ---------- */
-function fillSelect(selectEl, items) {
+function fillSelect(selectEl, items, getLabel) {
   if (!selectEl) return;
   selectEl.innerHTML = "";
   selectEl.append(new Option("（なし）", ""));
-  for (const it of items) selectEl.append(new Option(it.title ?? it.id, it.id));
+  for (const it of items) {
+    const label = getLabel ? getLabel(it) : (it.title ?? it.id);
+    selectEl.append(new Option(label, it.id));
+  }
 }
 
 function buildTableRows() {
@@ -213,7 +220,7 @@ function renderTable(basePlusProtein, equipDisplay, total) {
 }
 
 /* ---------- 保存 ---------- */
-const STORAGE_KEY = "status_sim_state_acc3_lv1base";
+const STORAGE_KEY = "status_sim_state_acc3_lv1base_petui_v1";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
@@ -224,20 +231,28 @@ const clearState = () => localStorage.removeItem(STORAGE_KEY);
 /* ---------- main ---------- */
 document.addEventListener("DOMContentLoaded", async () => {
   buildTableRows();
-
   const saved = loadState();
 
-  // ★ステップ2：ペットDB読み込み（確認のみ）
-  // 失敗してもシミュは止めない
-  let petDB = null;
+  // ---- ペットDB読み込み（UI反映） ----
+  let petList = [];
   try {
-    petDB = await fetchJSON(abs("/db/pet_skills.json"));
-    const count = Array.isArray(petDB?.pets) ? petDB.pets.length : 0;
-    flashInfo(`pet_skills.json 読み込みOK：${count}体`, 3000);
+    const petDB = await fetchJSON(abs("/db/pet_skills.json"));
+    petList = Array.isArray(petDB?.pets) ? petDB.pets : [];
+    flashInfo(`pet_skills.json 読み込みOK：${petList.length}体`, 1200);
   } catch (e) {
-    flashInfo(`pet_skills.json 読み込み失敗：${String(e?.message ?? e)}`, 5000);
+    flashInfo(`pet_skills.json 読み込み失敗：${String(e?.message ?? e)}`, 4000);
   }
 
+  // ペットselectへ反映（存在する場合だけ）
+  for (const k of PET_KEYS) {
+    fillSelect($(`select_${k}`), petList, (p) => p.name ?? p.id);
+    const sel = $(`select_${k}`);
+    const stg = $(`stage_${k}`);
+    if (sel) sel.value = saved?.pets?.[k]?.id ?? "";
+    if (stg) stg.value = String(clampStage(saved?.pets?.[k]?.stage ?? 0));
+  }
+
+  // ---- 装備DB読み込み ----
   const SLOTS = [
     { key: "weapon", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
     { key: "head", indexUrl: "/db/equip/armor/head/index.json", itemDir: "/db/equip/armor/head/" },
@@ -251,7 +266,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const slotItems = {};
   const loadErrors = [];
 
-  // DB読み込み
   for (const s of SLOTS) {
     slotItems[s.key] = [];
     try {
@@ -269,7 +283,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // selectの反映（武器防具）
   for (const key of ["weapon", "head", "body", "hands", "feet", "shield"]) {
-    fillSelect($(`select_${key}`), slotItems[key] || []);
+    fillSelect($(`select_${key}`), slotItems[key] || [], (it) => it.title ?? it.id);
     const sel = $(`select_${key}`);
     const lv = $(`level_${key}`);
     if (sel) sel.value = saved?.equip?.[key]?.id ?? "";
@@ -278,7 +292,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // selectの反映（アクセ3枠：同じDBを使う）
   for (const akey of ACCESSORY_KEYS) {
-    fillSelect($(`select_${akey}`), slotItems.accessory || []);
+    fillSelect($(`select_${akey}`), slotItems.accessory || [], (it) => it.title ?? it.id);
     const sel = $(`select_${akey}`);
     const lv = $(`level_${akey}`);
     if (sel) sel.value = saved?.equip?.[akey]?.id ?? "";
@@ -308,6 +322,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   $("clearSaveBtn")?.addEventListener("click", () => {
     clearState();
+
     if ($("basePointTotal")) $("basePointTotal").value = "0";
     for (const k of BASE_STATS) if ($(`base_${k}`)) $(`base_${k}`).value = "0";
     if ($("shakerCount")) $("shakerCount").value = "0";
@@ -321,10 +336,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       if ($(`select_${akey}`)) $(`select_${akey}`).value = "";
       if ($(`level_${akey}`)) $(`level_${akey}`).value = "1";
     }
+
+    for (const k of PET_KEYS) {
+      if ($(`select_${k}`)) $(`select_${k}`).value = "";
+      if ($(`stage_${k}`)) $(`stage_${k}`).value = "0";
+    }
+
     recalc();
   });
 
-  // すべてのinput/selectで再計算
   document.querySelectorAll("input,select").forEach((el) => {
     el.addEventListener("input", recalc);
     el.addEventListener("change", recalc);
@@ -345,7 +365,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     for (const k of PROTEIN_STATS) proteinRaw[k] = clamp0($(`protein_${k}`)?.value);
     const proteinAppliedRaw = mulStatsFloor(proteinRaw, 1 + shaker * 0.01);
 
-    // 武器防具（スケール込み）
     let equipSumRaw = makeZeroStats();
     const equipState = {};
 
@@ -360,18 +379,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       equipSumRaw = addStats(equipSumRaw, scaleEquipBaseAdd(it.base_add ?? {}, lv));
     }
 
-    // セット効果（防具5部位）
     const setSeries = getArmorSetSeries(slotItems, equipState);
     const setMul = setSeries ? 1.1 : 1.0;
 
-    // ポイント残り
     const used = BASE_STATS.reduce((s, k) => s + (basePointsRaw[k] ?? 0), 0);
     const remain = basePointTotal - used;
     const info = $("basePointInfo");
     if (info) info.textContent = setSeries ? `使用 ${used} / 残り ${remain}（セットON）` : `使用 ${used} / 残り ${remain}`;
     if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
-    // セット効果は「ステ振り/プロテイン/武器防具」のみ
     const basePoints = setMul === 1.0 ? basePointsRaw : mulStatsFloor(basePointsRaw, setMul);
     const proteinApplied = setMul === 1.0 ? proteinAppliedRaw : mulStatsFloor(proteinAppliedRaw, setMul);
     const equipSum = setMul === 1.0 ? equipSumRaw : mulStatsFloor(equipSumRaw, setMul);
@@ -379,7 +395,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const basePlusProtein = addStats(basePoints, proteinApplied);
     const sumBeforeAcc = addStats(basePlusProtein, equipSum);
 
-    // アクセ3枠（実数→加算 / 割合→最後に乗算）
     let accFlat = makeZeroStats();
     let accRate = makeZeroStats();
 
@@ -399,11 +414,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const sumAfterFlat = addStats(sumBeforeAcc, accFlat);
     const total = applyRateToStatsFloor(sumAfterFlat, accRate);
 
-    // 表示用：装備列＝武器防具＋アクセ実数（割合は合計に反映）
     const equipDisplay = addStats(equipSum, accFlat);
 
     setErr(errs.join("\n"));
     renderTable(basePlusProtein, equipDisplay, total);
+
+    // ★ペットUI保存（計算には使わない）
+    const petsState = {};
+    for (const k of PET_KEYS) {
+      petsState[k] = {
+        id: $(`select_${k}`)?.value || "",
+        stage: clampStage($(`stage_${k}`)?.value),
+      };
+    }
 
     saveState({
       basePointTotal,
@@ -411,6 +434,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       shakerCount: shaker,
       proteinRaw: Object.fromEntries(PROTEIN_STATS.map((k) => [k, proteinRaw[k] ?? 0])),
       equip: equipState,
+      pets: petsState,
     });
   }
 
