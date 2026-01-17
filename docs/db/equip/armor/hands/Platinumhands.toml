@@ -2,7 +2,7 @@
 id = "Platinum"
 title = "プラチナアーム"
 slot = "hands"
-series = "platinum"
+series = "Platinum"
 +++
 [base_add]
 spd = 79
