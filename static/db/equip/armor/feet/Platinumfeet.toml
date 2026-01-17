@@ -1,0 +1,12 @@
++++
+id = "Platinumfeet"
+title = "プラチナブーツ"
+slot = "feet"
+series = "Platinum"
++++
+
+[base_add]
+spd = 53
+def = 25
+mdef = 75
+mov = 5
