@@ -1,5 +1,6 @@
 // static/js/status-sim.js
 // 安定版：アクセ3枠（Lv1基礎）＋ペット3体（段階0〜4）＋最終割合(**)対応
+// ★修正：mov の基礎値は 0 ではなく 6（ステ振り/プロテイン対象外）
 //
 // 仕様
 // - 武器/防具：+0が基礎（×1.0）、+1から補正（mov除外）
@@ -20,6 +21,9 @@ const ACCESSORY_KEYS = ["accessory1", "accessory2", "accessory3"];
 const PET_KEYS = ["pet1", "pet2", "pet3"];
 
 const $ = (id) => document.getElementById(id);
+
+// ★movの基礎値（ゲーム仕様）
+const BASE_MOV = 6;
 
 /* ---------- util ---------- */
 const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
@@ -124,7 +128,7 @@ function scaleEquipBaseAdd(baseAdd, enhance) {
 
   const out = makeZeroStats();
   for (const k of SCALE_STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
-  out.mov = baseAdd?.mov ?? 0;
+  out.mov = baseAdd?.mov ?? 0; // movはスケールしない
   return out;
 }
 function scaleAccFlatLv1Base(baseAdd, displayLv) {
@@ -140,7 +144,7 @@ function scaleAccRatePercentLv1Base(baseRate, displayLv) {
   const mul = 1 + internal * 0.01;
 
   const out = makeZeroStats();
-  for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul; // 小数OK
+  for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul;
   return out;
 }
 
@@ -175,7 +179,7 @@ function sumPetUpToStage(pet, stage) {
     const st = stages[i] || {};
     const add = st.base_add || {};
     const rate = st.base_rate || {};
-    const fin = st.final_rate || {}; // 無くてもOK
+    const fin = st.final_rate || {};
 
     for (const k of STATS) outAdd[k] += (add?.[k] ?? 0);
     for (const k of STATS) outRate[k] += (rate?.[k] ?? 0);
@@ -226,7 +230,7 @@ function renderTable(basePlusProtein, equipDisplay, total) {
 }
 
 /* ---------- 保存 ---------- */
-const STORAGE_KEY = "status_sim_state_acc3_lv1base_pet_finalrate_v1";
+const STORAGE_KEY = "status_sim_state_acc3_lv1base_pet_finalrate_v2_mov6";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
@@ -363,11 +367,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const basePointsRaw = makeZeroStats();
     for (const k of BASE_STATS) basePointsRaw[k] = clamp0($(`base_${k}`)?.value);
-    basePointsRaw.mov = 0;
+    // ★movはステ振り不可：固定で6
+    basePointsRaw.mov = BASE_MOV;
 
     const shaker = clamp0($("shakerCount")?.value);
     const proteinRaw = makeZeroStats();
     for (const k of PROTEIN_STATS) proteinRaw[k] = clamp0($(`protein_${k}`)?.value);
+    // ★movはプロテイン対象外：0のまま
+    proteinRaw.mov = 0;
+
     const proteinAppliedRaw = mulStatsFloor(proteinRaw, 1 + shaker * 0.01);
 
     // 武器防具
@@ -388,7 +396,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const setSeries = getArmorSetSeries(slotItems, equipState);
     const setMul = setSeries ? 1.1 : 1.0;
 
-    // ポイント
+    // ポイント（movは常に6で固定なので、チェック対象はBASE_STATSのみ）
     const used = BASE_STATS.reduce((s, k) => s + (basePointsRaw[k] ?? 0), 0);
     const remain = basePointTotal - used;
     const info = $("basePointInfo");
@@ -458,9 +466,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     saveState({
       basePointTotal,
-      basePoints: Object.fromEntries(BASE_STATS.map((k) => [k, basePointsRaw[k] ?? 0])),
+      basePoints: Object.fromEntries(BASE_STATS.map((k) => [k, (basePointsRaw[k] ?? 0)])),
       shakerCount: shaker,
-      proteinRaw: Object.fromEntries(PROTEIN_STATS.map((k) => [k, proteinRaw[k] ?? 0])),
+      proteinRaw: Object.fromEntries(PROTEIN_STATS.map((k) => [k, (proteinRaw[k] ?? 0)])),
       equip: equipState,
       pets: petsState
     });
