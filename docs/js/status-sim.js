@@ -1,6 +1,5 @@
 // static/js/status-sim.js
-// 安定版：アクセ3枠（Lv1基礎）＋表表示復旧版
-// ★ステップ4：ペットUIへDB反映＋保存/復元（計算はまだ未反映）
+// 安定版：アクセ3枠（Lv1基礎）＋ペット3体（段階0〜4）計算反映（ステップ5）
 //
 // 武器/防具：+0が基礎（×1.0）、+1から補正
 //   実数スケール：基礎×(1+強化×0.1)（mov除外）
@@ -12,10 +11,12 @@
 //   割合：基礎×(1+内部×0.01) を、その後に乗算（1 + %/100）
 //   アクセはセット効果対象外
 //
-// ペット（ステップ4）
-//   /db/pet_skills.json を読み込み、ペット1〜3のselectへ反映
-//   段階(0〜4)を保存/復元/保存クリア対応
-//   ※計算にはまだ使わない
+// ペット（3体）
+//   段階：0=未解放 / 1=31 / 2=71 / 3=121 / 4=181
+//   選択したペットの stages[0..stage] を合算して補正を作る
+//   実数はアクセ実数と同タイミングで加算
+//   割合はアクセ割合と同タイミングで最後に乗算
+//   ペットはセット効果対象外
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -55,7 +56,7 @@ function setErr(text) {
   el.textContent = msg;
   el.classList.toggle("is-visible", msg.length > 0);
 }
-function flashInfo(msg, ms = 2500) {
+function flashInfo(msg, ms = 1200) {
   setErr(msg);
   window.setTimeout(() => setErr(""), ms);
 }
@@ -178,6 +179,23 @@ function getArmorSetSeries(slotItems, equipState) {
   return series;
 }
 
+/* ---------- ペット：段階0..stageを合算 ---------- */
+function sumPetUpToStage(pet, stage) {
+  const s = clampStage(stage);
+  const outAdd = makeZeroStats();
+  const outRate = makeZeroStats();
+
+  const stages = Array.isArray(pet?.stages) ? pet.stages : [];
+  for (let i = 0; i <= s; i++) {
+    const st = stages[i] || {};
+    const add = st.base_add || {};
+    const rate = st.base_rate || {};
+    for (const k of STATS) outAdd[k] += (add?.[k] ?? 0);
+    for (const k of STATS) outRate[k] += (rate?.[k] ?? 0);
+  }
+  return { add: outAdd, rate: outRate };
+}
+
 /* ---------- UI ---------- */
 function fillSelect(selectEl, items, getLabel) {
   if (!selectEl) return;
@@ -220,7 +238,7 @@ function renderTable(basePlusProtein, equipDisplay, total) {
 }
 
 /* ---------- 保存 ---------- */
-const STORAGE_KEY = "status_sim_state_acc3_lv1base_petui_v1";
+const STORAGE_KEY = "status_sim_state_acc3_lv1base_petcalc_v1";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
@@ -233,17 +251,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   buildTableRows();
   const saved = loadState();
 
-  // ---- ペットDB読み込み（UI反映） ----
+  // ---- ペットDB読み込み ----
   let petList = [];
   try {
     const petDB = await fetchJSON(abs("/db/pet_skills.json"));
     petList = Array.isArray(petDB?.pets) ? petDB.pets : [];
-    flashInfo(`pet_skills.json 読み込みOK：${petList.length}体`, 1200);
+    flashInfo(`pet_skills.json 読み込みOK：${petList.length}体`, 900);
   } catch (e) {
     flashInfo(`pet_skills.json 読み込み失敗：${String(e?.message ?? e)}`, 4000);
   }
 
-  // ペットselectへ反映（存在する場合だけ）
+  // ペットselectへ反映
   for (const k of PET_KEYS) {
     fillSelect($(`select_${k}`), petList, (p) => p.name ?? p.id);
     const sel = $(`select_${k}`);
@@ -290,7 +308,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (lv) lv.value = String(clamp0(saved?.equip?.[key]?.lv ?? 0));
   }
 
-  // selectの反映（アクセ3枠：同じDBを使う）
+  // selectの反映（アクセ3枠）
   for (const akey of ACCESSORY_KEYS) {
     fillSelect($(`select_${akey}`), slotItems.accessory || [], (it) => it.title ?? it.id);
     const sel = $(`select_${akey}`);
@@ -336,7 +354,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if ($(`select_${akey}`)) $(`select_${akey}`).value = "";
       if ($(`level_${akey}`)) $(`level_${akey}`).value = "1";
     }
-
     for (const k of PET_KEYS) {
       if ($(`select_${k}`)) $(`select_${k}`).value = "";
       if ($(`stage_${k}`)) $(`stage_${k}`).value = "0";
@@ -395,6 +412,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const basePlusProtein = addStats(basePoints, proteinApplied);
     const sumBeforeAcc = addStats(basePlusProtein, equipSum);
 
+    // --- アクセ ---
     let accFlat = makeZeroStats();
     let accRate = makeZeroStats();
 
@@ -411,22 +429,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       accRate = addStats(accRate, scaleAccRatePercentLv1Base(it.base_rate ?? {}, lv));
     }
 
-    const sumAfterFlat = addStats(sumBeforeAcc, accFlat);
-    const total = applyRateToStatsFloor(sumAfterFlat, accRate);
+    // --- ペット（3体） ---
+    let petFlat = makeZeroStats();
+    let petRate = makeZeroStats();
 
-    const equipDisplay = addStats(equipSum, accFlat);
+    const petsState = {};
+    for (const pk of PET_KEYS) {
+      const pid = $(`select_${pk}`)?.value || "";
+      const stage = clampStage($(`stage_${pk}`)?.value);
+      petsState[pk] = { id: pid, stage };
+
+      if (!pid || stage <= 0) continue;
+      const pet = petList.find((p) => p.id === pid);
+      if (!pet) continue;
+
+      const summed = sumPetUpToStage(pet, stage);
+      petFlat = addStats(petFlat, summed.add);
+      petRate = addStats(petRate, summed.rate);
+    }
+
+    // 実数：アクセ＋ペットを同タイミングで加算
+    const sumAfterFlat = addStats(addStats(sumBeforeAcc, accFlat), petFlat);
+
+    // 割合：アクセ＋ペットを合算して最後に乗算
+    const totalRate = addStats(accRate, petRate);
+    const total = applyRateToStatsFloor(sumAfterFlat, totalRate);
+
+    // 表示用：装備列＝武器防具＋アクセ実数＋ペット実数（割合は合計に反映）
+    const equipDisplay = addStats(addStats(equipSum, accFlat), petFlat);
 
     setErr(errs.join("\n"));
     renderTable(basePlusProtein, equipDisplay, total);
-
-    // ★ペットUI保存（計算には使わない）
-    const petsState = {};
-    for (const k of PET_KEYS) {
-      petsState[k] = {
-        id: $(`select_${k}`)?.value || "",
-        stage: clampStage($(`stage_${k}`)?.value),
-      };
-    }
 
     saveState({
       basePointTotal,
