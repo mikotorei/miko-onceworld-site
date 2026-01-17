@@ -1,7 +1,12 @@
 // static/js/status-sim.js
-// 装備Lv：+0 が未強化（×1.0）、+1 から補正（×1.1…）
-// 装備Lvスケール：基礎値 × (1 + 強化数×0.1)（mov除外）
-// セット効果：防具5部位が同seriesなら、ステ振り/プロテイン/装備に×1.1（切り捨て）
+// 装備Lv：+0が未強化（×1.0）、+1から補正（×1.1…）
+// 武器防具Lvスケール：基礎×(1+強化×0.1)（mov除外）
+// セット効果：防具5部位が同seriesなら、ステ振り/プロテイン/武器防具に×1.1（切り捨て）
+//
+// アクセサリー（今回追加）
+// - 実数：基礎×(1+強化×0.1) を「(ステ振り+プロテイン+武器防具)の後」に加算
+// - 割合：基礎×(1+強化×0.01) を、その後に乗算（1 + %/100）
+// - アクセはセット効果対象外（仕様どおり）
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -42,16 +47,20 @@ const abs = (p) => `${ASSET_BASE}${p}`;
 
 /* ---------- 装備DB ---------- */
 const SLOTS = [
+  // weapon/armor
   { key: "weapon", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
   { key: "head", indexUrl: "/db/equip/armor/head/index.json", itemDir: "/db/equip/armor/head/" },
   { key: "body", indexUrl: "/db/equip/armor/body/index.json", itemDir: "/db/equip/armor/body/" },
   { key: "hands", indexUrl: "/db/equip/armor/hands/index.json", itemDir: "/db/equip/armor/hands/" },
   { key: "feet", indexUrl: "/db/equip/armor/feet/index.json", itemDir: "/db/equip/armor/feet/" },
   { key: "shield", indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
+
+  // accessory（今回追加）
+  { key: "accessory", indexUrl: "/db/equip/accessory/index.json", itemDir: "/db/equip/accessory/" },
 ];
 
 /* ---------- 保存 ---------- */
-const STORAGE_KEY = "status_sim_state_v11_plus0";
+const STORAGE_KEY = "status_sim_state_v12_accessory";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
@@ -80,14 +89,14 @@ async function fetchText(url) {
   return await res.text();
 }
 
-/* ---------- TOML簡易 ---------- */
+/* ---------- TOML簡易（base_add と base_rate を扱う） ---------- */
 function parseMiniToml(text) {
   const lines = text
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter((l) => l && l !== "+++" && !l.startsWith("#"));
 
-  const item = { base_add: {} };
+  const item = { base_add: {}, base_rate: {} };
   let section = "";
 
   for (const line of lines) {
@@ -104,6 +113,7 @@ function parseMiniToml(text) {
     const value = Number.isFinite(Number(raw)) ? Number(raw) : raw;
 
     if (section === "base_add") item.base_add[key] = Number.isFinite(Number(value)) ? Number(value) : 0;
+    else if (section === "base_rate") item.base_rate[key] = Number.isFinite(Number(value)) ? Number(value) : 0;
     else item[key] = value;
   }
 
@@ -111,14 +121,44 @@ function parseMiniToml(text) {
   return item;
 }
 
-/* ---------- 装備Lvスケール（+0対応） ---------- */
+/* ---------- 武器防具Lvスケール（+0対応、mov除外） ---------- */
 function scaleEquipBaseAdd(baseAdd, enhance) {
-  const lv = clamp0(enhance);              // +0 OK
-  const mul = 1 + lv * 0.1;               // ★仕様どおり
+  const lv = clamp0(enhance);
+  const mul = 1 + lv * 0.1;
 
   const out = makeZeroStats();
   for (const k of SCALE_STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
-  out.mov = baseAdd?.mov ?? 0;            // movはスケール対象外
+  out.mov = baseAdd?.mov ?? 0;
+  return out;
+}
+
+/* ---------- アクセ：実数（+0対応、全ステ対象） ---------- */
+function scaleAccFlat(baseAdd, enhance) {
+  const lv = clamp0(enhance);
+  const mul = 1 + lv * 0.1;
+
+  const out = makeZeroStats();
+  for (const k of STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
+  return out;
+}
+
+/* ---------- アクセ：割合（%）（+0対応、全ステ対象） ---------- */
+// base_rate は「％」として持つ（例：atk=5 は +5%）
+function scaleAccRatePercent(baseRate, enhance) {
+  const lv = clamp0(enhance);
+  const mul = 1 + lv * 0.01;
+
+  const out = makeZeroStats();
+  for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul; // %は小数になる可能性あり
+  return out;
+}
+function applyRateToStatsFloor(stats, ratePercentByStat) {
+  const out = makeZeroStats();
+  for (const k of STATS) {
+    const p = ratePercentByStat?.[k] ?? 0;     // 例 5.5 (%)
+    const mul = 1 + p / 100;
+    out[k] = Math.floor((stats?.[k] ?? 0) * mul);
+  }
   return out;
 }
 
@@ -177,13 +217,13 @@ function buildTableRows() {
   }
 }
 
-function renderTable(basePlusProtein, equip, total) {
+function renderTable(basePlusProtein, equipDisplay, total) {
   const tbody = $("statsTbody");
   for (const tr of tbody.querySelectorAll("tr")) {
     const k = tr.dataset.stat;
 
     const b = basePlusProtein?.[k] ?? 0;
-    const e = equip?.[k] ?? 0;
+    const e = equipDisplay?.[k] ?? 0;
     const t = total?.[k] ?? 0;
 
     tr.querySelector('[data-col="base"]').textContent = String(b);
@@ -280,8 +320,6 @@ async function main() {
 
       fillSelect(sel, items);
       sel.value = saved?.equip?.[s.key]?.id ?? "";
-
-      // ★ +0デフォルト
       lv.value = String(clamp0(saved?.equip?.[s.key]?.lv ?? 0));
     } catch (e) {
       fillSelect(sel, []);
@@ -319,7 +357,7 @@ async function main() {
       const sel = $(`select_${s.key}`);
       const lv = $(`level_${s.key}`);
       if (sel) sel.value = "";
-      if (lv) lv.value = "0"; // ★ +0へ
+      if (lv) lv.value = "0";
     }
     recalc();
   });
@@ -335,7 +373,7 @@ async function main() {
     const proteinRaw = readProteinRaw();
     const proteinAppliedRaw = applyShakerToProtein(proteinRaw, shakerCount);
 
-    // 装備合算（Lvスケール込み）
+    // --- 武器防具（Lvスケール込み）合算 ---
     let equipSumRaw = makeZeroStats();
     const equipState = {};
 
@@ -344,10 +382,13 @@ async function main() {
       const lv = $(`level_${s.key}`);
 
       const id = sel?.value || "";
-      const level = clamp0(lv?.value); // ★ +0 OK
+      const level = clamp0(lv?.value);
       if (lv && Number(lv.value) < 0) lv.value = "0";
 
       equipState[s.key] = { id, lv: level };
+
+      // accessory はここでは扱わない（あとで順序処理する）
+      if (s.key === "accessory") continue;
 
       if (!id) continue;
       const chosen = (slotItems[s.key] || []).find((it) => it.id === id);
@@ -356,24 +397,46 @@ async function main() {
       equipSumRaw = addStats(equipSumRaw, scaleEquipBaseAdd(chosen.base_add ?? {}, level));
     }
 
-    // セット判定
+    // --- セット判定（防具5部位）→ セット効果は「ステ振り/プロテイン/武器防具」のみ ---
     const setSeries = getArmorSetSeries(slotItems, equipState);
     const setMul = setSeries ? 1.1 : 1.0;
 
-    // 使用/残り（セットON表示は最小）
     const { remain } = renderPointInfo(basePointTotal, basePointsRaw, !!setSeries);
     if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
-    // セット効果：ステ振り/プロテイン/装備それぞれへ×1.1（切り捨て）
     const basePoints = setMul === 1.0 ? basePointsRaw : mulStatsFloor(basePointsRaw, setMul);
     const proteinApplied = setMul === 1.0 ? proteinAppliedRaw : mulStatsFloor(proteinAppliedRaw, setMul);
     const equipSum = setMul === 1.0 ? equipSumRaw : mulStatsFloor(equipSumRaw, setMul);
 
+    // ① ステ振り + プロテイン + 武器防具（ここまで）
     const basePlusProtein = addStats(basePoints, proteinApplied);
-    const total = addStats(basePlusProtein, equipSum);
+    const sumBeforeAcc = addStats(basePlusProtein, equipSum);
+
+    // --- アクセ（実数→加算、割合→乗算） ---
+    let accFlat = makeZeroStats();
+    let accRatePercent = makeZeroStats();
+
+    const accId = equipState.accessory?.id || "";
+    const accLv = clamp0(equipState.accessory?.lv ?? 0);
+    if (accId) {
+      const accItem = (slotItems.accessory || []).find((it) => it.id === accId);
+      if (accItem) {
+        accFlat = scaleAccFlat(accItem.base_add ?? {}, accLv);
+        accRatePercent = scaleAccRatePercent(accItem.base_rate ?? {}, accLv);
+      }
+    }
+
+    // ② 実数を加算
+    const sumAfterFlat = addStats(sumBeforeAcc, accFlat);
+
+    // ③ 割合を乗算（最後）
+    const total = applyRateToStatsFloor(sumAfterFlat, accRatePercent);
+
+    // 表示用：「装備」列には武器防具＋アクセ実数を含める（割合は合計に反映）
+    const equipDisplay = addStats(equipSum, accFlat);
 
     setErr(errs.join("\n"));
-    renderTable(basePlusProtein, equipSum, total);
+    renderTable(basePlusProtein, equipDisplay, total);
 
     saveState({
       basePointTotal,
