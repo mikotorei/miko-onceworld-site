@@ -1,0 +1,9 @@
++++
+id = "Platinum"
+title = "プラチナアーム"
+slot = "hands"
+series = "platinum"
++++
+[base_add]
+spd = 79
+luk = 125
