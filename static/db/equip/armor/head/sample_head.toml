@@ -1,7 +1,0 @@
-+++
-title = "サンプルヘルム"
-slot = "head"
-
-[base_add]
-def = 5
-+++

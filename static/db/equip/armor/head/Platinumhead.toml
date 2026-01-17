@@ -1,0 +1,10 @@
++++
+id = "Platinumhead"
+title = "白金ヘルム"
+slot = "head"
+series = "Platinum"
++++
+[base_add]
+spd = 31
+def = 78
+mdef = 78
