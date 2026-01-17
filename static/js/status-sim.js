@@ -1,5 +1,5 @@
 // static/js/status-sim.js
-// 安定版：結果表が消える（JS停止）問題を回避しつつ、アクセ3枠を実装
+// 安定版：アクセ3枠（Lv1基礎）＋表表示復旧版
 //
 // 武器/防具：+0が基礎（×1.0）、+1から補正
 //   実数スケール：基礎×(1+強化×0.1)（mov除外）
@@ -220,7 +220,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const saved = loadState();
 
-  // DBロード先
   const SLOTS = [
     { key: "weapon", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
     { key: "head", indexUrl: "/db/equip/armor/head/index.json", itemDir: "/db/equip/armor/head/" },
@@ -268,7 +267,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (lv) lv.value = String(clamp1(saved?.equip?.[akey]?.lv ?? 1));
   }
 
-  // 振り分け・プロテイン復元（存在しない場合もあるので安全に）
+  // 振り分け・プロテイン復元
   if ($("basePointTotal")) $("basePointTotal").value = String(clamp0(saved?.basePointTotal ?? 0));
   for (const k of BASE_STATS) {
     const el = $(`base_${k}`);
@@ -291,7 +290,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   $("clearSaveBtn")?.addEventListener("click", () => {
     clearState();
-    // UI初期化（安全）
     if ($("basePointTotal")) $("basePointTotal").value = "0";
     for (const k of BASE_STATS) if ($(`base_${k}`)) $(`base_${k}`).value = "0";
     if ($("shakerCount")) $("shakerCount").value = "0";
@@ -327,7 +325,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const shaker = clamp0($("shakerCount")?.value);
     const proteinRaw = makeZeroStats();
     for (const k of PROTEIN_STATS) proteinRaw[k] = clamp0($(`protein_${k}`)?.value);
-
     const proteinAppliedRaw = mulStatsFloor(proteinRaw, 1 + shaker * 0.01);
 
     // 武器防具（スケール込み）
@@ -349,7 +346,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const setSeries = getArmorSetSeries(slotItems, equipState);
     const setMul = setSeries ? 1.1 : 1.0;
 
-    // ポイント残り（表示だけ）
+    // ポイント残り
     const used = BASE_STATS.reduce((s, k) => s + (basePointsRaw[k] ?? 0), 0);
     const remain = basePointTotal - used;
     const info = $("basePointInfo");
@@ -370,7 +367,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     for (const akey of ACCESSORY_KEYS) {
       const id = $(`select_${akey}`)?.value || "";
-      const lv = clamp1($(`level_${akey}`)?.value); // Lv1基礎
+      const lv = clamp1($(`level_${akey}`)?.value);
       equipState[akey] = { id, lv };
 
       if (!id) continue;
@@ -384,7 +381,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const sumAfterFlat = addStats(sumBeforeAcc, accFlat);
     const total = applyRateToStatsFloor(sumAfterFlat, accRate);
 
-    // 表示用：装備列には「武器防具＋アクセ実数」を出す（割合は合計に反映）
+    // 表示用：装備列＝武器防具＋アクセ実数（割合は合計に反映）
     const equipDisplay = addStats(equipSum, accFlat);
 
     setErr(errs.join("\n"));
