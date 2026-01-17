@@ -1,0 +1,11 @@
++++
+id = "CloudGodStaff"
+title = "雲神杖"
+slot = "weapon"
++++
+
+[base_add]
+atk = 211
+int = 311
+luk = 71
+mov = 1
