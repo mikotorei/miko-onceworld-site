@@ -1,5 +1,6 @@
 // static/js/status-sim.js
 // 安定版：アクセ3枠（Lv1基礎）＋表表示復旧版
+// ★ステップ2：pet_skills.json を読み込んで件数を表示（UI/計算にはまだ未反映）
 //
 // 武器/防具：+0が基礎（×1.0）、+1から補正
 //   実数スケール：基礎×(1+強化×0.1)（mov除外）
@@ -10,6 +11,9 @@
 //   実数：基礎×(1+内部×0.1) を「(ステ振り+プロテイン+武器防具)の後」に加算
 //   割合：基礎×(1+内部×0.01) を、その後に乗算（1 + %/100）
 //   アクセはセット効果対象外
+//
+// ペット（ステップ2）
+//   /db/pet_skills.json を読み込み、読み込み可否だけ errBox に3秒表示
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -46,6 +50,10 @@ function setErr(text) {
   const msg = (text || "").trim();
   el.textContent = msg;
   el.classList.toggle("is-visible", msg.length > 0);
+}
+function flashInfo(msg, ms = 3000) {
+  setErr(msg);
+  window.setTimeout(() => setErr(""), ms);
 }
 
 /* ---------- GitHub Pages 対応（安定版） ---------- */
@@ -215,10 +223,20 @@ const clearState = () => localStorage.removeItem(STORAGE_KEY);
 
 /* ---------- main ---------- */
 document.addEventListener("DOMContentLoaded", async () => {
-  setErr("");
   buildTableRows();
 
   const saved = loadState();
+
+  // ★ステップ2：ペットDB読み込み（確認のみ）
+  // 失敗してもシミュは止めない
+  let petDB = null;
+  try {
+    petDB = await fetchJSON(abs("/db/pet_skills.json"));
+    const count = Array.isArray(petDB?.pets) ? petDB.pets.length : 0;
+    flashInfo(`pet_skills.json 読み込みOK：${count}体`, 3000);
+  } catch (e) {
+    flashInfo(`pet_skills.json 読み込み失敗：${String(e?.message ?? e)}`, 5000);
+  }
 
   const SLOTS = [
     { key: "weapon", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
