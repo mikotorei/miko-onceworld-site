@@ -1,12 +1,13 @@
 // static/js/status-sim.js
-// 装備Lv：+0が未強化（×1.0）、+1から補正（×1.1…）
-// 武器防具Lvスケール：基礎×(1+強化×0.1)（mov除外）
+// 武器/防具：+0が未強化（×1.0）、+1から補正（×1.1…）
+//   スケール：基礎×(1+強化数×0.1)（mov除外）
 // セット効果：防具5部位が同seriesなら、ステ振り/プロテイン/武器防具に×1.1（切り捨て）
 //
-// アクセサリー（今回追加）
-// - 実数：基礎×(1+強化×0.1) を「(ステ振り+プロテイン+武器防具)の後」に加算
-// - 割合：基礎×(1+強化×0.01) を、その後に乗算（1 + %/100）
-// - アクセはセット効果対象外（仕様どおり）
+// アクセサリー：Lv1が基礎（補正なし）
+//   内部強化数 = (表示Lv - 1)
+//   実数：基礎×(1+内部×0.1) を「(ステ振り+プロテイン+武器防具)の後」に加算
+//   割合：基礎×(1+内部×0.01) を、その後に乗算（1 + %/100）
+//   アクセはセット効果対象外
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -19,6 +20,7 @@ const $ = (id) => document.getElementById(id);
 /* ---------- util ---------- */
 const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
 const clamp0 = (v) => Math.max(0, n(v, 0));
+const clamp1 = (v) => Math.max(1, n(v, 1));
 
 function makeZeroStats() {
   return Object.fromEntries(STATS.map((k) => [k, 0]));
@@ -55,12 +57,12 @@ const SLOTS = [
   { key: "feet", indexUrl: "/db/equip/armor/feet/index.json", itemDir: "/db/equip/armor/feet/" },
   { key: "shield", indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
 
-  // accessory（今回追加）
+  // accessory
   { key: "accessory", indexUrl: "/db/equip/accessory/index.json", itemDir: "/db/equip/accessory/" },
 ];
 
 /* ---------- 保存 ---------- */
-const STORAGE_KEY = "status_sim_state_v12_accessory";
+const STORAGE_KEY = "status_sim_state_v13_accessory_lv1_base";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
@@ -132,30 +134,30 @@ function scaleEquipBaseAdd(baseAdd, enhance) {
   return out;
 }
 
-/* ---------- アクセ：実数（+0対応、全ステ対象） ---------- */
-function scaleAccFlat(baseAdd, enhance) {
-  const lv = clamp0(enhance);
-  const mul = 1 + lv * 0.1;
+/* ---------- アクセ：実数（Lv1基礎） ---------- */
+function scaleAccFlatLv1Base(baseAdd, displayLv) {
+  const internal = clamp1(displayLv) - 1;     // ★Lv1→0
+  const mul = 1 + internal * 0.1;
 
   const out = makeZeroStats();
   for (const k of STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
   return out;
 }
 
-/* ---------- アクセ：割合（%）（+0対応、全ステ対象） ---------- */
-// base_rate は「％」として持つ（例：atk=5 は +5%）
-function scaleAccRatePercent(baseRate, enhance) {
-  const lv = clamp0(enhance);
-  const mul = 1 + lv * 0.01;
+/* ---------- アクセ：割合%（Lv1基礎） ---------- */
+function scaleAccRatePercentLv1Base(baseRate, displayLv) {
+  const internal = clamp1(displayLv) - 1;     // ★Lv1→0
+  const mul = 1 + internal * 0.01;
 
   const out = makeZeroStats();
-  for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul; // %は小数になる可能性あり
+  for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul; // %は小数になり得る
   return out;
 }
+
 function applyRateToStatsFloor(stats, ratePercentByStat) {
   const out = makeZeroStats();
   for (const k of STATS) {
-    const p = ratePercentByStat?.[k] ?? 0;     // 例 5.5 (%)
+    const p = ratePercentByStat?.[k] ?? 0;   // 例 5.5 (%)
     const mul = 1 + p / 100;
     out[k] = Math.floor((stats?.[k] ?? 0) * mul);
   }
@@ -191,6 +193,7 @@ function fillSelect(selectEl, items) {
 
 function buildTableRows() {
   const tbody = $("statsTbody");
+  if (!tbody) return;
   tbody.innerHTML = "";
 
   for (const k of STATS) {
@@ -219,6 +222,8 @@ function buildTableRows() {
 
 function renderTable(basePlusProtein, equipDisplay, total) {
   const tbody = $("statsTbody");
+  if (!tbody) return;
+
   for (const tr of tbody.querySelectorAll("tr")) {
     const k = tr.dataset.stat;
 
@@ -309,6 +314,9 @@ async function main() {
     const sel = $(`select_${s.key}`);
     const lv = $(`level_${s.key}`);
 
+    // 画面に存在しない場合はスキップ（保険）
+    if (!sel || !lv) continue;
+
     try {
       const files = await fetchJSON(abs(s.indexUrl));
       const items = [];
@@ -320,11 +328,17 @@ async function main() {
 
       fillSelect(sel, items);
       sel.value = saved?.equip?.[s.key]?.id ?? "";
-      lv.value = String(clamp0(saved?.equip?.[s.key]?.lv ?? 0));
+
+      // ★初期Lv：武器防具は0、アクセは1
+      if (s.key === "accessory") {
+        lv.value = String(clamp1(saved?.equip?.[s.key]?.lv ?? 1));
+      } else {
+        lv.value = String(clamp0(saved?.equip?.[s.key]?.lv ?? 0));
+      }
     } catch (e) {
       fillSelect(sel, []);
       sel.value = "";
-      lv.value = "0";
+      lv.value = (s.key === "accessory") ? "1" : "0";
       loadErrors.push(`${s.key}: ${String(e?.message ?? e)}`);
     }
 
@@ -357,7 +371,7 @@ async function main() {
       const sel = $(`select_${s.key}`);
       const lv = $(`level_${s.key}`);
       if (sel) sel.value = "";
-      if (lv) lv.value = "0";
+      if (lv) lv.value = (s.key === "accessory") ? "1" : "0";
     }
     recalc();
   });
@@ -380,14 +394,23 @@ async function main() {
     for (const s of SLOTS) {
       const sel = $(`select_${s.key}`);
       const lv = $(`level_${s.key}`);
+      if (!sel || !lv) continue;
 
-      const id = sel?.value || "";
-      const level = clamp0(lv?.value);
-      if (lv && Number(lv.value) < 0) lv.value = "0";
+      const id = sel.value || "";
+
+      // ★アクセだけLv1以上、他は0以上
+      let level;
+      if (s.key === "accessory") {
+        level = clamp1(lv.value);
+        if (Number(lv.value) < 1) lv.value = "1";
+      } else {
+        level = clamp0(lv.value);
+        if (Number(lv.value) < 0) lv.value = "0";
+      }
 
       equipState[s.key] = { id, lv: level };
 
-      // accessory はここでは扱わない（あとで順序処理する）
+      // accessory はここでは扱わない（順序のため）
       if (s.key === "accessory") continue;
 
       if (!id) continue;
@@ -417,12 +440,12 @@ async function main() {
     let accRatePercent = makeZeroStats();
 
     const accId = equipState.accessory?.id || "";
-    const accLv = clamp0(equipState.accessory?.lv ?? 0);
+    const accLvDisplay = equipState.accessory?.lv ?? 1; // 表示Lv
     if (accId) {
       const accItem = (slotItems.accessory || []).find((it) => it.id === accId);
       if (accItem) {
-        accFlat = scaleAccFlat(accItem.base_add ?? {}, accLv);
-        accRatePercent = scaleAccRatePercent(accItem.base_rate ?? {}, accLv);
+        accFlat = scaleAccFlatLv1Base(accItem.base_add ?? {}, accLvDisplay);
+        accRatePercent = scaleAccRatePercentLv1Base(accItem.base_rate ?? {}, accLvDisplay);
       }
     }
 
