@@ -1,0 +1,11 @@
++++
+id = "Hellfireshield"
+title = "獄炎の盾"
+slot = "shield"
+series = "Hellfire"
++++
+
+[base_add]
+atk = 155
+def = 155
+mdef = 155
