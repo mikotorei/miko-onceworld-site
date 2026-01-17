@@ -302,7 +302,7 @@ async function main() {
 
       fillSelect(sel, items);
       sel.value = saved?.equip?.[s.key]?.id ?? "";
-      lv.value = String(clamp0(saved?.equip?.[s.key]?.lv ?? 0));
+      lv.value = String(clamp0(saved?.equip?.[s.key]?.lv ?? 1));
     } catch (e) {
       fillSelect(sel, []);
       sel.value = "";
