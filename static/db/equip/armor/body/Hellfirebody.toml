@@ -1,0 +1,11 @@
++++
+id = "Hellfirebody"
+title = "獄炎の鎧"
+slot = "body"
+series = "Hellfire"
++++
+
+[base_add]
+vit = 188
+def = 131
+mdef = 31
