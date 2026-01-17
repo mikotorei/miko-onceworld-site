@@ -1,7 +1,0 @@
-+++
-title = "サンプルシールド"
-slot = "shield"
-
-[base_add]
-def = 6
-+++

@@ -1,0 +1,9 @@
++++
+id = "Platinumshield"
+title = "プラチナの盾"
+slot = "shield"
+series = "Platinum"
++++
+[base_add]
+def = 130
+mdef = 109
