@@ -1,20 +1,20 @@
 // static/js/status-sim.js
-// 検証用（段階・安定版）
+// 検証用（丸めルール：最終%は四捨五入）
 //
 // 【表示】
-// - 常に整数（小数点以下を捨てる）… floorSafe を使用（浮動小数誤差対策）
+// - 表示は「最終確定値」をそのまま整数で出す（表示側で別の丸めはしない）
 //
-// 【内部の切り捨て（確定タイミング）】
+// 【内部の切り捨て/確定】
 // 1) 武器/防具の強化スケール：装備ごとに floorSafe（movは強化しない）
 // 2) セット効果： (基礎 + プロテイン + 武器防具) を合算してから
 //    vit/spd/atk/int/def/mdef/luk にだけ ×1.1 して floorSafe（mov対象外）
-// 3) 最終：アクセ/ペット割合などの % を掛けた直後に floorSafe で確定（全ステ）
+// 3) 最終：アクセ/ペット割合などの % を掛けた直後に roundSafe で確定（全ステ）
 //
-// 【内部で切り捨てしない】
-// - シェイカー（プロテイン倍率）は小数保持
-// - アクセ実数/割合、ペット実数/割合の生成は小数保持
+// 【内部で切り捨てしない（小数保持）】
+// - シェイカー（プロテイン倍率）
+// - アクセ実数/割合、ペット実数/割合の生成
 //
-// 目的：どのタイミングの切り捨てがゲーム実値に一致するかを特定する
+// 目的：ゲーム実値が「%後は四捨五入」で一致するか検証する
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -47,24 +47,16 @@ function mulStats(stats, mul) {
   return out;
 }
 
-// ★浮動小数誤差対策：floor直前に微小値を足す
+// 浮動小数誤差対策：floor/round直前に微小値を足す
 function floorSafe(x) {
-  // 1e-6: 0.1/1.1 系の誤差救済として十分小さいが実用的
   return Math.floor((Number(x) || 0) + 1e-6);
 }
-function floorStatsSafe(stats) {
-  const out = makeZeroStats();
-  for (const k of STATS) out[k] = floorSafe(stats?.[k] ?? 0);
-  return out;
+function roundSafe(x) {
+  return Math.round((Number(x) || 0) + 1e-6);
 }
-
-/* ---------- 表示：整数（小数点以下切り捨て） ---------- */
-function toDisplayIntFloor(v) {
-  return floorSafe(v);
-}
-function statsToDisplayIntsFloor(stats) {
+function roundStatsSafe(stats) {
   const out = makeZeroStats();
-  for (const k of STATS) out[k] = toDisplayIntFloor(stats?.[k] ?? 0);
+  for (const k of STATS) out[k] = roundSafe(stats?.[k] ?? 0);
   return out;
 }
 
@@ -140,7 +132,7 @@ function parseMiniToml(text) {
 }
 
 /* ---------- スケール ---------- */
-// ★武器/防具：装備ごとに切り捨て（movは強化しない）
+// 武器/防具：装備ごとに切り捨て（movは強化しない）
 function scaleEquipBaseAdd(baseAdd, enhance) {
   const lv = clamp0(enhance);
   const mul = 1 + lv * 0.1;
@@ -151,7 +143,7 @@ function scaleEquipBaseAdd(baseAdd, enhance) {
   return out;
 }
 
-// アクセ実数：内部切り捨てなし（検証中）
+// アクセ実数：内部切り捨てなし（小数保持）
 function scaleAccFlatLv1Base(baseAdd, displayLv) {
   const internal = clamp1(displayLv) - 1;
   const mul = 1 + internal * 0.1;
@@ -161,7 +153,7 @@ function scaleAccFlatLv1Base(baseAdd, displayLv) {
   return out;
 }
 
-// アクセ割合：内部切り捨てなし（検証中）
+// アクセ割合：内部切り捨てなし（小数保持）
 function scaleAccRatePercentLv1Base(baseRate, displayLv) {
   const internal = clamp1(displayLv) - 1;
   const mul = 1 + internal * 0.01;
@@ -255,19 +247,19 @@ function buildTableRows() {
   }
 }
 
-function renderTable(basePlusProtein, equipDisplay, total) {
+function renderTable(basePlusProtein, equipDisplay, totalFinalInt) {
   const tbody = $("statsTbody");
   if (!tbody) return;
 
-  const baseD = statsToDisplayIntsFloor(basePlusProtein);
-  const equipD = statsToDisplayIntsFloor(equipDisplay);
-  const totalD = statsToDisplayIntsFloor(total);
+  // base/equip列も最終は整数として表示（見た目だけの丸めでズレを作らない）
+  const baseD = roundStatsSafe(basePlusProtein);
+  const equipD = roundStatsSafe(equipDisplay);
 
   for (const tr of tbody.querySelectorAll("tr")) {
     const k = tr.dataset.stat;
     tr.querySelector('[data-col="base"]').textContent = String(baseD?.[k] ?? 0);
     tr.querySelector('[data-col="equip"]').textContent = String(equipD?.[k] ?? 0);
-    tr.querySelector('[data-col="total"]').textContent = String(totalD?.[k] ?? 0);
+    tr.querySelector('[data-col="total"]').textContent = String(totalFinalInt?.[k] ?? 0);
   }
 }
 
@@ -376,7 +368,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   $("recalcBtn")?.addEventListener("click", recalc);
 
-  // 入力変化で再計算
   document.querySelectorAll("input,select").forEach((el) => {
     el.addEventListener("input", recalc);
     el.addEventListener("change", recalc);
@@ -393,13 +384,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     for (const k of BASE_STATS) basePointsRaw[k] = clamp0($(`base_${k}`)?.value);
     basePointsRaw.mov = 0;
 
-    // プロテイン（内部切り捨て無し）
+    // プロテイン（小数保持）
     const shaker = clamp0($("shakerCount")?.value);
     const proteinRaw = makeZeroStats();
     for (const k of PROTEIN_STATS) proteinRaw[k] = clamp0($(`protein_${k}`)?.value);
     const proteinAppliedRaw = mulStats(proteinRaw, 1 + shaker * 0.01);
 
-    // 武器/防具（装備ごと floorSafe）
+    // 武器/防具（装備ごとfloor）
     let equipSumRaw = makeZeroStats();
     const equipState = {};
 
@@ -426,14 +417,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (info) info.textContent = setSeries ? `使用 ${used} / 残り ${remain}（セットON）` : `使用 ${used} / 残り ${remain}`;
     if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
-    // ★セット適用（合算後1回だけ floorSafe / mov除外）
+    // セット適用（合算後1回、mov除外）
     const sumBeforeSet = addStats(addStats(basePointsRaw, proteinAppliedRaw), equipSumRaw);
     const sumAfterSet = applySetAfterSumFloor(sumBeforeSet, setMul);
 
-    // base列表示（基礎+プロテイン）
-    const basePlusProtein = addStats(basePointsRaw, proteinAppliedRaw);
-
-    // アクセ（内部切り捨て無し）
+    // アクセ
     let accFlat = makeZeroStats();
     let accRate = makeZeroStats();
 
@@ -450,15 +438,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       accRate = addStats(accRate, scaleAccRatePercentLv1Base(it.base_rate ?? {}, lv));
     }
 
-    // ペット（内部切り捨て無し）
+    // ペット
     let petFlat = makeZeroStats();
     let petRate = makeZeroStats();
 
+    const petsState = {};
     for (const pk of PET_KEYS) {
       const pid = $(`select_${pk}`)?.value || "";
       const stage = clampStage($(`stage_${pk}`)?.value);
-      if (!pid || stage <= 0) continue;
+      petsState[pk] = { id: pid, stage };
 
+      if (!pid || stage <= 0) continue;
       const pet = petList.find((p) => p.id === pid);
       if (!pet) continue;
 
@@ -467,24 +457,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       petRate = addStats(petRate, summed.rate);
     }
 
-    // 実数加算 → %適用（小数保持） → ★最終確定で floorStatsSafe
+    // 実数加算
     const sumAfterFlat = addStats(addStats(sumAfterSet, accFlat), petFlat);
+
+    // %合算 → 乗算 → ★最終は四捨五入で確定
     const totalRate = addStats(accRate, petRate);
     const totalFloat = applyRateToStats(sumAfterFlat, totalRate);
-    const total = floorStatsSafe(totalFloat); // ★ここが今回の本命（%後に確定）
+    const totalFinal = roundStatsSafe(totalFloat);
 
+    // 表示用（base列は「基礎+プロテイン」）
+    const basePlusProtein = addStats(basePointsRaw, proteinAppliedRaw);
     const equipDisplay = addStats(addStats(equipSumRaw, accFlat), petFlat);
 
     setErr(errs.join("\n"));
-    renderTable(basePlusProtein, equipDisplay, total);
+    renderTable(basePlusProtein, equipDisplay, totalFinal);
 
-    // 保存（必要なら後で復帰させる。今は検証優先で最低限）
+    // 保存（検証に必要な最低限を維持）
     saveState({
       basePointTotal,
       basePoints: Object.fromEntries(BASE_STATS.map((k) => [k, basePointsRaw[k] ?? 0])),
       shakerCount: shaker,
       proteinRaw: Object.fromEntries(PROTEIN_STATS.map((k) => [k, proteinRaw[k] ?? 0])),
       equip: equipState,
+      pets: petsState,
     });
   }
 
