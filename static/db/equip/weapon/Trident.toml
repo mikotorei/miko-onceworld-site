@@ -1,0 +1,9 @@
++++
+id = "Trident"
+title = "トライデント"
+slot = "weapon"
++++
+
+[base_add]
+atk = 7777
+luk = 77777
