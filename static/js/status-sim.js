@@ -1,16 +1,23 @@
 // static/js/status-sim.js
-// 安定版：アクセ3枠（Lv1基礎）＋ペット3体（段階0〜4）＋最終割合(**)対応
-// ★修正：mov の基礎値は 0 ではなく 6（ステ振り/プロテイン対象外）
+// 安定版：アクセ3枠（Lv1基礎）＋ペット3体（段階0〜4）計算反映（ステップ5）
+// ★改善：ペットを選択したら、段階が0のとき自動で1にする（操作性向上）
 //
-// 仕様
-// - 武器/防具：+0が基礎（×1.0）、+1から補正（mov除外）
-// - セット効果：防具5部位同seriesで、ステ振り/プロテイン/武器防具に×1.1（切り捨て）
-// - アクセ：実数→加算、割合→最後に乗算（Lv1基礎、内部=Lv-1）
-// - ペット：段階0..stageを合算
-//   - base_add：実数（アクセ実数と同タイミングで加算）
-//   - base_rate：通常割合（アクセ割合と同タイミングで乗算）
-//   - final_rate：最終割合(**)（全ての補正の最後にもう1回乗算）
-// - EXP/回避/補○○は無視（STATS外は0扱い）
+// 武器/防具：+0が基礎（×1.0）、+1から補正
+//   実数スケール：基礎×(1+強化×0.1)（mov除外）
+// セット効果：防具5部位が同seriesなら、ステ振り/プロテイン/武器防具に×1.1（切り捨て）
+//
+// アクセ（3枠）：Lv1が基礎（補正なし）
+//   内部強化数 = (Lv - 1)
+//   実数：基礎×(1+内部×0.1) を「(ステ振り+プロテイン+武器防具)の後」に加算
+//   割合：基礎×(1+内部×0.01) を、その後に乗算（1 + %/100）
+//   アクセはセット効果対象外
+//
+// ペット（3体）
+//   段階：0=未解放 / 1=31 / 2=71 / 3=121 / 4=181
+//   選択したペットの stages[0..stage] を合算して補正を作る
+//   実数はアクセ実数と同タイミングで加算
+//   割合はアクセ割合と同タイミングで最後に乗算
+//   ペットはセット効果対象外
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -21,9 +28,6 @@ const ACCESSORY_KEYS = ["accessory1", "accessory2", "accessory3"];
 const PET_KEYS = ["pet1", "pet2", "pet3"];
 
 const $ = (id) => document.getElementById(id);
-
-// ★movの基礎値（ゲーム仕様）
-const BASE_MOV = 6;
 
 /* ---------- util ---------- */
 const n = (v, fb = 0) => (Number.isFinite(Number(v)) ? Number(v) : fb);
@@ -44,14 +48,6 @@ function mulStatsFloor(stats, mul) {
   for (const k of STATS) out[k] = Math.floor((stats?.[k] ?? 0) * mul);
   return out;
 }
-function applyRateToStatsFloor(stats, ratePercentByStat) {
-  const out = makeZeroStats();
-  for (const k of STATS) {
-    const p = ratePercentByStat?.[k] ?? 0;
-    out[k] = Math.floor((stats?.[k] ?? 0) * (1 + p / 100));
-  }
-  return out;
-}
 
 /* ---------- error ---------- */
 function setErr(text) {
@@ -61,7 +57,7 @@ function setErr(text) {
   el.textContent = msg;
   el.classList.toggle("is-visible", msg.length > 0);
 }
-function flashInfo(msg, ms = 700) {
+function flashInfo(msg, ms = 900) {
   setErr(msg);
   window.setTimeout(() => setErr(""), ms);
 }
@@ -101,7 +97,10 @@ function parseMiniToml(text) {
 
   for (const line of lines) {
     const sec = line.match(/^\[(.+?)\]$/);
-    if (sec) { section = sec[1]; continue; }
+    if (sec) {
+      section = sec[1];
+      continue;
+    }
 
     const kv = line.match(/^([A-Za-z0-9_]+)\s*=\s*(.+)$/);
     if (!kv) continue;
@@ -128,9 +127,10 @@ function scaleEquipBaseAdd(baseAdd, enhance) {
 
   const out = makeZeroStats();
   for (const k of SCALE_STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
-  out.mov = baseAdd?.mov ?? 0; // movはスケールしない
+  out.mov = baseAdd?.mov ?? 0;
   return out;
 }
+
 function scaleAccFlatLv1Base(baseAdd, displayLv) {
   const internal = clamp1(displayLv) - 1;
   const mul = 1 + internal * 0.1;
@@ -139,12 +139,22 @@ function scaleAccFlatLv1Base(baseAdd, displayLv) {
   for (const k of STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
   return out;
 }
+
 function scaleAccRatePercentLv1Base(baseRate, displayLv) {
   const internal = clamp1(displayLv) - 1;
   const mul = 1 + internal * 0.01;
 
   const out = makeZeroStats();
   for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul;
+  return out;
+}
+
+function applyRateToStatsFloor(stats, ratePercentByStat) {
+  const out = makeZeroStats();
+  for (const k of STATS) {
+    const p = ratePercentByStat?.[k] ?? 0;
+    out[k] = Math.floor((stats?.[k] ?? 0) * (1 + p / 100));
+  }
   return out;
 }
 
@@ -167,25 +177,21 @@ function getArmorSetSeries(slotItems, equipState) {
   return series;
 }
 
-/* ---------- ペット：段階0..stageを合算（base_add/base_rate/final_rate） ---------- */
+/* ---------- ペット：段階0..stageを合算 ---------- */
 function sumPetUpToStage(pet, stage) {
   const s = clampStage(stage);
   const outAdd = makeZeroStats();
   const outRate = makeZeroStats();
-  const outFinal = makeZeroStats();
 
   const stages = Array.isArray(pet?.stages) ? pet.stages : [];
   for (let i = 0; i <= s; i++) {
     const st = stages[i] || {};
     const add = st.base_add || {};
     const rate = st.base_rate || {};
-    const fin = st.final_rate || {};
-
     for (const k of STATS) outAdd[k] += (add?.[k] ?? 0);
     for (const k of STATS) outRate[k] += (rate?.[k] ?? 0);
-    for (const k of STATS) outFinal[k] += (fin?.[k] ?? 0);
   }
-  return { add: outAdd, rate: outRate, final: outFinal };
+  return { add: outAdd, rate: outRate };
 }
 
 /* ---------- UI ---------- */
@@ -230,7 +236,7 @@ function renderTable(basePlusProtein, equipDisplay, total) {
 }
 
 /* ---------- 保存 ---------- */
-const STORAGE_KEY = "status_sim_state_acc3_lv1base_pet_finalrate_v2_mov6";
+const STORAGE_KEY = "status_sim_state_acc3_lv1base_petcalc_v2";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
@@ -248,7 +254,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const petDB = await fetchJSON(abs("/db/pet_skills.json"));
     petList = Array.isArray(petDB?.pets) ? petDB.pets : [];
-    flashInfo(`pet_skills.json 読み込みOK：${petList.length}体`, 600);
+    flashInfo(`pet_skills.json 読み込みOK：${petList.length}体`, 700);
   } catch (e) {
     flashInfo(`pet_skills.json 読み込み失敗：${String(e?.message ?? e)}`, 4000);
   }
@@ -262,13 +268,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (stg) stg.value = String(clampStage(saved?.pets?.[k]?.stage ?? 0));
   }
 
-  // ペットを選んだら段階が0なら1へ（操作性）
+  // ★操作性：ペットを選んだら段階が0のとき自動で1にする
   for (const k of PET_KEYS) {
     const sel = $(`select_${k}`);
     const stg = $(`stage_${k}`);
     if (!sel || !stg) continue;
     sel.addEventListener("change", () => {
-      if (sel.value && String(stg.value) === "0") stg.value = "1";
+      const pid = sel.value || "";
+      if (pid && String(stg.value) === "0") stg.value = "1";
       recalc();
     });
   }
@@ -281,7 +288,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     { key: "hands", indexUrl: "/db/equip/armor/hands/index.json", itemDir: "/db/equip/armor/hands/" },
     { key: "feet", indexUrl: "/db/equip/armor/feet/index.json", itemDir: "/db/equip/armor/feet/" },
     { key: "shield", indexUrl: "/db/equip/armor/shield/index.json", itemDir: "/db/equip/armor/shield/" },
-    { key: "accessory", indexUrl: "/db/equip/accessory/index.json", itemDir: "/db/equip/accessory/" }
+    { key: "accessory", indexUrl: "/db/equip/accessory/index.json", itemDir: "/db/equip/accessory/" },
   ];
 
   const slotItems = {};
@@ -302,7 +309,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // 装備UI復元
   for (const key of ["weapon", "head", "body", "hands", "feet", "shield"]) {
     fillSelect($(`select_${key}`), slotItems[key] || [], (it) => it.title ?? it.id);
     const sel = $(`select_${key}`);
@@ -310,6 +316,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (sel) sel.value = saved?.equip?.[key]?.id ?? "";
     if (lv) lv.value = String(clamp0(saved?.equip?.[key]?.lv ?? 0));
   }
+
   for (const akey of ACCESSORY_KEYS) {
     fillSelect($(`select_${akey}`), slotItems.accessory || [], (it) => it.title ?? it.id);
     const sel = $(`select_${akey}`);
@@ -318,16 +325,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (lv) lv.value = String(clamp1(saved?.equip?.[akey]?.lv ?? 1));
   }
 
-  // 振り分け・プロテイン復元
   if ($("basePointTotal")) $("basePointTotal").value = String(clamp0(saved?.basePointTotal ?? 0));
-  for (const k of BASE_STATS) if ($(`base_${k}`)) $(`base_${k}`).value = String(clamp0(saved?.basePoints?.[k] ?? 0));
+  for (const k of BASE_STATS) {
+    const el = $(`base_${k}`);
+    if (el) el.value = String(clamp0(saved?.basePoints?.[k] ?? 0));
+  }
   if ($("shakerCount")) $("shakerCount").value = String(clamp0(saved?.shakerCount ?? 0));
-  for (const k of PROTEIN_STATS) if ($(`protein_${k}`)) $(`protein_${k}`).value = String(clamp0(saved?.proteinRaw?.[k] ?? 0));
+  for (const k of PROTEIN_STATS) {
+    const el = $(`protein_${k}`);
+    if (el) el.value = String(clamp0(saved?.proteinRaw?.[k] ?? 0));
+  }
 
-  // ボタン
   $("recalcBtn")?.addEventListener("click", recalc);
   $("resetBtn")?.addEventListener("click", () => {
-    for (const k of BASE_STATS) if ($(`base_${k}`)) $(`base_${k}`).value = "0";
+    for (const k of BASE_STATS) {
+      const el = $(`base_${k}`);
+      if (el) el.value = "0";
+    }
     recalc();
   });
   $("clearSaveBtn")?.addEventListener("click", () => {
@@ -367,20 +381,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const basePointsRaw = makeZeroStats();
     for (const k of BASE_STATS) basePointsRaw[k] = clamp0($(`base_${k}`)?.value);
-    // ★movはステ振り不可：固定で6
-    basePointsRaw.mov = BASE_MOV;
+    basePointsRaw.mov = 0;
 
     const shaker = clamp0($("shakerCount")?.value);
     const proteinRaw = makeZeroStats();
     for (const k of PROTEIN_STATS) proteinRaw[k] = clamp0($(`protein_${k}`)?.value);
-    // ★movはプロテイン対象外：0のまま
-    proteinRaw.mov = 0;
-
     const proteinAppliedRaw = mulStatsFloor(proteinRaw, 1 + shaker * 0.01);
 
-    // 武器防具
     let equipSumRaw = makeZeroStats();
     const equipState = {};
+
     for (const key of ["weapon","head","body","hands","feet","shield"]) {
       const id = $(`select_${key}`)?.value || "";
       const lv = clamp0($(`level_${key}`)?.value);
@@ -392,18 +402,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       equipSumRaw = addStats(equipSumRaw, scaleEquipBaseAdd(it.base_add ?? {}, lv));
     }
 
-    // セット
     const setSeries = getArmorSetSeries(slotItems, equipState);
     const setMul = setSeries ? 1.1 : 1.0;
 
-    // ポイント（movは常に6で固定なので、チェック対象はBASE_STATSのみ）
     const used = BASE_STATS.reduce((s, k) => s + (basePointsRaw[k] ?? 0), 0);
     const remain = basePointTotal - used;
     const info = $("basePointInfo");
     if (info) info.textContent = setSeries ? `使用 ${used} / 残り ${remain}（セットON）` : `使用 ${used} / 残り ${remain}`;
     if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
-    // セット適用（ステ振り/プロテイン/武器防具のみ）
     const basePoints = setMul === 1.0 ? basePointsRaw : mulStatsFloor(basePointsRaw, setMul);
     const proteinApplied = setMul === 1.0 ? proteinAppliedRaw : mulStatsFloor(proteinAppliedRaw, setMul);
     const equipSum = setMul === 1.0 ? equipSumRaw : mulStatsFloor(equipSumRaw, setMul);
@@ -411,9 +418,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const basePlusProtein = addStats(basePoints, proteinApplied);
     const sumBeforeAcc = addStats(basePlusProtein, equipSum);
 
-    // アクセ
     let accFlat = makeZeroStats();
     let accRate = makeZeroStats();
+
     for (const akey of ACCESSORY_KEYS) {
       const id = $(`select_${akey}`)?.value || "";
       const lv = clamp1($(`level_${akey}`)?.value);
@@ -427,10 +434,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       accRate = addStats(accRate, scaleAccRatePercentLv1Base(it.base_rate ?? {}, lv));
     }
 
-    // ペット（実数・通常割合・最終割合）
+    // --- ペット（3体） ---
     let petFlat = makeZeroStats();
     let petRate = makeZeroStats();
-    let petFinalRate = makeZeroStats();
 
     const petsState = {};
     for (const pk of PET_KEYS) {
@@ -439,26 +445,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       petsState[pk] = { id: pid, stage };
 
       if (!pid || stage <= 0) continue;
-      const pet = petList.find((p) => String(p.id) === String(pid));
+      const pet = petList.find((p) => p.id === pid);
       if (!pet) continue;
 
       const summed = sumPetUpToStage(pet, stage);
       petFlat = addStats(petFlat, summed.add);
       petRate = addStats(petRate, summed.rate);
-      petFinalRate = addStats(petFinalRate, summed.final);
     }
 
-    // 実数（アクセ＋ペット）
     const sumAfterFlat = addStats(addStats(sumBeforeAcc, accFlat), petFlat);
-
-    // 通常割合（アクセ＋ペット*）
     const totalRate = addStats(accRate, petRate);
-    const afterNormalRate = applyRateToStatsFloor(sumAfterFlat, totalRate);
+    const total = applyRateToStatsFloor(sumAfterFlat, totalRate);
 
-    // 最終割合（ペット**）
-    const total = applyRateToStatsFloor(afterNormalRate, petFinalRate);
-
-    // 表示用：装備列＝武器防具＋アクセ実数＋ペット実数
     const equipDisplay = addStats(addStats(equipSum, accFlat), petFlat);
 
     setErr(errs.join("\n"));
@@ -466,11 +464,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     saveState({
       basePointTotal,
-      basePoints: Object.fromEntries(BASE_STATS.map((k) => [k, (basePointsRaw[k] ?? 0)])),
+      basePoints: Object.fromEntries(BASE_STATS.map((k) => [k, basePointsRaw[k] ?? 0])),
       shakerCount: shaker,
-      proteinRaw: Object.fromEntries(PROTEIN_STATS.map((k) => [k, (proteinRaw[k] ?? 0)])),
+      proteinRaw: Object.fromEntries(PROTEIN_STATS.map((k) => [k, proteinRaw[k] ?? 0])),
       equip: equipState,
-      pets: petsState
+      pets: petsState,
     });
   }
 
