@@ -2,10 +2,12 @@
 // 検証用（段階）
 // - 表示：常に整数（小数点以下を捨てる）
 // - 内部切り捨て：
-//   (1) 武器/防具の強化スケールは「装備ごとに floor」（movは強化しない）
+//   (1) 武器/防具の強化スケールは「装備ごとに floorSafe」（movは強化しない）
 //   (2) セット効果は「(基礎+プロテイン+武器防具) を合算してから」
-//       vit/spd/atk/int/def/mdef/luk にだけ×1.1して floor（movは対象外）
+//       vit/spd/atk/int/def/mdef/luk にだけ×1.1して floorSafe（movは対象外）
 // - それ以外（シェイカー、アクセ、ペット、％適用）は内部切り捨てなし（小数保持）
+//
+// ★ポイント：JS浮動小数の誤差（109.999999999...）で -1 が出るのを避けるため、floorSafe を使用
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -36,6 +38,11 @@ function mulStats(stats, mul) {
   const out = makeZeroStats();
   for (const k of STATS) out[k] = (stats?.[k] ?? 0) * mul;
   return out;
+}
+
+// ★浮動小数誤差対策：floor直前に微小値を足す
+function floorSafe(x) {
+  return Math.floor((Number(x) || 0) + 1e-9);
 }
 
 /* ---------- 表示：整数（小数点以下切り捨て） ---------- */
@@ -127,7 +134,7 @@ function scaleEquipBaseAdd(baseAdd, enhance) {
   const mul = 1 + lv * 0.1;
 
   const out = makeZeroStats();
-  for (const k of SCALE_STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
+  for (const k of SCALE_STATS) out[k] = floorSafe((baseAdd?.[k] ?? 0) * mul);
   out.mov = baseAdd?.mov ?? 0;
   return out;
 }
@@ -181,12 +188,12 @@ function getArmorSetSeries(slotItems, equipState) {
   return series;
 }
 
-/* ---------- セット適用：合算後に1回だけ floor（mov除外） ---------- */
+/* ---------- セット適用：合算後に1回だけ floorSafe（mov除外） ---------- */
 function applySetAfterSumFloor(sumStats, setMul) {
   if (setMul === 1.0) return { ...sumStats };
 
   const out = { ...sumStats };
-  for (const k of BASE_STATS) out[k] = Math.floor((sumStats?.[k] ?? 0) * setMul);
+  for (const k of BASE_STATS) out[k] = floorSafe((sumStats?.[k] ?? 0) * setMul);
   out.mov = sumStats?.mov ?? 0; // mov対象外
   return out;
 }
@@ -410,7 +417,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     for (const k of PROTEIN_STATS) proteinRaw[k] = clamp0($(`protein_${k}`)?.value);
     const proteinAppliedRaw = mulStats(proteinRaw, 1 + shaker * 0.01);
 
-    // 武器/防具（装備ごと floor）
+    // 武器/防具（装備ごと floorSafe）
     let equipSumRaw = makeZeroStats();
     const equipState = {};
 
@@ -437,7 +444,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (info) info.textContent = setSeries ? `使用 ${used} / 残り ${remain}（セットON）` : `使用 ${used} / 残り ${remain}`;
     if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
-    // ★セット適用（合算後1回だけ floor / mov除外）
+    // ★セット適用（合算後1回だけ floorSafe / mov除外）
     const sumBeforeSet = addStats(addStats(basePointsRaw, proteinAppliedRaw), equipSumRaw);
     const sumAfterSet = applySetAfterSumFloor(sumBeforeSet, setMul);
 
