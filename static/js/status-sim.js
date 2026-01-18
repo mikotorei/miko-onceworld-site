@@ -1,24 +1,19 @@
 // static/js/status-sim.js
-// 検証用：内部計算は小数保持（途中のfloorなし）
-// 表示だけ整数（小数点以下を捨てる＝表示floor）
-//
-// ★今回の変更（重要）
-// セット効果：
-//  「(基礎 + プロテイン + 武器防具) を合算してから」
-//  vit/spd/atk/int/def/mdef/luk にだけ ×1.1 を掛け、そこで1回だけ切り捨て
-//  mov はセット対象外（倍率も切り捨ても行わない）
-//
-// ※アクセ/ペットはセット対象外（従来通り）
-// ※強化/シェイカー/%など、他の内部切り捨てはこの検証モードでは行わない
+// 検証用（段階）
+// - 表示：常に整数（小数点以下を捨てる）
+// - 内部切り捨て：
+//   (1) 武器/防具の強化スケールは「装備ごとに floor」（movは強化しない）
+//   (2) セット効果は「(基礎+プロテイン+武器防具) を合算してから」
+//       vit/spd/atk/int/def/mdef/luk にだけ×1.1して floor（movは対象外）
+// - それ以外（シェイカー、アクセ、ペット、％適用）は内部切り捨てなし（小数保持）
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
 const PROTEIN_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
 const SCALE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
+
 const ARMOR_KEYS = ["head", "body", "hands", "feet", "shield"];
-const ACCESSORY_KEYS = ["accessory1", "accessory2", "accessory2", "accessory3"].filter(
-  (v, i, a) => a.indexOf(v) === i
-);
+const ACCESSORY_KEYS = ["accessory1", "accessory2", "accessory3"];
 const PET_KEYS = ["pet1", "pet2", "pet3"];
 
 const $ = (id) => document.getElementById(id);
@@ -43,7 +38,7 @@ function mulStats(stats, mul) {
   return out;
 }
 
-/* ---------- 表示用：整数化（小数点以下を捨てる） ---------- */
+/* ---------- 表示：整数（小数点以下切り捨て） ---------- */
 function toDisplayIntFloor(v) {
   const x = Number(v);
   return Number.isFinite(x) ? Math.floor(x) : 0;
@@ -51,19 +46,6 @@ function toDisplayIntFloor(v) {
 function statsToDisplayIntsFloor(stats) {
   const out = makeZeroStats();
   for (const k of STATS) out[k] = toDisplayIntFloor(stats?.[k] ?? 0);
-  return out;
-}
-
-/* ---------- セット用：合算後に1回だけ切り捨て（mov除外） ---------- */
-function applySetAfterSumFloor(sumStats, setMul) {
-  if (setMul === 1.0) return { ...sumStats };
-
-  const out = { ...sumStats };
-  // movは対象外：倍率も切り捨ても行わない
-  for (const k of BASE_STATS) {
-    out[k] = Math.floor((sumStats?.[k] ?? 0) * setMul);
-  }
-  out.mov = sumStats?.mov ?? 0;
   return out;
 }
 
@@ -138,22 +120,19 @@ function parseMiniToml(text) {
   return item;
 }
 
-/* ---------- スケール（内部切り捨て無し） ---------- */
+/* ---------- スケール ---------- */
+// ★武器/防具：装備ごとに切り捨て（movは強化しない）
 function scaleEquipBaseAdd(baseAdd, enhance) {
   const lv = clamp0(enhance);
   const mul = 1 + lv * 0.1;
 
   const out = makeZeroStats();
-  // ★装備ごとに切り捨て（ここが変更点）
   for (const k of SCALE_STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
-
-  // movは強化対象外（切り捨ても倍率も掛けない）
   out.mov = baseAdd?.mov ?? 0;
-
   return out;
 }
 
-
+// アクセ実数：内部切り捨てなし（検証中）
 function scaleAccFlatLv1Base(baseAdd, displayLv) {
   const internal = clamp1(displayLv) - 1;
   const mul = 1 + internal * 0.1;
@@ -163,6 +142,7 @@ function scaleAccFlatLv1Base(baseAdd, displayLv) {
   return out;
 }
 
+// アクセ割合：内部切り捨てなし（検証中）
 function scaleAccRatePercentLv1Base(baseRate, displayLv) {
   const internal = clamp1(displayLv) - 1;
   const mul = 1 + internal * 0.01;
@@ -172,6 +152,7 @@ function scaleAccRatePercentLv1Base(baseRate, displayLv) {
   return out;
 }
 
+// 最後の％適用：内部切り捨てなし（検証中）
 function applyRateToStats(stats, ratePercentByStat) {
   const out = makeZeroStats();
   for (const k of STATS) {
@@ -198,6 +179,16 @@ function getArmorSetSeries(slotItems, equipState) {
     if (series !== s) return null;
   }
   return series;
+}
+
+/* ---------- セット適用：合算後に1回だけ floor（mov除外） ---------- */
+function applySetAfterSumFloor(sumStats, setMul) {
+  if (setMul === 1.0) return { ...sumStats };
+
+  const out = { ...sumStats };
+  for (const k of BASE_STATS) out[k] = Math.floor((sumStats?.[k] ?? 0) * setMul);
+  out.mov = sumStats?.mov ?? 0; // mov対象外
+  return out;
 }
 
 /* ---------- ペット：段階0..stageを合算 ---------- */
@@ -279,7 +270,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   buildTableRows();
   const saved = loadState();
 
-  // ---- ペットDB読み込み ----
+  // ---- ペットDB ----
   let petList = [];
   try {
     const petDB = await fetchJSON(abs("/db/pet_skills.json"));
@@ -289,7 +280,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     flashInfo(`pet_skills.json 読み込み失敗：${String(e?.message ?? e)}`, 4000);
   }
 
-  // ペットselectへ反映 + 復元
   for (const k of PET_KEYS) {
     fillSelect($(`select_${k}`), petList, (p) => p.name ?? p.id);
     const sel = $(`select_${k}`);
@@ -310,7 +300,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ---- 装備DB読み込み ----
+  // ---- 装備DB ----
   const SLOTS = [
     { key: "weapon", indexUrl: "/db/equip/weapon/index.json", itemDir: "/db/equip/weapon/" },
     { key: "head", indexUrl: "/db/equip/armor/head/index.json", itemDir: "/db/equip/armor/head/" },
@@ -347,7 +337,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (lv) lv.value = String(clamp0(saved?.equip?.[key]?.lv ?? 0));
   }
 
-  for (const akey of ["accessory1", "accessory2", "accessory3"]) {
+  for (const akey of ACCESSORY_KEYS) {
     fillSelect($(`select_${akey}`), slotItems.accessory || [], (it) => it.title ?? it.id);
     const sel = $(`select_${akey}`);
     const lv = $(`level_${akey}`);
@@ -386,7 +376,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if ($(`select_${key}`)) $(`select_${key}`).value = "";
       if ($(`level_${key}`)) $(`level_${key}`).value = "0";
     }
-    for (const akey of ["accessory1", "accessory2", "accessory3"]) {
+    for (const akey of ACCESSORY_KEYS) {
       if ($(`select_${akey}`)) $(`select_${akey}`).value = "";
       if ($(`level_${akey}`)) $(`level_${akey}`).value = "1";
     }
@@ -409,18 +399,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const basePointTotal = clamp0($("basePointTotal")?.value);
 
+    // 基礎
     const basePointsRaw = makeZeroStats();
     for (const k of BASE_STATS) basePointsRaw[k] = clamp0($(`base_${k}`)?.value);
     basePointsRaw.mov = 0;
 
+    // プロテイン（内部切り捨て無し）
     const shaker = clamp0($("shakerCount")?.value);
     const proteinRaw = makeZeroStats();
     for (const k of PROTEIN_STATS) proteinRaw[k] = clamp0($(`protein_${k}`)?.value);
-
-    // シェイカー補正：内部切り捨て無し
     const proteinAppliedRaw = mulStats(proteinRaw, 1 + shaker * 0.01);
 
-    // 武器防具：内部切り捨て無し
+    // 武器/防具（装備ごと floor）
     let equipSumRaw = makeZeroStats();
     const equipState = {};
 
@@ -432,32 +422,33 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!id) continue;
       const it = (slotItems[key] || []).find((v) => v.id === id);
       if (!it) continue;
+
       equipSumRaw = addStats(equipSumRaw, scaleEquipBaseAdd(it.base_add ?? {}, lv));
     }
 
+    // セット判定
     const setSeries = getArmorSetSeries(slotItems, equipState);
     const setMul = setSeries ? 1.1 : 1.0;
 
+    // ポイント表示
     const used = BASE_STATS.reduce((s, k) => s + (basePointsRaw[k] ?? 0), 0);
     const remain = basePointTotal - used;
     const info = $("basePointInfo");
     if (info) info.textContent = setSeries ? `使用 ${used} / 残り ${remain}（セットON）` : `使用 ${used} / 残り ${remain}`;
     if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
-    // ★ここが今回の本命：合算してからセットを1回だけ適用（mov除外）
+    // ★セット適用（合算後1回だけ floor / mov除外）
     const sumBeforeSet = addStats(addStats(basePointsRaw, proteinAppliedRaw), equipSumRaw);
     const sumAfterSet = applySetAfterSumFloor(sumBeforeSet, setMul);
 
-    // ここから先は従来通り（アクセ/ペットはセット対象外）
+    // テーブルの base列表示（現状は「基礎+プロテイン」）
     const basePlusProtein = addStats(basePointsRaw, proteinAppliedRaw);
-    // 表示用の base列もセットON時に寄せたいならここも後で調整可能だが、
-    // 今回は「最終値の一致」を優先するため、計算の本筋(sumAfterSet)を進める。
-    // ただし base列表示が気になる場合は報告してください。
 
+    // アクセ（内部切り捨て無し）
     let accFlat = makeZeroStats();
     let accRate = makeZeroStats();
 
-    for (const akey of ["accessory1", "accessory2", "accessory3"]) {
+    for (const akey of ACCESSORY_KEYS) {
       const id = $(`select_${akey}`)?.value || "";
       const lv = clamp1($(`level_${akey}`)?.value);
       equipState[akey] = { id, lv };
@@ -470,7 +461,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       accRate = addStats(accRate, scaleAccRatePercentLv1Base(it.base_rate ?? {}, lv));
     }
 
-    // ペット
+    // ペット（内部切り捨て無し）
     let petFlat = makeZeroStats();
     let petRate = makeZeroStats();
 
@@ -489,14 +480,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       petRate = addStats(petRate, summed.rate);
     }
 
+    // 実数加算 → 最後に%（内部切り捨て無し）
     const sumAfterFlat = addStats(addStats(sumAfterSet, accFlat), petFlat);
     const totalRate = addStats(accRate, petRate);
     const total = applyRateToStats(sumAfterFlat, totalRate);
 
-    // 表示用の装備列
-    // 「装備」列は “(武器防具 + アクセ実数 + ペット実数)” を見せたいので、
-    // セットONの場合、武器防具のうち倍率対象7ステは「合算後セット適用」の結果から差分を作るのが厳密。
-    // ただ、今回の主眼は最終一致なので、まずは以下で近似します（報告を見て必要なら整えます）。
+    // 装備列表示（武器防具 + アクセ実数 + ペット実数）
     const equipDisplay = addStats(addStats(equipSumRaw, accFlat), petFlat);
 
     setErr(errs.join("\n"));
