@@ -144,7 +144,15 @@ function scaleEquipBaseAdd(baseAdd, enhance) {
   const mul = 1 + lv * 0.1;
 
   const out = makeZeroStats();
-  for (const k of SCALE_STATS) out[k] = (baseAdd?.[k] ?? 0) * mul;
+  function scaleEquipBaseAdd(baseAdd, enhance) {
+  const lv = clamp0(enhance);
+  const mul = 1 + lv * 0.1;
+
+  const out = makeZeroStats();
+  for (const k of SCALE_STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
+  out.mov = baseAdd?.mov ?? 0; // movは強化しない（従来通り）
+  return out;
+}
   out.mov = baseAdd?.mov ?? 0;
   return out;
 }
