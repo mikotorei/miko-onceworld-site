@@ -1,23 +1,8 @@
 // static/js/status-sim.js
-// 安定版：アクセ3枠（Lv1基礎）＋ペット3体（段階0〜4）計算反映（ステップ5）
-// ★改善：ペットを選択したら、段階が0のとき自動で1にする（操作性向上）
-//
-// 武器/防具：+0が基礎（×1.0）、+1から補正
-//   実数スケール：基礎×(1+強化×0.1)（mov除外）
-// セット効果：防具5部位が同seriesなら、ステ振り/プロテイン/武器防具に×1.1（切り捨て）
-//
-// アクセ（3枠）：Lv1が基礎（補正なし）
-//   内部強化数 = (Lv - 1)
-//   実数：基礎×(1+内部×0.1) を「(ステ振り+プロテイン+武器防具)の後」に加算
-//   割合：基礎×(1+内部×0.01) を、その後に乗算（1 + %/100）
-//   アクセはセット効果対象外
-//
-// ペット（3体）
-//   段階：0=未解放 / 1=31 / 2=71 / 3=121 / 4=181
-//   選択したペットの stages[0..stage] を合算して補正を作る
-//   実数はアクセ実数と同タイミングで加算
-//   割合はアクセ割合と同タイミングで最後に乗算
-//   ペットはセット効果対象外
+// 検証用：切り捨て（Math.floor）を一切行わない版
+// - 内部計算は小数を保持（途中のfloorなし）
+// - 画面表示だけ整数（四捨五入）
+//   ※「切り捨て」を避けるため、表示は Math.round を使用
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -43,9 +28,20 @@ function addStats(a, b) {
   for (const k of STATS) out[k] = (out[k] ?? 0) + (b?.[k] ?? 0);
   return out;
 }
-function mulStatsFloor(stats, mul) {
+function mulStats(stats, mul) {
   const out = makeZeroStats();
-  for (const k of STATS) out[k] = Math.floor((stats?.[k] ?? 0) * mul);
+  for (const k of STATS) out[k] = (stats?.[k] ?? 0) * mul;
+  return out;
+}
+
+/* ---------- 表示用：整数化（四捨五入） ---------- */
+function toDisplayInt(v) {
+  const x = Number(v);
+  return Number.isFinite(x) ? Math.round(x) : 0;
+}
+function statsToDisplayInts(stats) {
+  const out = makeZeroStats();
+  for (const k of STATS) out[k] = toDisplayInt(stats?.[k] ?? 0);
   return out;
 }
 
@@ -120,14 +116,14 @@ function parseMiniToml(text) {
   return item;
 }
 
-/* ---------- スケール ---------- */
+/* ---------- スケール（切り捨て無し） ---------- */
 function scaleEquipBaseAdd(baseAdd, enhance) {
   const lv = clamp0(enhance);
   const mul = 1 + lv * 0.1;
 
   const out = makeZeroStats();
-  for (const k of SCALE_STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
-  out.mov = baseAdd?.mov ?? 0;
+  for (const k of SCALE_STATS) out[k] = (baseAdd?.[k] ?? 0) * mul; // floorしない
+  out.mov = baseAdd?.mov ?? 0; // movは従来通り強化しない
   return out;
 }
 
@@ -136,7 +132,7 @@ function scaleAccFlatLv1Base(baseAdd, displayLv) {
   const mul = 1 + internal * 0.1;
 
   const out = makeZeroStats();
-  for (const k of STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
+  for (const k of STATS) out[k] = (baseAdd?.[k] ?? 0) * mul; // floorしない
   return out;
 }
 
@@ -145,15 +141,15 @@ function scaleAccRatePercentLv1Base(baseRate, displayLv) {
   const mul = 1 + internal * 0.01;
 
   const out = makeZeroStats();
-  for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul;
+  for (const k of STATS) out[k] = (baseRate?.[k] ?? 0) * mul; // floatのまま
   return out;
 }
 
-function applyRateToStatsFloor(stats, ratePercentByStat) {
+function applyRateToStats(stats, ratePercentByStat) {
   const out = makeZeroStats();
   for (const k of STATS) {
     const p = ratePercentByStat?.[k] ?? 0;
-    out[k] = Math.floor((stats?.[k] ?? 0) * (1 + p / 100));
+    out[k] = (stats?.[k] ?? 0) * (1 + p / 100); // floorしない
   }
   return out;
 }
@@ -227,11 +223,16 @@ function renderTable(basePlusProtein, equipDisplay, total) {
   const tbody = $("statsTbody");
   if (!tbody) return;
 
+  // 表示だけ整数（四捨五入）
+  const baseD = statsToDisplayInts(basePlusProtein);
+  const equipD = statsToDisplayInts(equipDisplay);
+  const totalD = statsToDisplayInts(total);
+
   for (const tr of tbody.querySelectorAll("tr")) {
     const k = tr.dataset.stat;
-    tr.querySelector('[data-col="base"]').textContent = String(basePlusProtein?.[k] ?? 0);
-    tr.querySelector('[data-col="equip"]').textContent = String(equipDisplay?.[k] ?? 0);
-    tr.querySelector('[data-col="total"]').textContent = String(total?.[k] ?? 0);
+    tr.querySelector('[data-col="base"]').textContent = String(baseD?.[k] ?? 0);
+    tr.querySelector('[data-col="equip"]').textContent = String(equipD?.[k] ?? 0);
+    tr.querySelector('[data-col="total"]').textContent = String(totalD?.[k] ?? 0);
   }
 }
 
@@ -239,8 +240,11 @@ function renderTable(basePlusProtein, equipDisplay, total) {
 const STORAGE_KEY = "status_sim_state_acc3_lv1base_petcalc_v2";
 const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
 const loadState = () => {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
-  catch { return {}; }
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
 };
 const clearState = () => localStorage.removeItem(STORAGE_KEY);
 
@@ -352,7 +356,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if ($("shakerCount")) $("shakerCount").value = "0";
     for (const k of PROTEIN_STATS) if ($(`protein_${k}`)) $(`protein_${k}`).value = "0";
 
-    for (const key of ["weapon","head","body","hands","feet","shield"]) {
+    for (const key of ["weapon", "head", "body", "hands", "feet", "shield"]) {
       if ($(`select_${key}`)) $(`select_${key}`).value = "";
       if ($(`level_${key}`)) $(`level_${key}`).value = "0";
     }
@@ -386,12 +390,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const shaker = clamp0($("shakerCount")?.value);
     const proteinRaw = makeZeroStats();
     for (const k of PROTEIN_STATS) proteinRaw[k] = clamp0($(`protein_${k}`)?.value);
-    const proteinAppliedRaw = mulStatsFloor(proteinRaw, 1 + shaker * 0.01);
+
+    // シェイカー補正：切り捨て無し
+    const proteinAppliedRaw = mulStats(proteinRaw, 1 + shaker * 0.01);
 
     let equipSumRaw = makeZeroStats();
     const equipState = {};
 
-    for (const key of ["weapon","head","body","hands","feet","shield"]) {
+    for (const key of ["weapon", "head", "body", "hands", "feet", "shield"]) {
       const id = $(`select_${key}`)?.value || "";
       const lv = clamp0($(`level_${key}`)?.value);
       equipState[key] = { id, lv };
@@ -399,7 +405,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!id) continue;
       const it = (slotItems[key] || []).find((v) => v.id === id);
       if (!it) continue;
-      equipSumRaw = addStats(equipSumRaw, scaleEquipBaseAdd(it.base_add ?? {}, lv));
+      equipSumRaw = addStats(equipSumRaw, scaleEquipBaseAdd(it.base_add ?? {}, lv)); // floorしない
     }
 
     const setSeries = getArmorSetSeries(slotItems, equipState);
@@ -411,9 +417,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (info) info.textContent = setSeries ? `使用 ${used} / 残り ${remain}（セットON）` : `使用 ${used} / 残り ${remain}`;
     if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
-    const basePoints = setMul === 1.0 ? basePointsRaw : mulStatsFloor(basePointsRaw, setMul);
-    const proteinApplied = setMul === 1.0 ? proteinAppliedRaw : mulStatsFloor(proteinAppliedRaw, setMul);
-    const equipSum = setMul === 1.0 ? equipSumRaw : mulStatsFloor(equipSumRaw, setMul);
+    // セット倍率：切り捨て無し
+    const basePoints = setMul === 1.0 ? basePointsRaw : mulStats(basePointsRaw, setMul);
+    const proteinApplied = setMul === 1.0 ? proteinAppliedRaw : mulStats(proteinAppliedRaw, setMul);
+    const equipSum = setMul === 1.0 ? equipSumRaw : mulStats(equipSumRaw, setMul);
 
     const basePlusProtein = addStats(basePoints, proteinApplied);
     const sumBeforeAcc = addStats(basePlusProtein, equipSum);
@@ -430,8 +437,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const it = (slotItems.accessory || []).find((v) => v.id === id);
       if (!it) continue;
 
-      accFlat = addStats(accFlat, scaleAccFlatLv1Base(it.base_add ?? {}, lv));
-      accRate = addStats(accRate, scaleAccRatePercentLv1Base(it.base_rate ?? {}, lv));
+      accFlat = addStats(accFlat, scaleAccFlatLv1Base(it.base_add ?? {}, lv)); // floorしない
+      accRate = addStats(accRate, scaleAccRatePercentLv1Base(it.base_rate ?? {}, lv)); // float
     }
 
     // --- ペット（3体） ---
@@ -455,8 +462,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const sumAfterFlat = addStats(addStats(sumBeforeAcc, accFlat), petFlat);
     const totalRate = addStats(accRate, petRate);
-    const total = applyRateToStatsFloor(sumAfterFlat, totalRate);
 
+    // 最後の割合適用：切り捨て無し
+    const total = applyRateToStats(sumAfterFlat, totalRate);
+
+    // 表示用の装備列（切り捨て無し）
     const equipDisplay = addStats(addStats(equipSum, accFlat), petFlat);
 
     setErr(errs.join("\n"));
