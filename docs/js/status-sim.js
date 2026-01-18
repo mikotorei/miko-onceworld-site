@@ -144,15 +144,15 @@ function scaleEquipBaseAdd(baseAdd, enhance) {
   const mul = 1 + lv * 0.1;
 
   const out = makeZeroStats();
-  function scaleEquipBaseAdd(baseAdd, enhance) {
-  const lv = clamp0(enhance);
-  const mul = 1 + lv * 0.1;
-
-  const out = makeZeroStats();
+  // ★装備ごとに切り捨て（ここが変更点）
   for (const k of SCALE_STATS) out[k] = Math.floor((baseAdd?.[k] ?? 0) * mul);
-  out.mov = baseAdd?.mov ?? 0; // movは強化しない（従来通り）
+
+  // movは強化対象外（切り捨ても倍率も掛けない）
+  out.mov = baseAdd?.mov ?? 0;
+
   return out;
 }
+
 
 function scaleAccFlatLv1Base(baseAdd, displayLv) {
   const internal = clamp1(displayLv) - 1;
