@@ -1,8 +1,10 @@
 // static/js/status-sim.js
-// 検証用：切り捨て（Math.floor）を一切行わない版
+// 検証用：切り捨て（Math.floor）を内部計算では一切行わない版
 // - 内部計算は小数を保持（途中のfloorなし）
-// - 画面表示だけ整数（四捨五入）
-//   ※「切り捨て」を避けるため、表示は Math.round を使用
+// - 画面表示だけ整数（小数点以下を捨てる＝表示floor）
+//
+// 注意：これは「内部の切り捨て」を禁止する検証モードです。
+//       表示の整数化だけは floor を使います（見た目のため）。
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -34,14 +36,14 @@ function mulStats(stats, mul) {
   return out;
 }
 
-/* ---------- 表示用：整数化（四捨五入） ---------- */
-function toDisplayInt(v) {
+/* ---------- 表示用：整数化（小数点以下を捨てる） ---------- */
+function toDisplayIntFloor(v) {
   const x = Number(v);
-  return Number.isFinite(x) ? Math.round(x) : 0;
+  return Number.isFinite(x) ? Math.floor(x) : 0;
 }
-function statsToDisplayInts(stats) {
+function statsToDisplayIntsFloor(stats) {
   const out = makeZeroStats();
-  for (const k of STATS) out[k] = toDisplayInt(stats?.[k] ?? 0);
+  for (const k of STATS) out[k] = toDisplayIntFloor(stats?.[k] ?? 0);
   return out;
 }
 
@@ -116,14 +118,14 @@ function parseMiniToml(text) {
   return item;
 }
 
-/* ---------- スケール（切り捨て無し） ---------- */
+/* ---------- スケール（内部切り捨て無し） ---------- */
 function scaleEquipBaseAdd(baseAdd, enhance) {
   const lv = clamp0(enhance);
   const mul = 1 + lv * 0.1;
 
   const out = makeZeroStats();
   for (const k of SCALE_STATS) out[k] = (baseAdd?.[k] ?? 0) * mul; // floorしない
-  out.mov = baseAdd?.mov ?? 0; // movは従来通り強化しない
+  out.mov = baseAdd?.mov ?? 0; // movは強化しない
   return out;
 }
 
@@ -223,10 +225,10 @@ function renderTable(basePlusProtein, equipDisplay, total) {
   const tbody = $("statsTbody");
   if (!tbody) return;
 
-  // 表示だけ整数（四捨五入）
-  const baseD = statsToDisplayInts(basePlusProtein);
-  const equipD = statsToDisplayInts(equipDisplay);
-  const totalD = statsToDisplayInts(total);
+  // 表示だけ整数（小数点以下を捨てる）
+  const baseD = statsToDisplayIntsFloor(basePlusProtein);
+  const equipD = statsToDisplayIntsFloor(equipDisplay);
+  const totalD = statsToDisplayIntsFloor(total);
 
   for (const tr of tbody.querySelectorAll("tr")) {
     const k = tr.dataset.stat;
@@ -391,7 +393,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const proteinRaw = makeZeroStats();
     for (const k of PROTEIN_STATS) proteinRaw[k] = clamp0($(`protein_${k}`)?.value);
 
-    // シェイカー補正：切り捨て無し
+    // シェイカー補正：内部切り捨て無し
     const proteinAppliedRaw = mulStats(proteinRaw, 1 + shaker * 0.01);
 
     let equipSumRaw = makeZeroStats();
@@ -405,7 +407,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!id) continue;
       const it = (slotItems[key] || []).find((v) => v.id === id);
       if (!it) continue;
-      equipSumRaw = addStats(equipSumRaw, scaleEquipBaseAdd(it.base_add ?? {}, lv)); // floorしない
+      equipSumRaw = addStats(equipSumRaw, scaleEquipBaseAdd(it.base_add ?? {}, lv)); // 内部floorなし
     }
 
     const setSeries = getArmorSetSeries(slotItems, equipState);
@@ -417,7 +419,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (info) info.textContent = setSeries ? `使用 ${used} / 残り ${remain}（セットON）` : `使用 ${used} / 残り ${remain}`;
     if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
-    // セット倍率：切り捨て無し
+    // セット倍率：内部切り捨て無し（現状維持）
     const basePoints = setMul === 1.0 ? basePointsRaw : mulStats(basePointsRaw, setMul);
     const proteinApplied = setMul === 1.0 ? proteinAppliedRaw : mulStats(proteinAppliedRaw, setMul);
     const equipSum = setMul === 1.0 ? equipSumRaw : mulStats(equipSumRaw, setMul);
@@ -437,7 +439,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const it = (slotItems.accessory || []).find((v) => v.id === id);
       if (!it) continue;
 
-      accFlat = addStats(accFlat, scaleAccFlatLv1Base(it.base_add ?? {}, lv)); // floorしない
+      accFlat = addStats(accFlat, scaleAccFlatLv1Base(it.base_add ?? {}, lv)); // 内部floorなし
       accRate = addStats(accRate, scaleAccRatePercentLv1Base(it.base_rate ?? {}, lv)); // float
     }
 
@@ -463,10 +465,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const sumAfterFlat = addStats(addStats(sumBeforeAcc, accFlat), petFlat);
     const totalRate = addStats(accRate, petRate);
 
-    // 最後の割合適用：切り捨て無し
+    // 最後の割合適用：内部切り捨て無し
     const total = applyRateToStats(sumAfterFlat, totalRate);
 
-    // 表示用の装備列（切り捨て無し）
     const equipDisplay = addStats(addStats(equipSum, accFlat), petFlat);
 
     setErr(errs.join("\n"));
