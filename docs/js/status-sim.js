@@ -153,9 +153,6 @@ function scaleEquipBaseAdd(baseAdd, enhance) {
   out.mov = baseAdd?.mov ?? 0; // movは強化しない（従来通り）
   return out;
 }
-  out.mov = baseAdd?.mov ?? 0;
-  return out;
-}
 
 function scaleAccFlatLv1Base(baseAdd, displayLv) {
   const internal = clamp1(displayLv) - 1;
