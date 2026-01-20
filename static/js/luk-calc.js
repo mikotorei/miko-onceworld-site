@@ -88,7 +88,7 @@
     const enemyLuk = scaleByLevel(enemy.baseLuk, lv);
 
     const needHit = ceil(enemyLuk / 2);
-    const needEvade = ceil(enemyLuk / 3);
+    const needEvade = ceil(enemyLuk * 3);
     const needPerfect = ceil(enemyLuk * 100);
 
     $enemyLuk.textContent = String(enemyLuk);
