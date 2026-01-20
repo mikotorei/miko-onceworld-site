@@ -1295,7 +1295,9 @@
         {
           "base_add": {},
           "base_rate": {},
-          "final_rate": {}
+          "final_rate": {
+            "luk": 15
+          }
         },
         {
           "base_add": {},
