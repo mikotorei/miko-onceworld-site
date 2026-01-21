@@ -835,12 +835,16 @@
         {
           "base_add": {},
           "base_rate": {},
-          "final_rate": {}
+          "final_rate": {
+            "int": 15
+          }
         },
         {
           "base_add": {},
           "base_rate": {},
-          "final_rate": {}
+          "final_rate": {
+            "int": 25
+          }
         }
       ]
     },
