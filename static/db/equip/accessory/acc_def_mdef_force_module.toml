@@ -1,0 +1,8 @@
++++
+id = "acc_def_mdef_force_module"
+title = "フォースモジュール"
++++
+
+[base_add]
+def = 80
+mdef = 90
