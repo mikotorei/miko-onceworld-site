@@ -1,4 +1,5 @@
 [
-"acc_vit_science_formla.toml",
-"acc_vit_pulse_core.toml"
+  "acc_vit_science_formla.toml",
+  "acc_vit_pulse_core.toml",
+  "acc_spd_wind_crest.toml"
 ]
