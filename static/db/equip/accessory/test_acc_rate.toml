@@ -1,9 +1,0 @@
-+++
-id = "test_acc_rate"
-title = "テストアクセ（割合のみ）"
-slot = "accessory"
-series = ""
-+++
-
-[base_rate]
-atk = 10
