@@ -1,0 +1,7 @@
++++
+id = "acc_spd_wind_crest"
+title = "ウィンドクレスト"
++++
+
+[base_add]
+spd = 135
