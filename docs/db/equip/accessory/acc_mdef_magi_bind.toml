@@ -1,0 +1,7 @@
++++
+id = "acc_mdef_magi_bind"
+title = "マギバインド"
++++
+
+[base_rate]
+mdef = 25
