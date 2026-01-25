@@ -1,0 +1,10 @@
++++
+id = "acc_int_arc_grimoire"
+title = "アークグリモワール"
++++
+
+[base_add]
+int = 30
+
+[base_rate]
+int = 25
