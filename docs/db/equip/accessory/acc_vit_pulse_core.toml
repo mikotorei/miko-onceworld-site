@@ -1,0 +1,7 @@
++++
+id = "acc_vit_pulse_core"
+title = "鼓動核"
++++
+
+[base_rate]
+vit = 15
