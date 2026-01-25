@@ -1,0 +1,7 @@
++++
+id = "acc_mdef_barrier_storm"
+title = "結界嵐"
++++
+
+[base_rate]
+mdef = 15
