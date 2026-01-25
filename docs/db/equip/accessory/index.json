@@ -6,5 +6,6 @@
   "acc_atk_blood_tonic.toml",
   "acc_int_arc_grimoire.toml",
   "acc_def_mdef_force_module.toml",
-  "acc_def_knight_doctrine.toml"
+  "acc_def_knight_doctrine.toml",
+  "acc_mdef_magi_bind.toml"
 ]
