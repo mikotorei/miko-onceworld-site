@@ -1,0 +1,10 @@
++++
+id = "acc_luk_lucky_trump"
+title = "ラッキートランプ"
++++
+
+[base_add]
+luk = 99
+
+[base_rate]
+luk = 15
