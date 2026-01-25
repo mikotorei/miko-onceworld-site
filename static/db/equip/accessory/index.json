@@ -3,5 +3,6 @@
   "acc_vit_pulse_core.toml",
   "acc_spd_wind_crest.toml",
   "acc_spd_flash_fang_star.toml",
-  "acc_atk_blood_tonic.toml"
+  "acc_atk_blood_tonic.toml",
+  "acc_int_arc_grimoire.toml"
 ]
