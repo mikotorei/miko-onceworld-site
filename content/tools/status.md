@@ -329,4 +329,6 @@ title: "主人公ステータス・シミュレーター"
   }
 </style>
 
+<!-- 表示用フォーマット（fmt）を先に読み込む -->
+<script src="/js/utils/format.js"></script>
 <script src="/js/status-sim.js"></script>
