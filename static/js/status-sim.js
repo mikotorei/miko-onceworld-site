@@ -9,6 +9,8 @@
 // 5) 最終確定：全部反映後に roundSafe（全ステ）
 //
 // ペット段階：0..stage を累積合算（あなたの仕様コメント通り）
+//
+// 表示：fmt()（/js/utils/format.js）でカンマ区切り（内部計算は数値のまま）
 
 const STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk", "mov"];
 const BASE_STATS = ["vit", "spd", "atk", "int", "def", "mdef", "luk"];
@@ -56,6 +58,14 @@ function floorStatsSafe(stats) {
   const out = makeZeroStats();
   for (const k of STATS) out[k] = floorSafe(stats?.[k] ?? 0);
   return out;
+}
+
+// fmt() が無い環境でも壊れない保険（基本は format.js の fmt を使う）
+function fmtSafe(x) {
+  try {
+    if (typeof window.fmt === "function") return window.fmt(x);
+  } catch {}
+  return String(Number(x) || 0);
 }
 
 // rateの正規化：
@@ -271,14 +281,17 @@ function renderTable(basePlusProtein, equipDisplay, totalFinalInt) {
   const tbody = $("statsTbody");
   if (!tbody) return;
 
+  // 表の「基礎＋プロテイン」「装備」は“見た目”用に floor（内部計算は影響なし）
   const baseD = floorStatsSafe(basePlusProtein);
   const equipD = floorStatsSafe(equipDisplay);
 
   for (const tr of tbody.querySelectorAll("tr")) {
     const k = tr.dataset.stat;
-    tr.querySelector('[data-col="base"]').textContent = String(baseD?.[k] ?? 0);
-    tr.querySelector('[data-col="equip"]').textContent = String(equipD?.[k] ?? 0);
-    tr.querySelector('[data-col="total"]').textContent = String(totalFinalInt?.[k] ?? 0);
+
+    // ★表示のみ fmt（カンマ区切り）
+    tr.querySelector('[data-col="base"]').textContent = fmtSafe(baseD?.[k] ?? 0);
+    tr.querySelector('[data-col="equip"]').textContent = fmtSafe(equipD?.[k] ?? 0);
+    tr.querySelector('[data-col="total"]').textContent = fmtSafe(totalFinalInt?.[k] ?? 0);
   }
 }
 
@@ -425,11 +438,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const setSeries = getArmorSetSeries(slotItems, equipState);
     const setMul = setSeries ? 1.1 : 1.0;
 
-    // ポイント表示
+    // ポイント表示（ここもカンマにする）
     const used = BASE_STATS.reduce((s, k) => s + (basePointsRaw[k] ?? 0), 0);
     const remain = basePointTotal - used;
     const info = $("basePointInfo");
-    if (info) info.textContent = setSeries ? `使用 ${used} / 残り ${remain}（セットON）` : `使用 ${used} / 残り ${remain}`;
+    if (info) {
+      const usedS = fmtSafe(used);
+      const remainS = fmtSafe(remain);
+      info.textContent = setSeries ? `使用 ${usedS} / 残り ${remainS}（セットON）` : `使用 ${usedS} / 残り ${remainS}`;
+    }
     if (remain < 0) errs.push(`ポイント超過：残り ${remain}`);
 
     // セット適用（合算後1回 floor / mov除外）
