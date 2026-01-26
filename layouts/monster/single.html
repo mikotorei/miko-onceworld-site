@@ -57,42 +57,42 @@
 
             <div class="stat-row">
               <dt>VIT</dt>
-              <dd data-stat="vit" data-base="{{ .Params.vit }}">{{ .Params.vit | intcomma }}</dd>
+              <dd data-stat="vit" data-base="{{ .Params.vit }}">{{ lang.FormatNumber 0 .Params.vit }}</dd>
             </div>
 
             <div class="stat-row">
               <dt>SPD</dt>
-              <dd data-stat="spd" data-base="{{ .Params.spd }}">{{ .Params.spd | intcomma }}</dd>
+              <dd data-stat="spd" data-base="{{ .Params.spd }}">{{ lang.FormatNumber 0 .Params.spd }}</dd>
             </div>
 
             <div class="stat-row">
               <dt>ATK</dt>
-              <dd data-stat="atk" data-base="{{ .Params.atk }}">{{ .Params.atk | intcomma }}</dd>
+              <dd data-stat="atk" data-base="{{ .Params.atk }}">{{ lang.FormatNumber 0 .Params.atk }}</dd>
             </div>
 
             <div class="stat-row">
               <dt>INT</dt>
-              <dd data-stat="int" data-base="{{ .Params.int }}">{{ .Params.int | intcomma }}</dd>
+              <dd data-stat="int" data-base="{{ .Params.int }}">{{ lang.FormatNumber 0 .Params.int }}</dd>
             </div>
 
             <div class="stat-row">
               <dt>DEF</dt>
-              <dd data-stat="def" data-base="{{ .Params.def }}">{{ .Params.def | intcomma }}</dd>
+              <dd data-stat="def" data-base="{{ .Params.def }}">{{ lang.FormatNumber 0 .Params.def }}</dd>
             </div>
 
             <div class="stat-row">
               <dt>M-DEF</dt>
-              <dd data-stat="mdef" data-base="{{ .Params.mdef }}">{{ .Params.mdef | intcomma }}</dd>
+              <dd data-stat="mdef" data-base="{{ .Params.mdef }}">{{ lang.FormatNumber 0 .Params.mdef }}</dd>
             </div>
 
             <div class="stat-row">
               <dt>LUK</dt>
-              <dd data-stat="luk" data-base="{{ .Params.luk }}">{{ .Params.luk | intcomma }}</dd>
+              <dd data-stat="luk" data-base="{{ .Params.luk }}">{{ lang.FormatNumber 0 .Params.luk }}</dd>
             </div>
 
             <div class="stat-row">
               <dt>MOV</dt>
-              <dd data-stat="mov" data-base="{{ .Params.mov }}">{{ .Params.mov | intcomma }}</dd>
+              <dd data-stat="mov" data-base="{{ .Params.mov }}">{{ lang.FormatNumber 0 .Params.mov }}</dd>
             </div>
 
           </dl>
@@ -102,12 +102,12 @@
 
             <div class="stat-row">
               <dt>EXP</dt>
-              <dd data-stat="exp" data-base="{{ .Params.exp }}">{{ .Params.exp | intcomma }}</dd>
+              <dd data-stat="exp" data-base="{{ .Params.exp }}">{{ lang.FormatNumber 0 .Params.exp }}</dd>
             </div>
 
             <div class="stat-row">
               <dt>GOLD</dt>
-              <dd>{{ .Params.gold | intcomma }}</dd>
+              <dd>{{ lang.FormatNumber 0 .Params.gold }}</dd>
             </div>
 
             <div class="stat-row">
