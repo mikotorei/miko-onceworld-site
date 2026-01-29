@@ -1,0 +1,11 @@
++++
+id = "DragonShield"
+title = "ドラゴンの盾"
+slot = "shield"
+series = "Dragon"
++++
+
+[base_add]
+atk = 850
+def = 550
+mdef = 550
