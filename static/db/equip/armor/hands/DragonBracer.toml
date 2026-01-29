@@ -1,0 +1,10 @@
++++
+id = "DragonBracer"
+title = "ドラゴンブレイサー"
+slot = "hands"
+series = "Dragon"
++++
+
+[base_add]
+spd = 1250
+luk = 350
