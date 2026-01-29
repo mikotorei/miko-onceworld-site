@@ -1,0 +1,11 @@
++++
+id = "DragonHead"
+title = "ドラゴンヘッド"
+slot = "head"
+series = "Dragon"
++++
+
+[base_add]
+atk = 1050
+int = 550
+luk = 350
