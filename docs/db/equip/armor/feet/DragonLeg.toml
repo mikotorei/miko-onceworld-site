@@ -1,0 +1,12 @@
++++
+id = "DragonLeg"
+title = "ドラゴンレッグ"
+slot = "feet"
+series = "Dragon"
++++
+
+[base_add]
+spd = 350
+atk = 850
+def = 350
+mov = 6
