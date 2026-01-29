@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>罪環の監視者モルモ | OnceWorld(ワンスワ)miko</title>
+
+  <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/style.css">
+  <link rel="stylesheet" href="https://matsumoto0106.github.io/miko-onceworld-site/css/monster.css">
+</head>
+<body>
+
+<header class="site-header">
+  <h1 class="site-title">
+    <a href="https://matsumoto0106.github.io/miko-onceworld-site/">
+      OnceWorld(ワンスワ)miko
+    </a>
+  </h1>
+
+  
+  <button class="menu-toggle" type="button" aria-label="メニュー" aria-expanded="false">
+    ☰
+  </button>
+
+  
+  <nav class="site-nav" aria-label="サイトメニュー">
+    <a href="https://matsumoto0106.github.io/miko-onceworld-site/">ホームへ</a>
+    <a href="https://matsumoto0106.github.io/miko-onceworld-site/monster/">モンスター一覧</a>
+    <a href="https://matsumoto0106.github.io/miko-onceworld-site/tools/">ツール</a>
+  </nav>
+
+  
+  <div class="nav-overlay" aria-hidden="true"></div>
+</header>
+
+<main>
+  
+<article class="monster-detail">
+
+  
+  <h1 class="monster-title">罪環の監視者モルモ</h1>
+
+  
+  
+    <div class="monster-image">
+      <img src="https://matsumoto0106.github.io/miko-onceworld-site/images/monster/205.png" alt="罪環の監視者モルモ">
+    </div>
+  
+
+  
+  <section class="monster-stats">
+
+    
+    <p class="monster-basic">
+      <span class="monster_name">名前:</span>
+      <span class="monster_name_physic">罪環の監視者モルモ</span>
+      (物理・近距離・水属性)
+    </p>
+
+    
+    <div class="level-control">
+
+      
+        <div class="level-shortcuts" aria-label="レベルショートカット">
+          
+          
+          
+            
+            
+              
+              
+                
+                <button type="button" class="level-shortcut-btn" data-level="88888">Lv88888</button>
+              
+            
+          
+        </div>
+      
+
+      <label for="monster-level">Lv</label>
+      <input type="number" id="monster-level" value="1" min="1">
+    </div>
+
+    
+    <section class="monster-panel monster-panel--status">
+      <h2>ステータス</h2>
+
+      <div class="table">
+        <div class="table_top">
+
+          
+          <dl class="table_status" id="status-table">
+
+            <div class="stat-row">
+              <dt>VIT</dt>
+              <dd data-stat="vit" data-base="200">200</dd>
+            </div>
+
+            <div class="stat-row">
+              <dt>SPD</dt>
+              <dd data-stat="spd" data-base="100">100</dd>
+            </div>
+
+            <div class="stat-row">
+              <dt>ATK</dt>
+              <dd data-stat="atk" data-base="250">250</dd>
+            </div>
+
+            <div class="stat-row">
+              <dt>INT</dt>
+              <dd data-stat="int" data-base="5">5</dd>
+            </div>
+
+            <div class="stat-row">
+              <dt>DEF</dt>
+              <dd data-stat="def" data-base="300">300</dd>
+            </div>
+
+            <div class="stat-row">
+              <dt>M-DEF</dt>
+              <dd data-stat="mdef" data-base="100">100</dd>
+            </div>
+
+            <div class="stat-row">
+              <dt>LUK</dt>
+              <dd data-stat="luk" data-base="250">250</dd>
+            </div>
+
+            <div class="stat-row">
+              <dt>MOV</dt>
+              <dd data-stat="mov" data-base="25">25</dd>
+            </div>
+
+          </dl>
+
+          
+          <dl class="table_infomasion" id="info-table">
+
+            <div class="stat-row">
+              <dt>EXP</dt>
+              <dd data-stat="exp" data-base="96400">96,400</dd>
+            </div>
+
+            <div class="stat-row">
+              <dt>GOLD</dt>
+              <dd>600,000</dd>
+            </div>
+
+            <div class="stat-row">
+              <dt>捕獲確率</dt>
+              <dd>0.1%</dd>
+            </div>
+
+          </dl>
+
+        </div>
+      </div>
+    </section>
+  </section>
+
+  
+  
+  <section class="monster-drop">
+    <h2>ドロップアイテム</h2>
+    <ul>
+      
+        <li>次元石</li>
+      
+    </ul>
+  </section>
+  
+
+  
+  
+  <section class="monster-locations">
+    <h2>出現場所</h2>
+    <ul>
+      
+        <li>深淵20層</li>
+      
+    </ul>
+  </section>
+  
+
+  
+  <script src="https://matsumoto0106.github.io/miko-onceworld-site/js/utils/format.js"></script>
+  <script src="https://matsumoto0106.github.io/miko-onceworld-site/js/status-calc.js"></script>
+  <script src="https://matsumoto0106.github.io/miko-onceworld-site/js/level-shortcuts.js"></script>
+
+  <p><a href="https://matsumoto0106.github.io/miko-onceworld-site/monster/">一覧に戻る</a></p>
+</article>
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.querySelector(".menu-toggle");
+  const nav = document.querySelector(".site-nav");
+  const overlay = document.querySelector(".nav-overlay");
+
+  if (!toggle || !nav || !overlay) return;
+
+  function openMenu() {
+    nav.classList.add("is-open");
+    overlay.classList.add("is-open");
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.textContent = "✕";
+    document.body.classList.add("no-scroll");
+  }
+
+  function closeMenu() {
+    nav.classList.remove("is-open");
+    overlay.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.textContent = "☰";
+    document.body.classList.remove("no-scroll");
+  }
+
+  toggle.addEventListener("click", () => {
+    if (nav.classList.contains("is-open")) closeMenu();
+    else openMenu();
+  });
+
+  overlay.addEventListener("click", closeMenu);
+
+  
+  window.addEventListener("resize", () => {
+    if (window.matchMedia("(min-width: 769px)").matches) closeMenu();
+  });
+});
+</script>
+
+</body>
+</html>
