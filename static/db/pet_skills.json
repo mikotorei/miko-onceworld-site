@@ -2204,6 +2204,45 @@
       ]
     },
     {
+      "id": "110",
+      "name": "ラッキーヒトデ",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 30
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 30
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 30
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk": 30
+          },
+          "final_rate": {}
+        }
+      ]
+    },
+    {
       "id": "161",
       "name": "ホムラウマ",
       "stages": [
