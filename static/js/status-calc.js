@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
         calculatedStatus = Math.floor(baseStatus * (1 + (currentLevel - 1) * 0.1));
       }
 
-      // 表示だけカンマ
       statusEl.textContent = fmtSafe(calculatedStatus);
     });
   }
@@ -46,17 +45,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (statType !== "exp") return;
 
-      // 獲得EXP ＝ 基礎EXP × floor( max(1, 0.2 × Lv^1.1) )
+      // 獲得EXP ＝ 基礎経験値 × floor( max(1, 0.2 × Lv^1.1) )
       const rawScale = 0.2 * Math.pow(currentLevel, 1.1);
       const scale = Math.floor(Math.max(1, rawScale));
       const exp = baseValue * scale;
 
-      // 表示だけカンマ
       infoEl.textContent = fmtSafe(exp);
     });
   }
 
-  /* ===== まとめて再計算 ===== */
   function recalcAllByLevel() {
     recalcStatusByLevel();
     recalcInfoByLevel();
@@ -64,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   recalcAllByLevel();
 
-  // input でも change でも反応（スマホ対策）
+  // input + change（ショートカット/スマホ対策）
   levelInputElement.addEventListener("input", recalcAllByLevel);
   levelInputElement.addEventListener("change", recalcAllByLevel);
 });
