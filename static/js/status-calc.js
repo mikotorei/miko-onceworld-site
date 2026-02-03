@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const levelInputElement = document.getElementById("monster-level");
+  if (!levelInputElement) return;
 
   // 表示専用：fmt() が無い環境でも壊れない
   const fmtSafe = (v) => {
@@ -13,24 +14,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const statusValueElements = document.querySelectorAll("#status-table dd");
 
   function recalcStatusByLevel() {
-    const currentLevel = parseInt(levelInputElement.value, 10);
+    const currentLevel = parseInt(levelInputElement.value, 10) || 1;
 
     statusValueElements.forEach((statusEl) => {
-      // data-base は「カンマ無しの数値」を前提（テンプレ側でも維持できている）
-      const baseStatus = parseInt(statusEl.dataset.base, 10);
+      const baseStatus = parseInt(statusEl.dataset.base, 10) || 0;
       const statType = statusEl.dataset.stat;
 
       let calculatedStatus;
 
-      // ▼ MOVは計算しない
+      // MOVは計算しない
       if (statType === "mov") {
         calculatedStatus = baseStatus;
       } else {
-        // ▼ それ以外は計算を適用
         calculatedStatus = Math.floor(baseStatus * (1 + (currentLevel - 1) * 0.1));
       }
 
-      // ★表示だけカンマ
+      // 表示だけカンマ
       statusEl.textContent = fmtSafe(calculatedStatus);
     });
   }
@@ -39,29 +38,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const infoValueElements = document.querySelectorAll("#info-table dd[data-stat]");
 
   function recalcInfoByLevel() {
-    const currentLevel = parseInt(levelInputElement.value, 10);
+    const currentLevel = parseInt(levelInputElement.value, 10) || 1;
 
     infoValueElements.forEach((infoEl) => {
       const statType = infoEl.dataset.stat;
-      const baseValue = parseInt(infoEl.dataset.base, 10);
+      const baseValue = parseInt(infoEl.dataset.base, 10) || 0;
 
-      // EXPのみ計算
-      if (statType === "exp") {
-  const lv = currentLevel;
-  const baseExp = baseValue;
+      if (statType !== "exp") return;
 
-  const rawScale = 0.2 * Math.pow(lv, 1.1);
-  const scaleWithMin = Math.max(1, rawScale);
-  const scale = Math.floor(scaleWithMin);
+      // 獲得EXP ＝ 基礎EXP × floor( max(1, 0.2 × Lv^1.1) )
+      const rawScale = 0.2 * Math.pow(currentLevel, 1.1);
+      const scale = Math.floor(Math.max(1, rawScale));
+      const exp = baseValue * scale;
 
-  const exp = baseExp * scale;
-
-  infoEl.textContent = fmtSafe(exp);
-}
-      
-        // ★表示だけカンマ
-        infoEl.textContent = fmtSafe(v);
-      }
+      // 表示だけカンマ
+      infoEl.textContent = fmtSafe(exp);
     });
   }
 
@@ -72,5 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   recalcAllByLevel();
+
+  // input でも change でも反応（スマホ対策）
   levelInputElement.addEventListener("input", recalcAllByLevel);
+  levelInputElement.addEventListener("change", recalcAllByLevel);
 });
