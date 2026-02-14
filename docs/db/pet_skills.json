@@ -2472,6 +2472,46 @@
         }
       ]
     },
+    
+    {
+      "id": 172"",
+      "name": "白竜",
+      "stages": [
+        {
+          "base_add": {},
+          "base_rate": {},
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk":1
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add":{},
+          "base_rate": {
+            "luk":1
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "atk":80
+          },
+          "final_rate": {}
+        },
+        {
+          "base_add": {},
+          "base_rate": {
+            "luk":80
+          },
+          "final_rate": {}
+        }
+      ]
+    },
     {
       "id": "201",
       "name": "イグニス・シスター",
