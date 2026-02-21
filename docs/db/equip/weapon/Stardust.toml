@@ -1,0 +1,9 @@
++++
+id = "Stardust"
+title = "星屑ブレード"
+slot = "weapon"
++++
+
+[base_add]
+atk = 990
+luk = 490
