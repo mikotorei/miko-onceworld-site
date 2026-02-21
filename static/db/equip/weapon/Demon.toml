@@ -1,0 +1,10 @@
++++
+id = "Demon"
+title = "悪魔の杖"
+slot = "weapon"
++++
+
+[base_add]
+vit = 388
+int = 688
+def = 388
