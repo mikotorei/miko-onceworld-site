@@ -1,0 +1,9 @@
++++
+id = "Sacrifice"
+title = "生贄100"
+slot = "weapon"
++++
+
+[base_add]
+vit = 1000
+int = 1000
